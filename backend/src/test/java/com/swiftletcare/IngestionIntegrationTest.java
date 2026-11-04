@@ -171,8 +171,13 @@ class IngestionIntegrationTest {
   }
 
   WebSocket socket(long id) throws Exception {
+    return socket(id, token, events, new CompletableFuture<>());
+  }
+
+  WebSocket socket(long id, String auth, BlockingQueue<String> messages,
+      CompletableFuture<Integer> closed) throws Exception {
     return http.newWebSocketBuilder()
-        .header("Authorization", "Bearer " + token)
+        .header("Authorization", "Bearer " + auth)
         .header("Origin", "http://localhost:5173")
         .buildAsync(
             URI.create("ws://localhost:" + port + "/ws/devices/" + id),
@@ -186,14 +191,89 @@ class IngestionIntegrationTest {
               public CompletionStage<?> onText(WebSocket w, CharSequence data, boolean last) {
                 text.append(data);
                 if (last) {
-                  events.add(text.toString());
+                  messages.add(text.toString());
                   text.setLength(0);
                 }
                 w.request(1);
                 return null;
               }
+
+              public CompletionStage<?> onClose(WebSocket w, int status, String reason) {
+                closed.complete(status);
+                return null;
+              }
             })
         .get(5, TimeUnit.SECONDS);
+  }
+
+  @Autowired com.swiftletcare.realtime.Realtime realtime;
+
+  @Test
+  void countRealtimeIsCommittedOnceAndCannotCrossHouse() throws Exception {
+    String suffix=UUID.randomUUID().toString();
+    long foreignHouse=jdbc.queryForObject("insert into swiftletcare.houses(name,active) values('count foreign',true) returning id",Long.class);
+    long foreignZone=jdbc.queryForObject("insert into swiftletcare.zones(house_id,name,active) values(?,'count foreign',true) returning id",Long.class,foreignHouse);
+    long foreignCamera=jdbc.queryForObject("insert into swiftletcare.devices(zone_id,device_id,name,type,enabled) values(?,?,'count foreign','CAMERA',true) returning id",Long.class,foreignZone,"COUNT-"+suffix);
+    long foreignUser=jdbc.queryForObject("insert into swiftletcare.users(email,password_hash,role,active) values(?,'unused','OWNER',true) returning id",Long.class,suffix+"@count.test");
+    jdbc.update("insert into swiftletcare.house_memberships(user_id,house_id,role,active,joined_at) values(?,?,'VIEWER',true,now())",foreignUser,foreignHouse);
+    var claims=org.springframework.security.oauth2.jwt.JwtClaimsSet.builder().issuer("swiftletcare")
+        .subject(Long.toString(foreignUser)).issuedAt(Instant.now()).expiresAt(Instant.now().plusSeconds(900)).build();
+    String foreignToken=encoder.encode(org.springframework.security.oauth2.jwt.JwtEncoderParameters.from(
+        org.springframework.security.oauth2.jwt.JwsHeader.with(org.springframework.security.oauth2.jose.jws.MacAlgorithm.HS256).build(),claims)).getTokenValue();
+    var ownMessages=new LinkedBlockingQueue<String>();
+    var foreignMessages=new LinkedBlockingQueue<String>();
+    var deniedMessages=new LinkedBlockingQueue<String>();
+    var deniedClose=new CompletableFuture<Integer>();
+    var ownSocket=socket(camera,token,ownMessages,new CompletableFuture<>());
+    var foreignSocket=socket(foreignCamera,foreignToken,foreignMessages,new CompletableFuture<>());
+    var deniedSocket=socket(camera,foreignToken,deniedMessages,deniedClose);
+    try {
+      assertThat(deniedClose.get(5,TimeUnit.SECONDS)).isEqualTo(1008);
+      // Confirm registration of both authorized sockets before testing absence of delivery.
+      for(var target:List.of(Map.entry(camera,ownMessages),Map.entry(foreignCamera,foreignMessages))) {
+        String ready=null;
+        for(int i=0;i<30 && ready==null;i++) {
+          realtime.publish(target.getKey(),"test.ready",Map.of("ready",true));
+          ready=target.getValue().poll(100,TimeUnit.MILLISECONDS);
+        }
+        assertThat(ready).contains("test.ready");
+      }
+      ownMessages.clear(); foreignMessages.clear();
+      String path="/api/v1/internal/ai/count-logs";
+      String body=json.writeValueAsString(Map.of("deviceId",camera,"periodStart","2026-01-15T00:00:00Z",
+          "periodEnd","2026-01-15T01:00:00Z","entryCount",12,"exitCount",3,"detectCount",15,
+          "aggregationType","HOURLY","processedAt","2026-01-15T01:00:01Z"));
+      var created=request("POST",path,body,null);
+      assertThat(created.statusCode()).isEqualTo(201);
+      var event=json.readTree(Objects.requireNonNull(ownMessages.poll(5,TimeUnit.SECONDS)));
+      assertThat(event.get("type").asText()).isEqualTo("ai.count.updated");
+      long id=event.get("data").get("id").asLong();
+      assertThat(jdbc.queryForObject("select count(*) from swiftletcare.count_logs where id=?",Long.class,id)).isEqualTo(1);
+      assertThat(request("POST",path,body,null).statusCode()).isEqualTo(200);
+      assertThat(request("POST",path,body.replace("\"entryCount\":12","\"entryCount\":13"),null).statusCode()).isEqualTo(409);
+      assertThat(ownMessages.poll(200,TimeUnit.MILLISECONDS)).isNull();
+      assertThat(foreignMessages.poll(200,TimeUnit.MILLISECONDS)).isNull();
+      assertThat(deniedMessages).isEmpty();
+      assertThat(request("GET","/api/v1/devices/"+camera+"/count-logs?from=2026-01-15T00:00:00Z&to=2026-01-16T00:00:00Z",null,foreignToken).statusCode()).isEqualTo(403);
+
+      String trigger="b2_count_"+UUID.randomUUID().toString().replace("-","");
+      jdbc.execute("create function swiftletcare."+trigger+"() returns trigger language plpgsql as $$ begin if NEW.device_id="+camera+" and NEW.period_start=TIMESTAMPTZ '2026-01-16T00:00:00Z' then raise exception 'count test commit failure'; end if; return NEW; end $$");
+      String retry=body.replace("2026-01-15","2026-01-16");
+      try {
+        jdbc.execute("create constraint trigger "+trigger+" after insert on swiftletcare.count_logs deferrable initially deferred for each row execute function swiftletcare."+trigger+"()");
+        assertThat(request("POST",path,retry,null).statusCode()).isEqualTo(503);
+        assertThat(jdbc.queryForObject("select count(*) from swiftletcare.count_logs where device_id=? and period_start=TIMESTAMPTZ '2026-01-16T00:00:00Z'",Long.class,camera)).isZero();
+        assertThat(ownMessages.poll(200,TimeUnit.MILLISECONDS)).isNull();
+        assertThat(foreignMessages.poll(200,TimeUnit.MILLISECONDS)).isNull();
+      } finally {
+        jdbc.execute("drop trigger if exists "+trigger+" on swiftletcare.count_logs");
+        jdbc.execute("drop function swiftletcare."+trigger+"()");
+      }
+      assertThat(request("POST",path,retry,null).statusCode()).isEqualTo(201);
+      assertThat(ownMessages.poll(5,TimeUnit.SECONDS)).contains("ai.count.updated");
+      assertThat(ownMessages.poll(200,TimeUnit.MILLISECONDS)).isNull();
+      assertThat(foreignMessages.poll(200,TimeUnit.MILLISECONDS)).isNull();
+    } finally { ownSocket.abort(); foreignSocket.abort(); deniedSocket.abort(); }
   }
 
   @Test
@@ -650,4 +730,43 @@ class IngestionIntegrationTest {
   }
 
   @Autowired com.swiftletcare.iot.MqttGateway gateway;
+
+  @Test
+  void deviceEventsValidateSourceAndWriteStructuredLogsOnly() throws Exception {
+    var logger=(ch.qos.logback.classic.Logger)org.slf4j.LoggerFactory.getLogger(com.swiftletcare.iot.DeviceEvents.class);
+    var logs=new LinkedBlockingQueue<String>();
+    var appender=new ch.qos.logback.core.AppenderBase<ch.qos.logback.classic.spi.ILoggingEvent>() {
+      protected void append(ch.qos.logback.classic.spi.ILoggingEvent e) { logs.add(e.getFormattedMessage()); }
+    };
+    appender.setContext(logger.getLoggerContext()); appender.start(); logger.addAppender(appender);
+    long anomalies=jdbc.queryForObject("select count(*) from swiftletcare.anomaly_events",Long.class);
+    long alerts=jdbc.queryForObject("select count(*) from swiftletcare.alerts",Long.class);
+    try {
+      for(String type:List.of("SENSOR_FAULT","MANUAL_LIMIT")) {
+        String payload=json.writeValueAsString(Map.of("device_id",code,"timestamp",Instant.now().toString(),
+            "event_type",type,"sensor","DHT22","reason","simulated\nreason"));
+        mqtt.publish(topic+"/events",new MqttMessage(payload.getBytes(StandardCharsets.UTF_8)));
+        String log=logs.poll(5,TimeUnit.SECONDS);
+        assertThat(log).isNotNull();
+        assertThat(log).doesNotContain("\n");
+        var data=json.readTree(log);
+        assertThat(data.get("houseId").asLong()).isEqualTo(house);
+        assertThat(data.get("deviceId").asLong()).isEqualTo(device);
+        assertThat(data.get("type").asText()).isEqualTo(type);
+      }
+      for(var invalid:List.of(
+          Map.of("device_id",code,"timestamp",Instant.now().plusSeconds(600).toString(),"event_type","SENSOR_FAULT","sensor","DHT22","reason","bad time"),
+          Map.of("device_id",code,"timestamp",Instant.now().toString(),"event_type","UNKNOWN","sensor","DHT22","reason","bad type"),
+          Map.of("device_id","wrong-device","timestamp",Instant.now().toString(),"event_type","SENSOR_FAULT","sensor","DHT22","reason","bad source"))) {
+        gateway.messageArrived(topic+"/events",new MqttMessage(json.writeValueAsBytes(invalid)));
+        assertThat(logs.poll(100,TimeUnit.MILLISECONDS)).isNull();
+      }
+      var retained=new MqttMessage(json.writeValueAsBytes(Map.of("device_id",code,"timestamp",Instant.now().toString(),
+          "event_type","SENSOR_FAULT","sensor","DHT22","reason","retained")));
+      retained.setRetained(true); gateway.messageArrived(topic+"/events",retained);
+      assertThat(logs.poll(100,TimeUnit.MILLISECONDS)).isNull();
+      assertThat(jdbc.queryForObject("select count(*) from swiftletcare.anomaly_events",Long.class)).isEqualTo(anomalies);
+      assertThat(jdbc.queryForObject("select count(*) from swiftletcare.alerts",Long.class)).isEqualTo(alerts);
+    } finally { logger.detachAppender(appender); appender.stop(); }
+  }
 }

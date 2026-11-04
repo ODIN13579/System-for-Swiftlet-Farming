@@ -191,6 +191,7 @@ paths:
       tags:
       - Houses
       operationId: listMyHouses
+      x-build2-implemented: true
       summary: Nhà yến được phép truy cập
       parameters:
       - &id001
@@ -235,17 +236,17 @@ paths:
       - bearerAuth: []
       x-build-priority: MVP
       x-requirement-group: FR-FARM/RBAC
-      x-api-spec-status: PROPOSED_NEEDS_REVIEW
-      description: Design endpoint for BUILD, subject to validation, authorization and cross-review as documented in
-        DSN-09.
+      x-api-spec-status: IMPLEMENTED_BUILD2
+      description: Implemented BUILD 2 on V2 schema. Active global ADMIN spans Houses; other users require an active House membership.
+        See build2-handoff.md for lifecycle, filtering and remaining decisions.
     post:
       x-build104-implemented: false
       tags:
       - Houses
       operationId: createHouse
+      x-build2-implemented: true
       summary: Tạo nhà yến và Zone đầu tiên
-      description: Proposed initialZone atomic creation to satisfy House 1..* Zone on Class Diagram; pending approval.
-        Restrict by global role.
+      description: Global ADMIN only. Atomically creates House, initial Zone and creator OWNER membership. No implicit config or seed.
       requestBody:
         required: true
         content:
@@ -273,13 +274,14 @@ paths:
       - bearerAuth: []
       x-build-priority: MVP
       x-requirement-group: FR-FARM/ZONE
-      x-api-spec-status: PROPOSED_NEEDS_REVIEW
+      x-api-spec-status: IMPLEMENTED_BUILD2
   /api/v1/houses/{houseId}:
     get:
       x-build104-implemented: false
       tags:
       - Houses
       operationId: getHouse
+      x-build2-implemented: true
       summary: Chi tiết nhà yến
       parameters:
       - name: houseId
@@ -310,14 +312,15 @@ paths:
       - bearerAuth: []
       x-build-priority: MVP
       x-requirement-group: FR-FARM
-      x-api-spec-status: PROPOSED_NEEDS_REVIEW
-      description: Design endpoint for BUILD, subject to validation, authorization and cross-review as documented in
-        DSN-09.
+      x-api-spec-status: IMPLEMENTED_BUILD2
+      description: Implemented BUILD 2 on V2 schema. Active global ADMIN spans Houses; other users require an active House membership.
+        See build2-handoff.md for lifecycle, filtering and remaining decisions.
     patch:
       x-build104-implemented: false
       tags:
       - Houses
       operationId: updateHouse
+      x-build2-implemented: true
       summary: Sửa nhà yến
       parameters:
       - name: houseId
@@ -354,9 +357,8 @@ paths:
       - bearerAuth: []
       x-build-priority: Extended
       x-requirement-group: FR-FARM
-      x-api-spec-status: PROPOSED_NEEDS_REVIEW
-      description: Design endpoint for BUILD, subject to validation, authorization and cross-review as documented in
-        DSN-09.
+      x-api-spec-status: IMPLEMENTED_BUILD2
+      description: House OWNER or global ADMIN only. Soft disable/reactivation preserves children and history; no physical delete.
   /api/v1/houses/{houseId}/members:
     get:
       x-build104-implemented: false
@@ -500,6 +502,7 @@ paths:
       tags:
       - Zones
       operationId: listHouseZones
+      x-build2-implemented: true
       summary: Liệt kê khu vực trong nhà yến
       parameters:
       - name: houseId
@@ -532,14 +535,15 @@ paths:
       - bearerAuth: []
       x-build-priority: MVP
       x-requirement-group: FR-ZONE
-      x-api-spec-status: PROPOSED_NEEDS_REVIEW
-      description: Design endpoint for BUILD, subject to validation, authorization and cross-review as documented in
-        DSN-09.
+      x-api-spec-status: IMPLEMENTED_BUILD2
+      description: Implemented BUILD 2 on V2 schema. Active global ADMIN spans Houses; other users require an active House membership.
+        See build2-handoff.md for lifecycle, filtering and remaining decisions.
     post:
       x-build104-implemented: false
       tags:
       - Zones
       operationId: createZone
+      x-build2-implemented: true
       summary: Tạo khu vực
       parameters:
       - name: houseId
@@ -576,15 +580,16 @@ paths:
       - bearerAuth: []
       x-build-priority: MVP
       x-requirement-group: FR-ZONE
-      x-api-spec-status: PROPOSED_NEEDS_REVIEW
-      description: Design endpoint for BUILD, subject to validation, authorization and cross-review as documented in
-        DSN-09.
+      x-api-spec-status: IMPLEMENTED_BUILD2
+      description: Implemented BUILD 2 on V2 schema. Active global ADMIN spans Houses; other users require an active House membership.
+        See build2-handoff.md for lifecycle, filtering and remaining decisions.
   /api/v1/zones/{zoneId}:
     get:
       x-build104-implemented: false
       tags:
       - Zones
       operationId: getZone
+      x-build2-implemented: true
       summary: Xem chi tiết khu vực
       parameters:
       - name: zoneId
@@ -615,14 +620,15 @@ paths:
       - bearerAuth: []
       x-build-priority: MVP
       x-requirement-group: FR-ZONE
-      x-api-spec-status: PROPOSED_NEEDS_REVIEW
-      description: Design endpoint for BUILD, subject to validation, authorization and cross-review as documented in
-        DSN-09.
+      x-api-spec-status: IMPLEMENTED_BUILD2
+      description: Implemented BUILD 2 on V2 schema. Active global ADMIN spans Houses; other users require an active House membership.
+        See build2-handoff.md for lifecycle, filtering and remaining decisions.
     patch:
       x-build104-implemented: false
       tags:
       - Zones
       operationId: updateZone
+      x-build2-implemented: true
       summary: Cập nhật khu vực
       parameters:
       - name: zoneId
@@ -659,9 +665,9 @@ paths:
       - bearerAuth: []
       x-build-priority: Extended
       x-requirement-group: FR-ZONE
-      x-api-spec-status: PROPOSED_NEEDS_REVIEW
-      description: Design endpoint for BUILD, subject to validation, authorization and cross-review as documented in
-        DSN-09.
+      x-api-spec-status: IMPLEMENTED_BUILD2
+      description: Implemented BUILD 2 on V2 schema. Active global ADMIN spans Houses; other users require an active House membership.
+        See build2-handoff.md for lifecycle, filtering and remaining decisions.
   /api/v1/zones/{zoneId}/devices:
     get:
       x-build104-implemented: true
@@ -708,6 +714,7 @@ paths:
       tags:
       - Devices
       operationId: registerDevice
+      x-build2-implemented: true
       summary: Đăng ký thiết bị cho Zone
       description: Device is fixed to one zone in v1; no move endpoint. Device credentials provisioned separately (TBD).
       parameters:
@@ -745,7 +752,7 @@ paths:
       - bearerAuth: []
       x-build-priority: MVP
       x-requirement-group: FR-DEVICE
-      x-api-spec-status: PROPOSED_NEEDS_REVIEW
+      x-api-spec-status: IMPLEMENTED_BUILD2
   /api/v1/devices/{deviceId}:
     get:
       x-build104-implemented: true
@@ -789,6 +796,7 @@ paths:
       tags:
       - Devices
       operationId: updateDevice
+      x-build2-implemented: true
       summary: Đổi tên/bật trạng thái quản lý
       parameters:
       - name: deviceId
@@ -825,15 +833,16 @@ paths:
       - bearerAuth: []
       x-build-priority: Extended
       x-requirement-group: FR-DEVICE
-      x-api-spec-status: PROPOSED_NEEDS_REVIEW
-      description: Design endpoint for BUILD, subject to validation, authorization and cross-review as documented in
-        DSN-09.
+      x-api-spec-status: IMPLEMENTED_BUILD2
+      description: Implemented BUILD 2 on V2 schema. Active global ADMIN spans Houses; other users require an active House membership.
+        See build2-handoff.md for lifecycle, filtering and remaining decisions.
   /api/v1/devices/{deviceId}/actuators:
     get:
       x-build104-implemented: false
       tags:
       - Actuators
       operationId: listDeviceActuators
+      x-build2-implemented: true
       summary: Các actuator của ESP32
       parameters:
       - name: deviceId
@@ -866,9 +875,8 @@ paths:
       - bearerAuth: []
       x-build-priority: MVP
       x-requirement-group: FR-IOT
-      x-api-spec-status: PROPOSED_NEEDS_REVIEW
-      description: Design endpoint for BUILD, subject to validation, authorization and cross-review as documented in
-        DSN-09.
+      x-api-spec-status: IMPLEMENTED_BUILD2
+      description: Read through active House scope. Stored GPIO state is not proof of physical relay operation.
   /api/v1/devices/{deviceId}/telemetry/latest:
     get:
       x-build104-implemented: true
@@ -980,6 +988,8 @@ paths:
       tags:
       - Zone Configuration
       operationId: getZoneConfig
+      x-build2-implemented: true
+      x-build2-config-sync-implemented: false
       summary: Xem ngưỡng cấu hình
       parameters:
       - name: zoneId
@@ -1010,17 +1020,17 @@ paths:
       - bearerAuth: []
       x-build-priority: MVP
       x-requirement-group: FR-CONFIG
-      x-api-spec-status: PROPOSED_NEEDS_REVIEW
-      description: Design endpoint for BUILD, subject to validation, authorization and cross-review as documented in
-        DSN-09.
+      x-api-spec-status: IMPLEMENTED_BUILD2
+      description: Read saved V3 config by House scope. syncStatus is UNKNOWN; no proof of device application.
     put:
       x-build104-implemented: false
       tags:
       - Zone Configuration
       operationId: upsertZoneConfig
+      x-build2-implemented: true
+      x-build2-config-sync-implemented: false
       summary: Cập nhật cấu hình theo version
-      description: Save/commit is not proof ESP32 applied configuration. Uses version check; MQTT config payload/proof-of-application
-        pending P1/P4.
+      description: Database storage only; MQTT config synchronization is blocked pending approved per-device schema and application proof. Returns syncStatus UNKNOWN. Version 0 creates; updates require current version. Unchanged input preserves version and updatedAt.
       parameters:
       - name: zoneId
         in: path
@@ -1056,7 +1066,7 @@ paths:
       - bearerAuth: []
       x-build-priority: MVP
       x-requirement-group: FR-CONFIG
-      x-api-spec-status: PROPOSED_NEEDS_REVIEW
+      x-api-spec-status: IMPLEMENTED_BUILD2
   /api/v1/actuators/{actuatorId}/commands:
     post:
       x-build104-implemented: false
@@ -1173,6 +1183,7 @@ paths:
       tags:
       - Control Commands
       operationId: getControlCommand
+      x-build2-implemented: true
       summary: Tra cứu trạng thái lệnh theo commandId
       parameters:
       - name: commandId
@@ -1202,9 +1213,8 @@ paths:
       - bearerAuth: []
       x-build-priority: MVP
       x-requirement-group: FR-IOT/CONTROL
-      x-api-spec-status: PROPOSED_NEEDS_REVIEW
-      description: Design endpoint for BUILD, subject to validation, authorization and cross-review as documented in
-        DSN-09.
+      x-api-spec-status: IMPLEMENTED_BUILD2
+      description: Read the persisted status by command_id through the actuator device House scope. Does not publish or process ACKs.
   /api/v1/internal/ai/count-logs:
     post:
       x-build104-implemented: true
@@ -1289,6 +1299,7 @@ paths:
       tags:
       - AI Events
       operationId: listCountLogs
+      x-build2-implemented: true
       summary: Thống kê đếm từ Camera
       parameters:
       - name: deviceId
@@ -1323,9 +1334,9 @@ paths:
       - bearerAuth: []
       x-build-priority: MVP
       x-requirement-group: FR-AI
-      x-api-spec-status: PROPOSED_NEEDS_REVIEW
-      description: Design endpoint for BUILD, subject to validation, authorization and cross-review as documented in
-        DSN-09.
+      x-api-spec-status: IMPLEMENTED_BUILD2
+      description: Implemented BUILD 2 on V2 schema. Active global ADMIN spans Houses; other users require an active House membership.
+        See build2-handoff.md for lifecycle, filtering and remaining decisions.
   /api/v1/zones/{zoneId}/anomalies:
     get:
       x-build104-implemented: false
@@ -2267,7 +2278,7 @@ components:
       - name
       - address
       - initialZone
-      description: Proposed atomic House + first Zone creation to satisfy UML House 1..* Zone; pending P3/P4 approval.
+      description: Atomic House plus first Zone creation. Currently restricted to active global ADMIN; Global OWNER creation policy remains pending.
       additionalProperties: false
     HouseUpdateRequest:
       type: object
@@ -2543,35 +2554,44 @@ components:
           type: number
           format: double
           nullable: true
+          minimum: -10
+          maximum: 60
         tempMax:
           type: number
           format: double
           nullable: true
+          minimum: -10
+          maximum: 60
         tempHysteresis:
           type: number
           format: double
           nullable: true
           minimum: 0
+          exclusiveMinimum: true
         co2Min:
           type: number
           format: double
           nullable: true
           minimum: 0
+          maximum: 5000
         co2Max:
           type: number
           format: double
           nullable: true
           minimum: 0
+          maximum: 5000
         lightMin:
           type: number
           format: double
           nullable: true
           minimum: 0
+          maximum: 100000
         lightMax:
           type: number
           format: double
           nullable: true
           minimum: 0
+          maximum: 100000
         telemetryIntervalSec:
           type: integer
           format: int32

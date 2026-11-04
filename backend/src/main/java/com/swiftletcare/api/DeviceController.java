@@ -56,17 +56,7 @@ public class DeviceController {
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "20") int size) {
     page(page, size);
-    boolean allowed =
-        Boolean.TRUE.equals(
-            jdbc.queryForObject(
-                "select exists(select 1 from swiftletcare.zones z join swiftletcare.houses h on"
-                    + " h.id=z.house_id join swiftletcare.house_memberships m on m.house_id=h.id"
-                    + " join swiftletcare.users u on u.id=m.user_id where z.id=? and u.id=? and"
-                    + " z.active and h.active and m.active and u.active)",
-                Boolean.class,
-                zoneId,
-                Long.valueOf(jwt.getSubject())));
-    if (!allowed) throw new ApiError.Failure(403, "ACCESS_DENIED", "No active house membership");
+    access.requireZone(jwt, zoneId, Access.Permission.READ);
     var ids =
         jdbc.queryForList(
             "select id from swiftletcare.devices where zone_id=? order by id limit ? offset ?",

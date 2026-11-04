@@ -59,15 +59,15 @@ public class Ingestion {
     var d = devices.findByDeviceId(code).orElseThrow(ApiError::missing);
     if (!d.enabled
         || !d.type.equals(type)
-        || !Boolean.TRUE.equals(
-            jdbc.queryForObject(
-                "select exists(select 1 from swiftletcare.zones z join swiftletcare.houses h on"
-                    + " h.id=z.house_id where z.id=? and z.id=? and h.id=? and z.active and"
-                    + " h.active)",
-                Boolean.class,
+        || jdbc.queryForList(
+                "select d.id from swiftletcare.devices d join swiftletcare.zones z on z.id=d.zone_id"
+                    + " join swiftletcare.houses h on h.id=z.house_id where z.id=? and z.id=? and h.id=?"
+                    + " and d.id=? and d.enabled and z.active and h.active for share of h,z for update of d",
+                Long.class,
                 d.zoneId,
                 zone,
-                house))) throw ApiError.bad("Device/topic mismatch or disabled resource");
+                house,
+                d.id).isEmpty()) throw ApiError.bad("Device/topic mismatch or disabled resource");
     return d;
   }
 

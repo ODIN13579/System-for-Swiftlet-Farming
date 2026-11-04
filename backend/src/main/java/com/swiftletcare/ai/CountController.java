@@ -79,13 +79,12 @@ public class CountController {
               var d = devices.findById(p.deviceId()).orElseThrow(ApiError::missing);
               if (!d.enabled
                   || !d.type.equals("CAMERA")
-                  || !Boolean.TRUE.equals(
-                      jdbc.queryForObject(
-                          "select exists(select 1 from swiftletcare.zones z join"
-                              + " swiftletcare.houses h on h.id=z.house_id where z.id=? and"
-                              + " z.active and h.active)",
-                          Boolean.class,
-                          d.zoneId))) throw ApiError.bad("Enabled camera required");
+                  || jdbc.queryForList(
+                          "select d.id from swiftletcare.devices d join swiftletcare.zones z on z.id=d.zone_id"
+                              + " join swiftletcare.houses h on h.id=z.house_id where d.id=? and d.enabled"
+                              + " and d.type='CAMERA' and z.active and h.active for share of h,z for update of d",
+                          Long.class,
+                          d.id).isEmpty()) throw ApiError.bad("Enabled camera required");
               inserted[0] =
                   jdbc.update(
                           """
