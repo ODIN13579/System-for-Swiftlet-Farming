@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 1
+names: ['walet']
+
+roboflow:
+  workspace: ionest
+  project: swiftlet
+  version: 6
+  license: Public Domain
+  url: https://universe.roboflow.com/ionest/swiftlet/dataset/6

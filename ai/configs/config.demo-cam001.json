@@ -1,0 +1,19 @@
+{
+    "model_path": "../runs/detect/train-2/weights/best.pt",
+    "class_ids": [0],
+    "class_name": "swiftlet",
+    "confidence": 0.25,
+    "device_id": 3,
+    "camera_id": "CAM-001",
+    "zone_id": "ZONE-01",
+    "counting_line": [960, 100, 960, 650],
+    "inside_direction": 1,
+    "hysteresis_px": 8,
+    "cooldown_frames": 20,
+    "backend_api_url": "http://localhost:8080/api/v1/internal/ai/count-logs",
+    "http_timeout": 20,
+    "http_connect_timeout": 3,
+    "http_max_attempts": 3,
+    "http_backoff_seconds": 1,
+    "aggregation_type": "HOURLY"
+}

@@ -1,4 +1,13 @@
+
+#include <Arduino.h>
 #include <ArduinoJson.h>
+#include <math.h>
+#include <atomic>
+#include <esp_sntp.h>
+#include <esp_system.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/queue.h>
+#include <freertos/task.h>
 #include <Preferences.h>
 #include <time.h>
 #include <esp_system.h>   // esp_random()
@@ -10,9 +19,10 @@
 #define DHTPIN 15     // Chân kết nối DHT22
 #define DHTTYPE DHT22 // Loại cảm biến DHT
 #define LDR_PIN 34    // Chân đọc cảm biến ánh sáng
-#define CO2_PIN 27    // Chân đọc cảm biến CO2
+#define CO2_PIN 35    // Chân đọc cảm biến CO2
 #define FAN_PIN 4     // Chân điều khiển quạt
 
+struct ZoneConfig; // Forward declaration for Arduino sketch preprocessing.
 DHT dht(DHTPIN, DHTTYPE);
 bool getTimestamp(char *output, size_t outputSize);
 bool isClockTrusted();
@@ -20,7 +30,7 @@ void publishState();
 void applyControlLogic();
 void setFanState(bool turnOn); // Tạo đối tượng DHT22
 
-// FAN THRESHOLD
+// FAN THRESHOLD — fallback defaults; AUTO uses ZoneConfig.tempMax.
 #define FAN_ON_TEMP 31.0  // Nhiệt độ >= 31°C thì bật quạt
 #define FAN_OFF_TEMP 30.0 // Nhiệt độ <= 30°C thì tắt quạt
 
@@ -187,9 +197,6 @@ unsigned long manualModeStartedMs = 0;
 const unsigned long MANUAL_TIMEOUT_MS = 10UL * 60UL * 1000UL;
 uint8_t dhtGoodStreak = 0;
 bool dhtFaultActive = false;
-bool lastDhtValidState = true;
-unsigned long lastFaultPublishMs = 0;
-const unsigned long SENSOR_FAULT_RETRY_MS = 10000UL;
 uint32_t droppedTelemetryCount = 0;
 unsigned long bootStartedMs = 0;
 const char *TELEMETRY_ACK_TOPIC =
@@ -207,6 +214,48 @@ const unsigned long HEARTBEAT_INTERVAL = 2000; // Gửi heartbeat mỗi 2 giây
 
 unsigned long messageCounter = 0; // Đếm số message đã tạo
 bool ntpConfigured = false;
+std::atomic<bool> mqttOnline{false};
+std::atomic<bool> networkEnabled{true};
+std::atomic<bool> mqttJustConnected{false};
+std::atomic<bool> ntpSynced{false};
+std::atomic<uint32_t> lastNtpSyncMs{0};
+std::atomic<uint32_t> reconnectCount{0}, connectAttempts{0};
+std::atomic<uint32_t> txFailures{0}, rxDrops{0};
+uint32_t txQueueDrops = 0;
+uint32_t bufferPeak = 0;
+uint32_t loopMaxMs = 0;
+bool simulateDhtFault = false, simulateCo2Fault = false;
+bool simulateLightFault = false;
+
+// PubSubClient and WiFi belong exclusively to networkTask after setup.
+// Main loop owns control state, command handling, NVS and telemetry buffer.
+struct MqttPacket
+{
+  char topic[160];
+  uint8_t payload[768];
+  uint16_t length;
+  bool retained;
+};
+QueueHandle_t mqttTxQueue = nullptr, mqttRxQueue = nullptr;
+TaskHandle_t networkTaskHandle = nullptr;
+bool queuePublish(const char *topic, const uint8_t *payload,
+                  unsigned int length, bool retained = false);
+bool queuePublish(const char *topic, const char *payload,
+                  bool retained = false);
+void processMqttMessages();
+void networkTask(void *);
+void onNetworkMessage(char *, byte *, unsigned int);
+void processSerialTests();
+void flushSensorEvents();
+void printZoneConfig();
+bool validateZoneConfig(const ZoneConfig &);
+bool saveZoneConfig(const ZoneConfig &);
+void onTimeSync(struct timeval *)
+{
+  lastNtpSyncMs.store(millis());
+  ntpSynced.store(true);
+}
+
 // WIFI CONNECT
 void connectWiFi()
 {
@@ -267,6 +316,8 @@ bool addToBuffer(const char *topic, const char *payload)
   messageBuffer[bufferCount].lastSentMs = 0;
 
   bufferCount++;
+  if ((uint32_t)bufferCount > bufferPeak)
+    bufferPeak = bufferCount;
 
   Serial.printf("Telemetry buffered. Count = %d\n", bufferCount);
   return true;
@@ -360,36 +411,28 @@ void handleTelemetryAck(byte *payload, unsigned int length)
 
 void resendBufferedMessages()
 {
-  if (!mqttClient.connected())
-  {
+  if (!mqttOnline.load() || bufferCount == 0)
     return;
-  }
-
+  // At most two attempts per pass. Never flush 120 messages in a tight loop.
   unsigned long now = millis();
-
-  for (int i = 0; i < bufferCount; i++)
+  static unsigned long lastPass = 0;
+  static int cursor = 0;
+  if (now - lastPass < 50)
+    return;
+  lastPass = now;
+  int scanned = 0, sent = 0;
+  while (scanned < bufferCount && sent < 2)
   {
-    // Chưa đến thời điểm gửi lại.
-    if (messageBuffer[i].lastSentMs != 0 &&
-        now - messageBuffer[i].lastSentMs < TELEMETRY_RETRY_INTERVAL)
-    {
+    if (cursor >= bufferCount)
+      cursor = 0;
+    BufferedMessage &item = messageBuffer[cursor++];
+    scanned++;
+    if (item.lastSentMs && now - item.lastSentMs < TELEMETRY_RETRY_INTERVAL)
       continue;
-    }
-
-    bool success = mqttClient.publish(
-        messageBuffer[i].topic.c_str(),
-        messageBuffer[i].payload.c_str());
-
-    // Ghi nhận thời điểm thử gửi để tránh retry liên tục.
-    messageBuffer[i].lastSentMs = now;
-    if (success)
-    {
-      Serial.println("Telemetry published; waiting for STORED ACK");
-    }
-    else
-    {
-      Serial.println("Telemetry publish failed; keep in buffer");
-    }
+    if (!queuePublish(item.topic.c_str(), item.payload.c_str()))
+      break;
+    item.lastSentMs = now;
+    sent++;
   }
 }
 // MQTT CONNECT
@@ -400,52 +443,37 @@ const unsigned long MQTT_RETRY_INTERVAL = 3000; // Thử reconnect mỗi 3 giây
 // Kiểm tra và kết nối lại MQTT khi bị mất kết nối
 void tryConnectMQTT()
 {
+  // Called only by networkTask. Exponential retry 1, 2, 4 ... 30 seconds.
+  static uint32_t retryMs = 1000;
   if (mqttClient.connected())
-  {
     return;
-  }
-
-  // Chỉ thử kết nối lại sau mỗi 3 giây.
-  if (millis() - lastMQTTAttempt < MQTT_RETRY_INTERVAL)
-  {
+  if (millis() - lastMQTTAttempt < retryMs)
     return;
-  }
-
   lastMQTTAttempt = millis();
-
-  Serial.print("MQTT reconnect attempt... ");
-
-  String clientId = String(DEVICE_ID);
-
-  if (mqttClient.connect(clientId.c_str()))
+  connectAttempts.fetch_add(1);
+  Serial.printf("[MQTT] connect attempt=%lu\n",
+                (unsigned long)connectAttempts.load());
+  if (!mqttClient.connect(DEVICE_ID))
   {
-    Serial.println("SUCCESS");
-
-    mqttClient.subscribe(CFG_TOPIC, 1);
-    if (mqttClient.subscribe(COMMAND_TOPIC, 1))
-    {
-      Serial.println("Subscribed to command topic");
-    }
-    else
-    {
-      Serial.println("Command subscription failed");
-    }
-    if (mqttClient.subscribe(TELEMETRY_ACK_TOPIC, 1))
-    {
-      Serial.println("Subscribed to telemetry ACK topic");
-    }
-    else
-    {
-      Serial.println("Telemetry ACK subscription failed");
-    }
-    // Gửi trạng thái hiện tại sau khi kết nối MQTT thành công.
-    publishState();
+    retryMs = retryMs < 15000 ? retryMs * 2 : 30000;
+    Serial.printf("[MQTT] failed rc=%d retry_ms=%lu\n",
+                  mqttClient.state(), (unsigned long)retryMs);
+    return;
   }
-  else
+  bool subscribed = mqttClient.subscribe(CFG_TOPIC, 1);
+  subscribed = mqttClient.subscribe(COMMAND_TOPIC, 1) && subscribed;
+  subscribed = mqttClient.subscribe(TELEMETRY_ACK_TOPIC, 1) && subscribed;
+  if (!subscribed)
   {
-    Serial.print("FAILED, rc=");
-    Serial.println(mqttClient.state());
+    Serial.println("[MQTT] subscription send failed; reconnecting");
+    mqttClient.disconnect();
+    return;
   }
+  retryMs = 1000;
+  reconnectCount.fetch_add(1);
+  mqttOnline.store(true);
+  mqttJustConnected.store(true);
+  Serial.println("[MQTT] CONNECTED; subscribed cfg + command + telemetry_ack");
 }
 // TELEMETRY
 // Tạo và gửi dữ liệu nhiệt độ, độ ẩm, CO2 và ánh sáng
@@ -570,7 +598,7 @@ void publishTelemetry(
 // Đồng bộ schema heartbeat theo code nhóm trưởng.
 void publishHeartbeat()
 {
-  if (!mqttClient.connected())
+  if (!mqttOnline.load())
   {
     return;
   }
@@ -595,13 +623,13 @@ void publishHeartbeat()
       DEVICE_ID,
       timestamp);
 
-  bool sent = mqttClient.publish(
+  bool sent = queuePublish(
       HEARTBEAT_TOPIC,
       payload);
 
   if (sent)
   {
-    Serial.print("HEARTBEAT published: ");
+    Serial.print("HEARTBEAT queued: ");
     Serial.println(payload);
   }
   else
@@ -670,13 +698,13 @@ void publishCommandAck(
   Serial.print("[COMMAND_ACK] payload: ");
   Serial.println(payload);
 
-  if (!mqttClient.connected())
+  if (!mqttOnline.load())
   {
     Serial.println("[COMMAND_ACK] MQTT disconnected; ACK not published");
     return;
   }
 
-  bool published = mqttClient.publish(
+  bool published = queuePublish(
       COMMAND_ACK_TOPIC,
       (const uint8_t *)payload,
       length,
@@ -684,13 +712,13 @@ void publishCommandAck(
 
   Serial.println(
       published
-          ? "[COMMAND_ACK] Publish successful"
+          ? "[COMMAND_ACK] Queued for MQTT"
           : "[COMMAND_ACK] Publish failed");
 }
 
 void publishState()
 {
-  if (!mqttClient.connected())
+  if (!mqttOnline.load())
   {
     return;
   }
@@ -717,7 +745,7 @@ void publishState()
 
   doc["boot_id"] = bootId;
 
-  char payload[384];
+  char payload[512];
   size_t length = serializeJson(doc, payload, sizeof(payload));
 
   if (length == 0 || length >= sizeof(payload))
@@ -726,7 +754,7 @@ void publishState()
     return;
   }
 
-  mqttClient.publish(STATE_TOPIC, payload, false);
+  queuePublish(STATE_TOPIC, payload, false);
 }
 void setFanState(bool turnOn)
 {
@@ -750,44 +778,28 @@ void setFanState(bool turnOn)
 }
 void applyControlLogic()
 {
-  bool fresh =
-      latestDhtValid &&
-      haveValidTemperature &&
-      (millis() - lastValidTemperatureMs <= SENSOR_STALE_MS);
-  if (!fresh)
+  bool fresh = latestDhtValid && haveValidTemperature &&
+               millis() - lastValidTemperatureMs <= SENSOR_STALE_MS;
+  bool safe = !fresh || dhtFaultActive || dhtGoodStreak < 3;
+  bool overrideChanged = safetyOverride != safe;
+  safetyOverride = safe;
+  if (safe)
   {
-    bool overrideChanged = !safetyOverride;
-
-    safetyOverride = true;
-    setFanState(true);
-
-    if (overrideChanged)
-    {
-      publishState();
-    }
-
-    return;
-  }
-
-  bool overrideChanged = safetyOverride;
-  safetyOverride = false;
-
-  if (controlMode == MODE_AUTO)
-  {
-    if (!fanState && latestTemperature >= FAN_ON_TEMP)
-    {
+    if (!fanState)
       setFanState(true);
-    }
-    else if (fanState && latestTemperature <= FAN_OFF_TEMP)
-    {
-      setFanState(false);
-    }
   }
-
-  if (overrideChanged)
+  else if (controlMode == MODE_AUTO)
   {
-    publishState();
+    // FAN only: ON at temp_max, OFF one degree lower, never below temp_min.
+    // humidity_on/off describe a future humidifier, not the exhaust FAN.
+    float fanOff = fmaxf(zoneConfig.tempMin, zoneConfig.tempMax - 1.0f);
+    if (!fanState && latestTemperature >= zoneConfig.tempMax)
+      setFanState(true);
+    else if (fanState && latestTemperature <= fanOff)
+      setFanState(false);
   }
+  if (overrideChanged)
+    publishState();
 }
 time_t utcToEpoch(struct tm *t)
 {
@@ -817,7 +829,7 @@ bool isValidUtcDate(
     int minute,
     int second)
 {
-  if (year < 1970 ||
+  if (year < 1970 || year > 2037 ||
       month < 1 || month > 12 ||
       hour < 0 || hour > 23 ||
       minute < 0 || minute > 59 ||
@@ -928,56 +940,140 @@ void rejectAndCache(
     const String &normalizedContent,
     const char *reason)
 {
-  publishCommandAck(commandId, "REJECTED", reason);
   rememberCommand(
       commandId,
       normalizedContent,
       "REJECTED",
       reason);
+  publishCommandAck(commandId, "REJECTED", reason);
 }
 
 void publishCfgAck(uint32_t version, const char *status, const char *reason)
 {
-  if (!mqttClient.connected())
+  if (!mqttOnline.load())
     return;
   char timestamp[32] = "";
-  getTimestamp(timestamp, sizeof(timestamp));
+  bool timeValid = getTimestamp(timestamp, sizeof(timestamp));
   JsonDocument d;
   d["device_id"] = DEVICE_ID;
   d["version"] = version;
   d["status"] = status;
   d["reason"] = reason;
-  d["timestamp"] = timestamp;
+  if (timeValid)
+    d["timestamp"] = timestamp;
+  else
+    d["timestamp"] = nullptr;
   char out[320];
   size_t n = serializeJson(d, out, sizeof(out));
   if (n && n < sizeof(out))
-    mqttClient.publish(CFG_ACK_TOPIC, out, false);
+    queuePublish(CFG_ACK_TOPIC, out, false);
   Serial.printf("[CFG_ACK] version=%lu status=%s reason=%s\n", (unsigned long)version, status, reason);
 }
-void saveZoneConfig()
+bool validateZoneConfig(const ZoneConfig &c)
 {
-  preferences.begin("swiftlet", false);
-  preferences.putUInt("ver", zoneConfig.version);
-  preferences.putFloat("hon", zoneConfig.humidityOn);
-  preferences.putFloat("hoff", zoneConfig.humidityOff);
-  preferences.putFloat("tmin", zoneConfig.tempMin);
-  preferences.putFloat("tmax", zoneConfig.tempMax);
-  preferences.putUInt("tele", zoneConfig.telemetryIntervalMs);
+  return c.version >= 1 && isfinite(c.humidityOn) && isfinite(c.humidityOff) &&
+         isfinite(c.tempMin) && isfinite(c.tempMax) &&
+         c.humidityOn >= 0 && c.humidityOff <= 100 &&
+         c.humidityOn < c.humidityOff && c.tempMin >= -10 &&
+         c.tempMax <= 60 && c.tempMin < c.tempMax &&
+         c.telemetryIntervalMs >= 1000 && c.telemetryIntervalMs <= 60000;
+}
+
+// Single NVS blob: all values and the version are committed as one item.
+// CRC rejects a corrupted record; no code depends on struct padding.
+uint32_t configChecksum(const uint8_t *bytes, size_t size)
+{
+  uint32_t hash = 2166136261UL;
+  for (size_t i = 0; i < size; i++)
+    hash = (hash ^ bytes[i]) * 16777619UL;
+  return hash;
+}
+bool saveZoneConfig(const ZoneConfig &c)
+{
+  JsonDocument doc;
+  doc["version"] = c.version;
+  doc["humidity_on"] = c.humidityOn;
+  doc["humidity_off"] = c.humidityOff;
+  doc["temp_min"] = c.tempMin;
+  doc["temp_max"] = c.tempMax;
+  doc["telemetry_interval_ms"] = c.telemetryIntervalMs;
+  uint8_t record[388] = {};
+  size_t n = serializeJson(doc, record + 4, sizeof(record) - 4);
+  if (!n || n >= sizeof(record) - 4)
+    return false;
+  uint32_t crc = configChecksum(record + 4, n);
+  memcpy(record, &crc, 4);
+  if (!preferences.begin("swiftlet", false))
+    return false;
+  size_t written = preferences.putBytes("config2", record, n + 4);
   preferences.end();
+  return written == n + 4;
+}
+void printZoneConfig()
+{
+  Serial.printf("[CFG] version=%lu humidity_on=%.2f humidity_off=%.2f "
+                "temp_min=%.2f temp_max=%.2f interval_ms=%lu\n",
+                (unsigned long)zoneConfig.version, zoneConfig.humidityOn,
+                zoneConfig.humidityOff, zoneConfig.tempMin, zoneConfig.tempMax,
+                (unsigned long)zoneConfig.telemetryIntervalMs);
 }
 void loadZoneConfig()
 {
-  preferences.begin("swiftlet", true);
-  zoneConfig.version = preferences.getUInt("ver", 1);
-  zoneConfig.humidityOn = preferences.getFloat("hon", 70);
-  zoneConfig.humidityOff = preferences.getFloat("hoff", 75);
-  zoneConfig.tempMin = preferences.getFloat("tmin", 20);
-  zoneConfig.tempMax = preferences.getFloat("tmax", 31);
-  zoneConfig.telemetryIntervalMs = preferences.getUInt("tele", 5000);
-  preferences.end();
-  if (zoneConfig.humidityOn < 0 || zoneConfig.humidityOff > 100 || zoneConfig.humidityOn >= zoneConfig.humidityOff || zoneConfig.tempMin < -10 || zoneConfig.tempMax > 60 || zoneConfig.tempMin >= zoneConfig.tempMax || zoneConfig.telemetryIntervalMs < 1000 || zoneConfig.telemetryIntervalMs > 60000)
-    zoneConfig = ZoneConfig();
+  zoneConfig = ZoneConfig();
+  bool restored = false, migrate = false;
+  if (preferences.begin("swiftlet", true))
+  {
+    size_t n = preferences.getBytesLength("config2");
+    if (n >= 5 && n <= 388)
+    {
+      uint8_t record[388] = {};
+      uint32_t crc = 0;
+      if (preferences.getBytes("config2", record, n) == n)
+      {
+        memcpy(&crc, record, 4);
+        JsonDocument doc;
+        if (crc == configChecksum(record + 4, n - 4) &&
+            !deserializeJson(doc, record + 4, n - 4))
+        {
+          ZoneConfig c;
+          c.version = doc["version"].as<uint32_t>();
+          c.humidityOn = doc["humidity_on"].as<float>();
+          c.humidityOff = doc["humidity_off"].as<float>();
+          c.tempMin = doc["temp_min"].as<float>();
+          c.tempMax = doc["temp_max"].as<float>();
+          c.telemetryIntervalMs = doc["telemetry_interval_ms"].as<uint32_t>();
+          if (validateZoneConfig(c))
+          {
+            zoneConfig = c;
+            restored = true;
+          }
+        }
+      }
+    }
+    else if (n == 0 && preferences.isKey("ver"))
+    {
+      // Import valid legacy P1 configuration once; retain old keys as fallback.
+      ZoneConfig c;
+      c.version = preferences.getUInt("ver", 1);
+      c.humidityOn = preferences.getFloat("hon", 70);
+      c.humidityOff = preferences.getFloat("hoff", 75);
+      c.tempMin = preferences.getFloat("tmin", 20);
+      c.tempMax = preferences.getFloat("tmax", 31);
+      c.telemetryIntervalMs = preferences.getUInt("tele", 5000);
+      if (validateZoneConfig(c))
+      {
+        zoneConfig = c;
+        restored = true;
+        migrate = true;
+      }
+    }
+    preferences.end();
+  }
+  if (migrate && !saveZoneConfig(zoneConfig))
+    Serial.println("[CFG] legacy import in RAM; NVS save failed");
   TELEMETRY_INTERVAL = zoneConfig.telemetryIntervalMs;
+  Serial.println(restored ? "[CFG] restored" : "[CFG] using valid defaults");
+  printZoneConfig();
 }
 void handleConfigMessage(byte *payload, unsigned int length)
 {
@@ -996,11 +1092,6 @@ void handleConfigMessage(byte *payload, unsigned int length)
   if (v < zoneConfig.version)
   {
     publishCfgAck(v, "STALE", "OLDER_VERSION");
-    return;
-  }
-  if (v == zoneConfig.version)
-  {
-    publishCfgAck(v, "ALREADY_CURRENT", "SAME_VERSION");
     return;
   }
   if (!d["humidity_on"].is<float>() && !d["humidity_on"].is<int>())
@@ -1035,33 +1126,71 @@ void handleConfigMessage(byte *payload, unsigned int length)
   c.tempMin = d["temp_min"].as<float>();
   c.tempMax = d["temp_max"].as<float>();
   c.telemetryIntervalMs = d["telemetry_interval_ms"].as<uint32_t>();
-  if (c.humidityOn < 0 || c.humidityOn > 100 || c.humidityOff < 0 || c.humidityOff > 100 || c.humidityOn >= c.humidityOff || c.tempMin < -10 || c.tempMax > 60 || c.tempMin >= c.tempMax || c.telemetryIntervalMs < 1000 || c.telemetryIntervalMs > 60000)
+  if (!validateZoneConfig(c))
   {
     publishCfgAck(v, "REJECTED", "RANGE_OR_THRESHOLD_INVALID");
     return;
   }
+  if (v == zoneConfig.version)
+  {
+    bool same = c.humidityOn == zoneConfig.humidityOn &&
+                c.humidityOff == zoneConfig.humidityOff &&
+                c.tempMin == zoneConfig.tempMin && c.tempMax == zoneConfig.tempMax &&
+                c.telemetryIntervalMs == zoneConfig.telemetryIntervalMs;
+    publishCfgAck(v, same ? "ALREADY_CURRENT" : "REJECTED",
+                  same ? "SAME_VERSION" : "VERSION_CONFLICT");
+    return;
+  }
+  if (!saveZoneConfig(c))
+  {
+    publishCfgAck(v, "REJECTED", "PERSISTENCE_FAILED");
+    return;
+  }
   zoneConfig = c;
   TELEMETRY_INTERVAL = c.telemetryIntervalMs;
-  saveZoneConfig();
+  printZoneConfig();
+  applyControlLogic();
+  publishState();
   publishCfgAck(v, "APPLIED", "OK");
 }
+// Fault transitions can be buffered while offline (bounded RAM queue).
+struct PendingSensorEvent
+{
+  String json;
+};
+PendingSensorEvent sensorEvents[16];
+uint8_t sensorEventCount = 0;
+uint32_t sensorEventsDropped = 0;
 void publishSensorEvent(const char *type, const char *sensor, const char *reason)
 {
-  if (!mqttClient.connected())
-    return;
-  char timestamp[32] = "";
-  getTimestamp(timestamp, sizeof(timestamp));
   JsonDocument d;
+  char timestamp[32];
   d["device_id"] = DEVICE_ID;
   d["event_type"] = type;
   d["sensor"] = sensor;
   d["reason"] = reason;
-  d["timestamp"] = timestamp;
-  char out[320];
-  size_t n = serializeJson(d, out, sizeof(out));
-  if (n && n < sizeof(out))
-    mqttClient.publish(EVENTS_TOPIC, out, false);
-  Serial.printf("[EVENT] %s sensor=%s reason=%s\n", type, sensor, reason);
+  if (getTimestamp(timestamp, sizeof(timestamp)))
+    d["timestamp"] = timestamp;
+  else
+    d["timestamp"] = nullptr;
+  String json;
+  serializeJson(d, json);
+  if (sensorEventCount < 16)
+    sensorEvents[sensorEventCount++].json = json;
+  else
+    sensorEventsDropped++;
+  Serial.printf("[EVENT] %s sensor=%s queued=%u dropped=%lu\n", type, sensor,
+                sensorEventCount, (unsigned long)sensorEventsDropped);
+}
+void flushSensorEvents()
+{
+  if (!mqttOnline.load() || !sensorEventCount)
+    return;
+  if (!queuePublish(EVENTS_TOPIC, sensorEvents[0].json.c_str()))
+    return;
+  for (int i = 0; i < sensorEventCount - 1; i++)
+    sensorEvents[i] = sensorEvents[i + 1];
+  sensorEvents[--sensorEventCount].json = String();
 }
 
 void mqttCallback(
@@ -1362,14 +1491,12 @@ void mqttCallback(
 
     // Publish trạng thái sau khi logic điều khiển đã ổn định.
     publishState();
-    publishCommandAck(commandId, "APPLIED", "OK");
-
     rememberCommand(
         commandId,
         normalizedContent,
         "APPLIED",
         "OK");
-
+    publishCommandAck(commandId, "APPLIED", "OK");
     return;
   }
 
@@ -1393,6 +1520,7 @@ void mqttCallback(
     return;
   }
 
+  applyControlLogic();
   // Không cho phép tắt quạt khi có safety override.
   if (targetState == "OFF" && safetyOverride)
   {
@@ -1405,13 +1533,12 @@ void mqttCallback(
 
   setFanState(targetState == "ON");
 
-  publishCommandAck(commandId, "APPLIED", "OK");
-
   rememberCommand(
       commandId,
       normalizedContent,
       "APPLIED",
       "OK");
+  publishCommandAck(commandId, "APPLIED", "OK");
 }
 // SETUP
 void setup()
@@ -1419,6 +1546,11 @@ void setup()
   bootId = String((uint32_t)esp_random(), HEX) +
            String((uint32_t)esp_random(), HEX);
   Serial.begin(115200);
+  pinMode(FAN_PIN, OUTPUT);
+  fanState = true;
+  digitalWrite(FAN_PIN, HIGH);
+  Serial.printf("[BOOT] P1 FIXED B2 reset_reason=%d RAM buffer only\n",
+                (int)esp_reset_reason());
   loadZoneConfig();
   bootStartedMs = millis();
 
@@ -1427,7 +1559,7 @@ void setup()
 
   // Cấu hình chân điều khiển quạt
   pinMode(FAN_PIN, OUTPUT);
-  digitalWrite(FAN_PIN, LOW);
+  digitalWrite(FAN_PIN, HIGH);
 
   Serial.println();
   Serial.println("==============================");
@@ -1436,15 +1568,30 @@ void setup()
   Serial.println("==============================");
 
   // Kết nối WiFi
-  connectWiFi();
+  // WiFi connection is owned by the network task.
 
   // Cấu hình MQTT Broker
   mqttClient.setServer(MQTT_HOST, MQTT_PORT);
-  mqttClient.setCallback(mqttCallback);
+  mqttClient.setCallback(onNetworkMessage);
+  mqttClient.setSocketTimeout(1);
+  mqttClient.setKeepAlive(10);
   if (!mqttClient.setBufferSize(1024))
   {
-    Serial.println("ERROR: MQTT buffer allocation failed");
+    Serial.println("FATAL: MQTT buffer allocation failed; safe FAN ON");
+    while (true)
+      delay(1000);
   }
+  mqttTxQueue = xQueueCreate(12, sizeof(MqttPacket));
+  mqttRxQueue = xQueueCreate(12, sizeof(MqttPacket));
+  if (!mqttTxQueue || !mqttRxQueue ||
+      xTaskCreatePinnedToCore(networkTask, "mqtt-network", 8192, nullptr, 1,
+                              &networkTaskHandle, 0) != pdPASS)
+  {
+    Serial.println("FATAL: network task allocation failed; safe FAN ON");
+    while (true)
+      delay(1000);
+  }
+  Serial.println("[TEST] Serial HELP lists manual fault/offline tests");
 }
 
 // LOOP
@@ -1457,27 +1604,22 @@ void loop()
     Serial.println("[MODE] MANUAL timeout -> AUTO");
     applyControlLogic();
   }
-  maintainWiFi();
-  if (WiFi.status() == WL_CONNECTED && !ntpConfigured)
+  uint32_t loopStart = millis();
+  processSerialTests();
+  processMqttMessages();
+  if (mqttJustConnected.exchange(false))
+    publishState();
+  if (mqttOnline.load())
   {
-    configTime(0, 0, "pool.ntp.org", "time.google.com");
-    ntpConfigured = true;
-  }
-  if (WiFi.status() == WL_CONNECTED)
-  {
-    tryConnectMQTT();
-  }
-  if (mqttClient.connected())
-  {
-    mqttClient.loop();
     resendBufferedMessages();
-
+    flushSensorEvents();
     if (millis() - lastState >= STATE_INTERVAL)
     {
       lastState = millis();
       publishState();
     }
   }
+  applyControlLogic();
 
   // 2. Đọc cảm biến định kỳ mỗi 2 giây
   if (millis() - lastSensorSampleMs >= SENSOR_INTERVAL)
@@ -1491,15 +1633,15 @@ void loop()
     int co2Raw = analogRead(CO2_PIN);
     int co2 = map(co2Raw, 0, 4095, 400, 2000);
 
-    bool dhtValid = !isnan(humidity) && !isnan(temperature);
+    bool dhtValid = !simulateDhtFault && isfinite(humidity) &&
+                    isfinite(temperature) && humidity >= 0 && humidity <= 100 &&
+                    temperature >= -10 && temperature <= 60;
     latestCo2 = co2;
     latestLight = light;
-    latestCo2Valid = true;   // Cảm biến CO2 đang được mô phỏng bằng ADC.
-    latestLightValid = true; // Cảm biến ánh sáng đang được mô phỏng bằng ADC.
+    latestCo2Valid = !simulateCo2Fault && co2Raw >= 0 && co2Raw <= 4095;   // Cảm biến CO2 đang được mô phỏng bằng ADC.
+    latestLightValid = !simulateLightFault && light >= 0 && light <= 4095; // Cảm biến ánh sáng đang được mô phỏng bằng ADC.
 
     // Hai cảm biến này hiện đang được mô phỏng.
-    bool co2Valid = true;
-    bool lightValid = true;
 
     latestDhtValid = dhtValid;
     if (dhtValid)
@@ -1572,17 +1714,18 @@ void loop()
   if (millis() - lastResourceLog >= 60000UL)
   {
     lastResourceLog = millis();
-    Serial.printf("[RESOURCE] uptime_ms=%lu free_heap=%u buffer=%d/%d dropped=%lu\\n",
+    Serial.printf("[RESOURCE] uptime_ms=%lu free_heap=%u min_heap=%u "
+                  "buffer=%d/%d peak=%lu dropped=%lu connects=%lu attempts=%lu "
+                  "tx_fail=%lu tx_queue_drop=%lu rx_drop=%lu event_drop=%lu "
+                  "loop_max_ms=%lu net_stack_words=%u\n",
                   (unsigned long)millis(), (unsigned int)ESP.getFreeHeap(),
-                  bufferCount, BUFFER_SIZE, (unsigned long)droppedTelemetryCount);
-  }
-
-  // 6. Gửi heartbeat mỗi 2 giây
-  static unsigned long resourceLogAt = 0;
-  if (millis() - resourceLogAt >= 60000UL)
-  {
-    resourceLogAt = millis();
-    Serial.printf("[RESOURCE] uptime_ms=%lu free_heap=%u buffer=%d/%d dropped=%lu\n", (unsigned long)millis(), (unsigned int)ESP.getFreeHeap(), bufferCount, BUFFER_SIZE, (unsigned long)droppedTelemetryCount);
+                  (unsigned int)ESP.getMinFreeHeap(), bufferCount, BUFFER_SIZE,
+                  (unsigned long)bufferPeak, (unsigned long)droppedTelemetryCount,
+                  (unsigned long)reconnectCount.load(), (unsigned long)connectAttempts.load(),
+                  (unsigned long)txFailures.load(), (unsigned long)txQueueDrops,
+                  (unsigned long)rxDrops.load(), (unsigned long)sensorEventsDropped,
+                  (unsigned long)loopMaxMs,
+                  (unsigned int)uxTaskGetStackHighWaterMark(networkTaskHandle));
   }
   if (millis() - lastHeartbeat >= HEARTBEAT_INTERVAL)
   {
@@ -1590,7 +1733,10 @@ void loop()
     publishHeartbeat();
   }
 
-  delay(200);
+  uint32_t loopDuration = millis() - loopStart;
+  if (loopDuration > loopMaxMs)
+    loopMaxMs = loopDuration;
+  delay(10);
 }
 void setupClock()
 {
@@ -1599,29 +1745,179 @@ void setupClock()
 
 bool getTimestamp(char *output, size_t outputSize)
 {
-  time_t now = time(nullptr);
-
-  // Không dùng thời gian nếu đồng hồ chưa được đồng bộ.
-  if (now < 1760000000)
-  {
+  if (!output || outputSize < 21 || !isClockTrusted())
     return false;
-  }
-
-  struct tm timeInfo;
-  gmtime_r(&now, &timeInfo);
-
-  strftime(
-      output,
-      outputSize,
-      "%Y-%m-%dT%H:%M:%SZ",
-      &timeInfo);
-
-  return true;
+  time_t now = time(nullptr);
+  struct tm t;
+  if (!gmtime_r(&now, &t))
+    return false;
+  return strftime(output, outputSize, "%Y-%m-%dT%H:%M:%SZ", &t) > 0;
 }
 bool isClockTrusted()
 {
-  time_t now = time(nullptr);
+  // Require a real SNTP notification this boot; allow a six-hour holdover.
+  return ntpSynced.load() && time(nullptr) >= 1760000000 &&
+         (uint32_t)(millis() - lastNtpSyncMs.load()) <= 6UL * 60UL * 60UL * 1000UL;
+}
 
-  // Chỉ coi đồng hồ đáng tin sau khi đã đồng bộ.
-  return now >= 1760000000;
+// ================= NETWORK TASK AND MANUAL TEST INPUT =================
+bool queuePublish(const char *topic, const uint8_t *payload,
+                  unsigned int length, bool retained)
+{
+  if (!mqttOnline.load() || !mqttTxQueue || !topic || !payload ||
+      strlen(topic) >= 160 || length >= 768)
+    return false;
+  MqttPacket packet = {};
+  strlcpy(packet.topic, topic, sizeof(packet.topic));
+  memcpy(packet.payload, payload, length);
+  packet.length = length;
+  packet.retained = retained;
+  if (xQueueSend(mqttTxQueue, &packet, 0) != pdTRUE)
+  {
+    txQueueDrops++;
+    return false;
+  }
+  return true; // Queued only. Telemetry stays buffered until STORED.
+}
+bool queuePublish(const char *topic, const char *payload, bool retained)
+{
+  return payload && queuePublish(topic, (const uint8_t *)payload,
+                                 strlen(payload), retained);
+}
+void onNetworkMessage(char *topic, byte *payload, unsigned int length)
+{
+  // Copy before PubSubClient reuses its internal receive buffer.
+  if (length == 0 || length > 512 || strlen(topic) >= 160)
+  {
+    rxDrops.fetch_add(1);
+    return;
+  }
+  MqttPacket packet = {};
+  strlcpy(packet.topic, topic, sizeof(packet.topic));
+  memcpy(packet.payload, payload, length);
+  packet.length = length;
+  if (xQueueSend(mqttRxQueue, &packet, 0) != pdTRUE)
+    rxDrops.fetch_add(1);
+}
+void processMqttMessages()
+{
+  MqttPacket packet;
+  for (int i = 0; i < 4 && xQueueReceive(mqttRxQueue, &packet, 0) == pdTRUE; i++)
+    mqttCallback(packet.topic, packet.payload, packet.length);
+}
+void networkTask(void *)
+{
+  connectWiFi();
+  // SNTP renews periodically; callback is the source of clock trust.
+  sntp_set_time_sync_notification_cb(onTimeSync);
+  MqttPacket pending = {};
+  bool hasPending = false;
+  while (true)
+  {
+    if (!networkEnabled.load())
+    {
+      mqttClient.disconnect();
+      mqttOnline.store(false);
+      vTaskDelay(pdMS_TO_TICKS(20));
+      continue;
+    }
+    maintainWiFi();
+    if (WiFi.status() != WL_CONNECTED)
+    {
+      mqttClient.disconnect();
+      mqttOnline.store(false);
+      vTaskDelay(pdMS_TO_TICKS(20));
+      continue;
+    }
+    if (!ntpConfigured)
+    {
+      configTime(0, 0, "pool.ntp.org", "time.google.com");
+      ntpConfigured = true;
+    }
+    tryConnectMQTT();
+    if (mqttClient.connected())
+    {
+      mqttClient.loop();
+      if (!hasPending && xQueueReceive(mqttTxQueue, &pending, 0) == pdTRUE)
+        hasPending = true;
+      if (hasPending)
+      {
+        if (mqttClient.publish(pending.topic, pending.payload, pending.length,
+                               pending.retained))
+          hasPending = false;
+        else
+        {
+          txFailures.fetch_add(1);
+          mqttClient.disconnect();
+        }
+      }
+    }
+    mqttOnline.store(mqttClient.connected());
+    vTaskDelay(pdMS_TO_TICKS(10));
+  }
+}
+
+void processSerialTests()
+{
+  // Manual test controls; no Python, no extra libraries.
+  // TEST NETWORK OFF disconnects MQTT only, while sensors/AUTO keep running.
+  static char line[80];
+  static uint8_t used = 0;
+  for (int n = 0; n < 80 && Serial.available(); n++)
+  {
+    char ch = (char)Serial.read();
+    if (ch == '\r')
+      continue;
+    if (ch != '\n')
+    {
+      if (used < sizeof(line) - 1)
+        line[used++] = ch;
+      else
+        used = 0;
+      continue;
+    }
+    line[used] = 0;
+    used = 0;
+    String cmd(line);
+    cmd.trim();
+    cmd.toUpperCase();
+    if (cmd == "TEST DHT OFF")
+      simulateDhtFault = true;
+    else if (cmd == "TEST DHT ON")
+      simulateDhtFault = false;
+    else if (cmd == "TEST CO2 OFF")
+      simulateCo2Fault = true;
+    else if (cmd == "TEST CO2 ON")
+      simulateCo2Fault = false;
+    else if (cmd == "TEST LIGHT OFF")
+      simulateLightFault = true;
+    else if (cmd == "TEST LIGHT ON")
+      simulateLightFault = false;
+    else if (cmd == "TEST NETWORK OFF")
+      networkEnabled.store(false);
+    else if (cmd == "TEST NETWORK ON")
+      networkEnabled.store(true);
+    else if (cmd == "TEST CLEAR")
+    {
+      simulateDhtFault = simulateCo2Fault = simulateLightFault = false;
+      networkEnabled.store(true);
+    }
+    else if (cmd == "TEST STATUS")
+    {
+      char utc[32];
+      bool trusted = getTimestamp(utc, sizeof(utc));
+      Serial.printf("[TEST] utc=%s uptime_ms=%lu buffer=%d dropped=%lu "
+                    "dht_good=%u safety=%d mqtt=%d\n",
+                    trusted ? utc : "UNTRUSTED",
+                    (unsigned long)millis(), bufferCount, (unsigned long)droppedTelemetryCount,
+                    dhtGoodStreak, safetyOverride, mqttOnline.load());
+      printZoneConfig();
+    }
+    else
+    {
+      Serial.println("[TEST] HELP: TEST DHT/CO2/LIGHT OFF|ON; "
+                     "TEST NETWORK OFF|ON; TEST CLEAR; TEST STATUS");
+    }
+    Serial.printf("[TEST] %s\n", cmd.c_str());
+  }
 }
