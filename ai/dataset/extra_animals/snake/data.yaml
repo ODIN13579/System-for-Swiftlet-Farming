@@ -1,0 +1,8 @@
+path: D:/System-for-Swiftlet-Farming-main/ai/dataset/extra_animals/snake
+
+train: train/images
+val: valid/images
+test: test/images
+
+nc: 1
+names: ['snake']

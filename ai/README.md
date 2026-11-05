@@ -1,489 +1,426 @@
-# SwiftletCare AI Service
+# SWIFTLET FARMING – AI DETECTION & COUNTING SYSTEM
 
 ## 1. Giới thiệu
 
-SwiftletCare AI Service là thành phần trí tuệ nhân tạo của hệ thống quản lý và giám sát nhà yến.
+Swiftlet Farming là hệ thống quản lý nhà yến tích hợp AI Computer Vision nhằm nhận diện động vật, giám sát hoạt động và đếm số lượng chim yến ra/vào nhà yến thông qua camera.
 
-Hệ thống sử dụng Computer Vision để phát hiện chim yến trong video, theo dõi chuyển động của từng đối tượng bằng ByteTrack, xác định các lượt chim bay vào (ENTRY) và bay ra (EXIT), sau đó tổng hợp dữ liệu CountLog để gửi đến Backend Spring Boot.
+Các chức năng chính:
 
-Phiên bản hiện tại tập trung vào chức năng phát hiện chim yến, tracking, đếm Entry/Exit và tích hợp REST API.
+- Nhận diện chim yến và các loài động vật bằng YOLO.
+- Nhận diện 4 lớp: Owl, Snake, Rat và Swiftlet.
+- Theo dõi đối tượng qua nhiều khung hình bằng Object Tracking.
+- Xác định hướng di chuyển qua Counting Line.
+- Phân loại sự kiện ENTRY và EXIT.
+- Gửi dữ liệu thống kê đến Backend Spring Boot.
+- Lưu trữ dữ liệu bằng PostgreSQL.
 
 ## 2. Công nghệ sử dụng
 
-| Công nghệ | Chức năng |
+| Thành phần | Công nghệ |
 |---|---|
-| Python 3.13.6 | Ngôn ngữ phát triển |
-| Ultralytics YOLO | Phát hiện đối tượng |
-| PyTorch | Nền tảng chạy mô hình |
-| ByteTrack | Theo dõi đối tượng qua các frame |
-| OpenCV | Đọc, xử lý và xuất video |
-| Requests | Gửi REST API |
-| Pytest | Kiểm thử chức năng |
-| Spring Boot | Backend tiếp nhận CountLog |
+| Ngôn ngữ AI | Python |
+| Object Detection | YOLOv8 |
+| Object Tracking | Tracking |
+| Xử lý video | OpenCV |
+| Backend | Java Spring Boot |
+| Database | PostgreSQL |
+| Container | Docker Compose |
+| Kiểm thử | Pytest |
 
-## 3. Cấu trúc thư mục
+## 3. Cấu trúc thư mục dự án
 
 ```text
 System-for-Swiftlet-Farming-main/
 │
 ├── ai/
-│   ├── configs/
-│   │   ├── config.json
-│   │   └── config.demo-cam001.json
-│   │
 │   ├── dataset/
-│   │   └── swiftlet_training/
-│   │       ├── images/
+│   │   └── extra_animals/
+│   │       ├── owl/
 │   │       │   ├── train/
-│   │       │   ├── val/
+│   │       │   ├── valid/
 │   │       │   └── test/
-│   │       ├── labels/
+│   │       ├── snake/
 │   │       │   ├── train/
-│   │       │   ├── val/
+│   │       │   ├── valid/
 │   │       │   └── test/
-│   │       └── data.yaml
+│   │       ├── rat/
+│   │       │   ├── train/
+│   │       │   ├── valid/
+│   │       │   └── test/
+│   │       └── swiftlet/
+│   │           ├── train/
+│   │           ├── valid/
+│   │           └── test/
 │   │
-│   ├── dataset-v0/
-│   │   ├── images/
-│   │   ├── labels/
-│   │   ├── data.yaml
-│   │   ├── source-register.csv
-│   │   ├── ai-data-inventory.md
-│   │   ├── ai-annotation-guideline.md
-│   │   └── ai-dataset-split-plan.md
+│   ├── animal_training/
+│   │   ├── owl_v1/
+│   │   │   └── weights/
+│   │   │       ├── best.pt
+│   │   │       └── last.pt
+│   │   ├── snake_v1/
+│   │   │   └── weights/
+│   │   │       ├── best.pt
+│   │   │       └── last.pt
+│   │   ├── rat_v1/
+│   │   │   └── weights/
+│   │   │       ├── best.pt
+│   │   │       └── last.pt
+│   │   └── swiftlet_v1/
+│   │       └── weights/
+│   │           ├── best.pt
+│   │           └── last.pt
 │   │
-│   ├── experiments/
-│   │   └── experiment-report.md
-│   │
+│   ├── configs/
+│   │   └── config.demo-cam001.json
 │   ├── samples/
-│   │   └── sample.mp4
-│   │
 │   ├── outputs/
-│   │   └── annotated.mp4
-│   │
-│   ├── logs/
-│   │   ├── ai-service.log
-│   │   ├── count-events.jsonl
-│   │   └── count-log-payload.json
-│   │
 │   ├── src/
-│   │   ├── main.py
-│   │   ├── counting.py
-│   │   └── api_client.py
-│   │
 │   ├── tests/
-│   │   ├── test_counting.py
-│   │   └── test_api_client.py
-│   │
-│   ├── requirements.txt
-│   └── README.md
+│   └── requirements.txt
 │
-├── runs/
-│   └── detect/
-│       ├── train-2/
-│       │   └── weights/
-│       │       ├── best.pt
-│       │       └── last.pt
-│       └── predict/
+├── backend/
+│   ├── src/
+│   ├── target/
+│   └── pom.xml
 │
-└── docs/
+├── .env.example
+├── docker-compose.yml
+└── README.md
 ```
 
-Lưu ý: `runs` được tạo tại thư mục gốc dự án khi huấn luyện hoặc chạy dự đoán. Các thư mục kết quả có thể thay đổi tên theo số lần chạy.
+## 4. Dataset huấn luyện
 
-## 4. Chuẩn bị Dataset
-
-### 4.1. Nguồn dữ liệu
-
-Dataset chim yến được tải từ Roboflow và tích hợp vào dự án tại:
-
-`ai/dataset/swiftlet_training`
-
-Dataset được sử dụng để huấn luyện mô hình YOLO nhận diện chim yến.
-
-Thông tin URL của project/version Roboflow và giấy phép sử dụng cần được lưu trong hồ sơ nguồn dữ liệu nếu nhóm có thông tin tương ứng.
-
-### 4.2. Cấu trúc Dataset
+Dataset nằm tại:
 
 ```text
-swiftlet_training/
-├── images/
-│   ├── train/
-│   ├── val/
-│   └── test/
-│
-├── labels/
-│   ├── train/
-│   ├── val/
-│   └── test/
-│
-└── data.yaml
+ai/dataset/extra_animals/
 ```
 
-Số lượng ảnh trong dataset:
+Gồm 4 loài động vật:
 
-| Tập dữ liệu | Số ảnh |
-|---|---:|
-| Train | 296 |
-| Validation | 236 |
-| Test | 59 |
-| Tổng | 591 |
-
-### 4.3. Cấu hình data.yaml
-
-```yaml
-path: D:/System-for-Swiftlet-Farming-main/ai/dataset/swiftlet_training
-train: images/train
-val: images/val
-test: images/test
-
-names:
-  0: swiftlet
-```
-
-Dataset huấn luyện hiện tại có một class:
-
-- Class ID 0: swiftlet.
-
-Các class snake, rat và owl chưa được huấn luyện trong model hiện tại.
-
-## 5. Huấn luyện mô hình YOLO
-
-### 5.1. Mô hình ban đầu
-
-Sử dụng mô hình YOLOv8n pretrained làm trọng số khởi tạo:
-
-`yolov8n.pt`
-
-Sau đó fine-tune trên dataset chim yến đã chuẩn bị.
-
-### 5.2. Lệnh huấn luyện
-
-Chạy lệnh từ thư mục gốc dự án:
-
-```powershell
-python -c "from ultralytics import YOLO; model=YOLO('yolov8n.pt'); model.train(data='ai/dataset/swiftlet_training/data.yaml', epochs=30, imgsz=640, batch=8)"
-```
-
-Các tham số:
-
-- `data`: Đường dẫn dataset.
-- `epochs=30`: Huấn luyện 30 vòng.
-- `imgsz=640`: Kích thước ảnh đầu vào khi huấn luyện.
-- `batch=8`: Số ảnh trong mỗi batch.
-
-### 5.3. Thư mục kết quả huấn luyện
-
-Ultralytics tự động tạo thư mục kết quả:
-
-```text
-runs/detect/train-2/
-```
-
-Các file quan trọng:
-
-```text
-runs/detect/train-2/
-├── weights/
-│   ├── best.pt
-│   └── last.pt
-├── results.csv
-├── results.png
-├── confusion_matrix.png
-├── PR_curve.png
-├── F1_curve.png
-├── P_curve.png
-└── R_curve.png
-```
-
-- `best.pt`: Trọng số tốt nhất trong quá trình huấn luyện.
-- `last.pt`: Trọng số tại epoch cuối cùng.
-- `results.csv`: Kết quả các epoch.
-- `results.png`: Biểu đồ quá trình huấn luyện.
-- Các biểu đồ còn lại hỗ trợ phân tích hiệu năng mô hình.
-
-### 5.4. Đường dẫn model hiện tại
-
-```text
-runs/detect/train-2/weights/best.pt
-```
-
-Đây là model đã được huấn luyện để sử dụng trong thử nghiệm phát hiện chim yến.
-
-## 6. Kết quả đánh giá mô hình
-
-Kết quả Validation đã ghi nhận:
-
-| Chỉ số | Giá trị |
-|---|---:|
-| Precision | 66.9% |
-| Recall | 61.9% |
-| mAP50 | 68.3% |
-| mAP50-95 | 27.9% |
-
-Nhận xét:
-
-- Mô hình đã học được khả năng phát hiện chim yến.
-- Precision và Recall còn cần cải thiện.
-- mAP50-95 cho thấy độ chính xác định vị bounding box vẫn còn hạn chế.
-- Chưa có kết quả đánh giá độc lập trên tập Test được xác nhận trong báo cáo hiện tại.
-
-## 7. Chạy dự đoán YOLO trên video
-
-Có thể sử dụng model `best.pt` để dự đoán trên video mẫu.
-
-Chạy từ thư mục gốc dự án:
-
-```powershell
-python -c "from ultralytics import YOLO; model=YOLO('runs/detect/train-2/weights/best.pt'); model.predict(source='ai/samples/sample.mp4', conf=0.25, save=True)"
-```
-
-Kết quả được lưu tự động tại:
-
-```text
-runs/detect/predict/
-```
-
-Nếu thư mục đã tồn tại, Ultralytics có thể tạo:
-
-```text
-runs/detect/predict2/
-runs/detect/predict3/
-```
-
-Đây là kết quả dự đoán trực quan của YOLO, chưa phải kết quả gửi CountLog lên Backend.
-
-## 8. AI Service – Tracking và Entry/Exit
-
-AI Service sử dụng:
-
-- YOLO: Phát hiện chim yến.
-- ByteTrack: Duy trì tracking ID.
-- EntryExitCounter: Xác định hướng di chuyển qua đường đếm.
-
-Luồng xử lý:
-
-```text
-Camera / Video
-      |
-      v
-YOLO Detection
-      |
-      v
-ByteTrack Tracking
-      |
-      v
-EntryExitCounter
-      |
-      v
-ENTRY / EXIT Events
-      |
-      v
-CountLog Aggregation
-      |
-      v
-Spring Boot Backend
-```
-
-Quy tắc đếm:
-
-- Chim đi từ ngoài vào trong: ENTRY.
-- Chim đi từ trong ra ngoài: EXIT.
-- Theo dõi tâm bounding box và tracking ID.
-- Chỉ ghi nhận khi đối tượng vượt qua đường đếm hợp lệ.
-- Hysteresis và cooldown giúp hạn chế đếm lặp khi đối tượng dao động gần đường đếm.
-
-## 9. Cấu hình AI Service
-
-File cấu hình sử dụng:
-
-`ai/configs/config.demo-cam001.json`
-
-Các thông số quan trọng:
-
-| Tham số | Ý nghĩa |
+| Loài | Thư mục |
 |---|---|
-| model_path | Đường dẫn model YOLO |
-| class_ids | Class ID được nhận diện |
-| class_name | Tên lớp |
-| confidence | Ngưỡng tin cậy |
-| device_id | ID thiết bị |
-| camera_id | Mã camera |
-| zone_id | Mã khu vực |
-| counting_line | Tọa độ đường đếm |
-| inside_direction | Hướng bên trong |
-| hysteresis_px | Khoảng chống dao động |
-| cooldown_frames | Khoảng frame chống đếm lặp |
-| backend_api_url | Endpoint Backend |
+| Owl | `owl/` |
+| Snake | `snake/` |
+| Rat | `rat/` |
+| Swiftlet | `swiftlet/` |
 
-Cấu hình model hiện tại cần trỏ đến:
+Mỗi loài được chia thành 3 tập dữ liệu:
+
+- `train`: Dữ liệu dùng để huấn luyện mô hình.
+- `valid`: Dữ liệu dùng để đánh giá mô hình trong quá trình huấn luyện.
+- `test`: Dữ liệu dùng để kiểm thử mô hình.
+
+Thứ tự ID class được xác định theo file `data.yaml` thực tế.
+
+## 5. Mô hình AI đã huấn luyện
+
+Các mô hình được lưu tại:
 
 ```text
-../runs/detect/train-2/weights/best.pt
+ai/animal_training/
 ```
 
-Class ID hiện tại:
+| Loài | Thư mục mô hình |
+|---|---|
+| Owl | `owl_v1/` |
+| Snake | `snake_v1/` |
+| Rat | `rat_v1/` |
+| Swiftlet | `swiftlet_v1/` |
 
-```json
-"class_ids": [0],
-"class_name": "swiftlet"
+Mỗi thư mục mô hình có cấu trúc:
+
+```text
+weights/
+├── best.pt
+└── last.pt
 ```
 
-## 10. Chạy AI Service trên video
+Ý nghĩa:
 
-Mở PowerShell tại thư mục AI:
+- `best.pt`: Trọng số mô hình có kết quả tốt nhất trong quá trình huấn luyện.
+- `last.pt`: Trọng số mô hình tại epoch cuối cùng.
+
+## 6. Cài đặt môi trường Python
+
+Mở PowerShell tại thư mục gốc dự án:
 
 ```powershell
-cd D:\System-for-Swiftlet-Farming-main\ai
+cd D:\System-for-Swiftlet-Farming-main
 ```
 
-Kích hoạt môi trường ảo đã sử dụng:
+Kích hoạt môi trường ảo:
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
 ```
 
-Nếu môi trường ảo nằm ở thư mục gốc dự án, sử dụng đường dẫn:
+Di chuyển vào thư mục AI:
 
 ```powershell
-..\.venv\Scripts\Activate.ps1
+cd ai
 ```
 
-Cài thư viện khi cần:
+Cài đặt thư viện:
 
 ```powershell
 pip install -r requirements.txt
 ```
 
-Chạy thử offline:
+## 7. Cấu hình môi trường Docker – .env.example
 
-```powershell
-python -m src.main --video .\samples\sample.mp4 --config .\configs\config.demo-cam001.json --imgsz 320 --no-send
+File `.env.example` chứa các biến môi trường dùng cho Docker và Backend.
+
+Phần cấu hình Docker:
+
+```env
+# DOCKER
+POSTGRES_DB=swiftletcare
+POSTGRES_USER=swiftletcare
+POSTGRES_PASSWORD=swiftletcare_local_only
+POSTGRES_PORT=5432
+
+JWT_SECRET=local-only-replace-with-random-secret-at-least-32-bytes
+AI_SERVICE_KEY=local-only-replace-with-random-service-key
+MQTT_PORT=1883
+FRONTEND_ORIGINS=http://localhost:5173
 ```
 
-Tham số `--no-send` có nghĩa là xử lý video và tạo CountLog cục bộ nhưng không gửi dữ liệu tới Backend.
+## 8. Khởi động Docker và PostgreSQL
 
-Video kết quả:
+Mở PowerShell tại thư mục gốc dự án:
+
+```powershell
+cd D:\System-for-Swiftlet-Farming-main
+```
+
+Sử dụng file `.env.example` để nạp biến môi trường cho Docker Compose:
+
+```powershell
+docker compose --env-file .env.example up -d
+```
+
+Kiểm tra trạng thái container:
+
+```powershell
+docker compose ps
+```
+
+Xem log PostgreSQL:
+
+```powershell
+docker compose logs -f postgres
+```
+
+Kiểm tra PostgreSQL:
+
+```powershell
+docker exec -it system-for-swiftlet-farming-main-postgres-1 pg_isready -U swiftletcare -d swiftletcare
+```
+
+## 9. Khởi động Backend Spring Boot
+
+Mở một cửa sổ PowerShell riêng.
+
+Di chuyển vào thư mục Backend:
+
+```powershell
+cd D:\System-for-Swiftlet-Farming-main\backend
+```
+
+Nạp các biến môi trường cho Maven bằng PowerShell:
+
+```powershell
+$env:DB_URL = "jdbc:postgresql://localhost:5432/swiftletcare"
+$env:DB_USERNAME = "swiftletcare"
+$env:DB_PASSWORD = "swiftletcare_local_only"
+
+$env:JWT_SECRET = "local-only-replace-with-random-secret-at-least-32-bytes"
+$env:AI_SERVICE_KEY = "local-only-replace-with-random-service-key"
+
+$env:MQTT_ENABLED = "true"
+# $env:MQTT_URL = "tcp://localhost:1883"
+$env:MQTT_URL = "tcp://127.0.0.1:1883"
+```
+
+Kiểm tra Java:
+
+```powershell
+java -version
+```
+
+Kiểm tra Maven:
+
+```powershell
+mvn -version
+```
+
+Build Backend:
+
+```powershell
+mvn clean package -DskipTests
+```
+
+Chạy Spring Boot:
+
+```powershell
+java -jar .\target\swiftletcare-backend-0.0.1-SNAPSHOT.jar
+```
+
+Backend chạy tại:
 
 ```text
-ai/outputs/annotated.mp4
+http://localhost:8080
 ```
 
-Mở video:
+API tiếp nhận dữ liệu thống kê AI:
+
+```text
+POST http://localhost:8080/api/v1/internal/ai/count-logs
+```
+
+## 10. Chạy AI Detection và Counting
+
+Mở một cửa sổ PowerShell riêng.
+
+Di chuyển vào thư mục AI:
 
 ```powershell
-Invoke-Item .\outputs\annotated.mp4
+cd D:\System-for-Swiftlet-Farming-main\ai
 ```
 
-## 11. Kết quả chạy thử AI Service
+Kích hoạt môi trường Python:
 
-Kết quả thử nghiệm trên video `sample.mp4`:
+```powershell
+..\.venv\Scripts\Activate.ps1
+```
 
-| Nội dung | Kết quả |
-|---|---:|
-| Độ phân giải | 1280 × 720 |
-| Tổng frame | 980 |
-| Tracking IDs | 244 |
-| ENTRY | 6 |
-| EXIT | 4 |
-| Tổng sự kiện | 10 |
+Chạy AI với video mẫu:
 
-Video kết quả có bounding box, tracking ID và đường đếm.
+```powershell
+python -m src.main --config configs/config.demo-cam001.json --video samples/sample.mp4 --output outputs/swiftlet_test.mp4
+```
 
-Đây là kết quả của lần chạy AI Service hiện tại; không nhầm với kết quả dự đoán YOLO độc lập trong thư mục `runs/detect/predict`.
+Chạy chế độ offline, không gửi dữ liệu lên Backend:
 
-## 12. CountLog và tích hợp Backend
+```powershell
+python -m src.main --config configs/config.demo-cam001.json --video samples/sample.mp4 --output outputs/annotated.mp4 --no-send
+```
 
-Sau khi xử lý video, AI Service tổng hợp dữ liệu CountLog.
+Video kết quả được lưu trong thư mục `ai/outputs/`.
 
-Các trường dữ liệu:
+## 11. Quy trình nhận diện và đếm
+
+Hệ thống xử lý theo quy trình:
+
+1. Nhận video từ camera hoặc video mẫu.
+2. YOLO phát hiện các đối tượng trong từng frame.
+3. Tracking theo dõi đối tượng qua các frame.
+4. Counting Line xác định đối tượng đi qua đường đếm.
+5. Xác định hướng di chuyển:
+   - `ENTRY`: Đối tượng đi vào nhà yến.
+   - `EXIT`: Đối tượng đi ra khỏi nhà yến.
+6. Tổng hợp số lượng ENTRY và EXIT.
+7. Gửi dữ liệu thống kê đến Backend.
+8. Backend lưu dữ liệu vào PostgreSQL.
+
+## 12. API gửi dữ liệu AI
+
+Endpoint:
+
+```text
+POST /api/v1/internal/ai/count-logs
+```
+
+Dữ liệu thống kê gồm các thông tin:
 
 - `deviceId`
 - `periodStart`
 - `periodEnd`
 - `entryCount`
 - `exitCount`
-- `detectCount`
 - `aggregationType`
-- `processedAt`
 
-Endpoint:
+Một số mã HTTP:
 
-```text
-/api/v1/internal/ai/count-logs
-```
+| Mã | Ý nghĩa |
+|---|---|
+| 200 / 201 | Gửi dữ liệu thành công |
+| 400 | Payload không hợp lệ |
+| 401 | Chưa được xác thực |
+| 404 | Không tìm thấy thiết bị |
+| 409 | Dữ liệu bị trùng hoặc xung đột |
 
-Thông tin xác thực được truyền qua biến môi trường `AI_SERVICE_KEY`.
+## 13. Kiểm thử AI
 
-Client REST hỗ trợ:
-
-- Gửi POST CountLog.
-- Timeout kết nối và phản hồi.
-- Retry tối đa 3 lần cho lỗi kết nối, timeout và HTTP 5xx.
-- Tạo Idempotency-Key ổn định cho cùng thiết bị và khoảng thời gian.
-
-Chức năng gửi CountLog tới Spring Boot đã được người dùng xác nhận kiểm tra thành công.
-
-## 13. Kiểm thử
-
-Các file kiểm thử:
-
-```text
-ai/tests/
-├── test_counting.py
-└── test_api_client.py
-```
-
-Kiểm thử tập trung vào:
-
-- ENTRY và EXIT.
-- Không đếm khi đối tượng không vượt đường.
-- Hysteresis.
-- Cooldown.
-- Kiểm tra Idempotency-Key.
-- Retry khi gặp timeout hoặc HTTP 5xx.
-- Xử lý lỗi xác thực.
-
-Chạy kiểm thử từ thư mục `ai`:
+Tại thư mục `ai`, kích hoạt môi trường ảo rồi chạy:
 
 ```powershell
 python -m pytest tests -v
 ```
 
-## 14. Kết quả và giới hạn hiện tại
+Lệnh trên thực hiện các bài kiểm thử trong thư mục `tests`.
 
-Đã thực hiện:
+## 14. Quy trình khởi động toàn bộ hệ thống
 
-- Tải và chuẩn bị dataset chim yến từ Roboflow.
-- Chia dữ liệu Train, Validation và Test.
-- Huấn luyện YOLO 30 epochs.
-- Tạo model `best.pt`.
-- Đánh giá mô hình trên Validation.
-- Chạy dự đoán YOLO trên video.
-- Tích hợp ByteTrack và Entry/Exit Counter.
-- Xuất video `annotated.mp4`.
-- Tạo CountLog.
-- Kiểm tra tích hợp gửi CountLog tới Backend.
+### Bước 1 – Khởi động Docker
 
-Các nội dung còn cần hoàn thiện:
+Mở PowerShell:
 
-- Xác minh nguồn và giấy phép sử dụng dataset.
-- Xác nhận việc chia tập không rò rỉ dữ liệu theo video/session.
-- Đánh giá Ground Truth, MAE và ID-switch.
-- Đo FPS và băng thông định lượng.
-- Chuẩn bị dataset snake, rat và owl cho BUILD 3.
+```powershell
+cd D:\System-for-Swiftlet-Farming-main
 
-## 15. Định hướng phát triển
+docker compose --env-file .env.example up -d
 
-1. Cải thiện độ chính xác phát hiện chim yến.
-2. Bổ sung video thử nghiệm với nhiều điều kiện ánh sáng và mật độ chim.
-3. Hoàn thiện đánh giá Entry/Exit bằng Ground Truth.
-4. Tối ưu tốc độ xử lý AI Service.
-5. Bổ sung dataset động vật săn mồi.
-6. Phát triển chức năng phát hiện và cảnh báo động vật săn mồi trong BUILD 3.
+docker compose ps
+```
+
+### Bước 2 – Khởi động Backend
+
+Mở PowerShell riêng:
+
+```powershell
+cd D:\System-for-Swiftlet-Farming-main\backend
+
+$env:DB_URL = "jdbc:postgresql://localhost:5432/swiftletcare"
+$env:DB_USERNAME = "swiftletcare"
+$env:DB_PASSWORD = "swiftletcare_local_only"
+
+$env:JWT_SECRET = "local-only-replace-with-random-secret-at-least-32-bytes"
+$env:AI_SERVICE_KEY = "local-only-replace-with-random-service-key"
+
+$env:MQTT_ENABLED = "true"
+$env:MQTT_URL = "tcp://127.0.0.1:1883"
+
+mvn clean package -DskipTests
+
+java -jar .\target\swiftletcare-backend-0.0.1-SNAPSHOT.jar
+```
+
+### Bước 3 – Khởi động AI
+
+Mở PowerShell riêng:
+
+```powershell
+cd D:\System-for-Swiftlet-Farming-main\ai
+
+..\.venv\Scripts\Activate.ps1
+
+python -m src.main --config configs/config.demo-cam001.json --video samples/sample.mp4 --output outputs/swiftlet_test.mp4
+```
+
+## 15. Hướng phát triển
+
+- Tối ưu độ chính xác nhận diện chim yến.
+- Bổ sung nhận diện các loài động vật gây hại.
+- Cải thiện thuật toán Object Tracking.
+- Tối ưu thuật toán đếm ENTRY và EXIT.
+- Tích hợp camera trực tiếp.
+- Hoàn thiện Dashboard thống kê.
+- Mở rộng quản lý nhiều nhà yến và nhiều camera.
 
 ## 16. Kết luận
 
-SwiftletCare AI Service đã xây dựng được quy trình từ chuẩn bị dataset, huấn luyện YOLO, phát hiện chim yến, tracking bằng ByteTrack, đếm ENTRY/EXIT và tích hợp gửi CountLog tới Backend Spring Boot.
+Swiftlet Farming ứng dụng Computer Vision, YOLO và Object Tracking để nhận diện động vật, giám sát hoạt động và thống kê số lượng chim yến ra/vào nhà yến.
 
-Mô hình hiện tại là nền tảng cho chức năng giám sát hoạt động chim yến. Các công việc đánh giá hiệu năng, cải thiện độ chính xác và mở rộng nhận diện động vật săn mồi sẽ được thực hiện trong các giai đoạn tiếp theo.
+Hệ thống kết hợp AI Python, Backend Spring Boot và PostgreSQL nhằm xây dựng giải pháp giám sát nhà yến tự động, hỗ trợ quản lý và theo dõi dữ liệu tập trung.

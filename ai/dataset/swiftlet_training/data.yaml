@@ -1,7 +1,0 @@
-﻿path: D:/System-for-Swiftlet-Farming-main/ai/dataset/swiftlet_training
-train: images/train
-val: images/val
-test: images/test
-
-names:
-  0: swiftlet
