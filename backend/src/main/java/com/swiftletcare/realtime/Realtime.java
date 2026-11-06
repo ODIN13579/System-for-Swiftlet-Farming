@@ -32,15 +32,26 @@ public class Realtime extends TextWebSocketHandler {
   @Override
   public void afterConnectionEstablished(WebSocketSession s) throws Exception {
     try {
+      System.out.println(
+          "WS connected: id=" + s.getId()
+          + ", uri=" + s.getUri()
+          + ", principal=" + s.getPrincipal()
+      );
+
       if (!allowed(s)) {
+        System.out.println("WS rejected: not allowed");
         s.close(CloseStatus.POLICY_VIOLATION);
         return;
       }
+
       sessions.put(
           s.getId(),
           new org.springframework.web.socket.handler.ConcurrentWebSocketSessionDecorator(
               s, 3000, 65536));
+
+      System.out.println("WS session registered: " + s.getId());
     } catch (Exception e) {
+      e.printStackTrace();
       s.close(CloseStatus.POLICY_VIOLATION);
     }
   }
@@ -51,6 +62,12 @@ public class Realtime extends TextWebSocketHandler {
   }
 
   public void publish(long device, String type, Object data) {
+    System.out.println(
+        "WS publish: device=" + device
+        + ", type=" + type
+        + ", sessions=" + sessions.size()
+    );
+
     for (var s : sessions.values())
       try {
         if (!allowed(s)) {

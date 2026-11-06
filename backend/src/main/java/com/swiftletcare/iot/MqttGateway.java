@@ -24,12 +24,14 @@ public class MqttGateway implements MqttCallbackExtended {
   private final Realtime realtime;
   private final JsonMapper json;
   private final Validator validator;
+  private final DeviceEvents deviceEvents;
 
   public MqttGateway(
       Ingestion ingestion,
       Realtime realtime,
       JsonMapper json,
       Validator validator,
+      DeviceEvents deviceEvents,
       @Value("${app.mqtt.url}") String url,
       @Value("${app.mqtt.client-id:swiftletcare-backend}") String id,
       @Value("${app.mqtt.username:}") String username,
@@ -39,6 +41,7 @@ public class MqttGateway implements MqttCallbackExtended {
     this.realtime = realtime;
     this.json = json;
     this.validator = validator;
+    this.deviceEvents = deviceEvents;
     client = new MqttAsyncClient(url, id, new MemoryPersistence());
     client.setCallback(this);
     options.setAutomaticReconnect(true);
@@ -64,8 +67,8 @@ public class MqttGateway implements MqttCallbackExtended {
   public void connectComplete(boolean reconnect, String uri) {
     try {
       client.subscribe(
-          new String[] {"swiftletcare/+/+/+/telemetry", "swiftletcare/+/+/+/heartbeat"},
-          new int[] {0, 0});
+          new String[] {"swiftletcare/+/+/+/telemetry", "swiftletcare/+/+/+/heartbeat", "swiftletcare/+/+/+/events"},
+          new int[] {0, 0, 1});
     } catch (MqttException e) {
       log.warn("MQTT subscription failed: {}", e.getReasonCode());
     }
@@ -103,6 +106,10 @@ public class MqttGateway implements MqttCallbackExtended {
           if (result.inserted())
             realtime.publish(result.data().deviceId(), "telemetry.updated", result.data());
         }
+      } else if (parts[4].equals("events")) {
+        var p = json.readValue(message.getPayload(), DeviceEvents.Event.class);
+        if (!parts[3].equals(p.device_id())) throw new IllegalArgumentException("Invalid event topic");
+        deviceEvents.accept(house, zone, p);
       } else if (parts[4].equals("heartbeat")) {
         var p = json.readValue(message.getPayload(), Ingestion.Heartbeat.class);
         if (!validator.validate(p).isEmpty() || !parts[3].equals(p.device_id()))

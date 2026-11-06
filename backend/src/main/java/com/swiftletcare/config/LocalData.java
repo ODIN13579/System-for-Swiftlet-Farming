@@ -22,8 +22,18 @@ public class LocalData {
             .executeWithoutResult(
                 s -> {
                   // Entire seed is opt-in; do not overwrite any existing installation.
-                  if (jdbc.queryForObject("select count(*) from swiftletcare.houses", Long.class)
-                      != 0) return;
+                  // Reset password only when explicitly enabled for local development.
+                if (Boolean.parseBoolean(System.getenv("LOCAL_RESET_PASSWORD"))) {
+                jdbc.update(
+                    "UPDATE swiftletcare.users SET password_hash = ? WHERE email = ?",
+                    encoder.encode(password),
+                    "local@example.test");
+                return;
+                }
+
+                // Do not overwrite an existing installation.
+                if (jdbc.queryForObject("select count(*) from swiftletcare.houses", Long.class)
+                    != 0) return;
                   long house =
                       jdbc.queryForObject(
                           "insert into swiftletcare.houses(name,active) values('Local test"

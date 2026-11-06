@@ -39,6 +39,8 @@ services:
       JWT_SECRET: ${JWT_SECRET:-}
       AI_SERVICE_KEY: ${AI_SERVICE_KEY:-}
       MQTT_URL: tcp://mqtt:1883
+      MQTT_USERNAME: ${MQTT_USERNAME:-}
+      MQTT_PASSWORD: ${MQTT_PASSWORD:-}
       FRONTEND_ORIGINS: ${FRONTEND_ORIGINS:-http://localhost:5173}
     depends_on:
       postgres:

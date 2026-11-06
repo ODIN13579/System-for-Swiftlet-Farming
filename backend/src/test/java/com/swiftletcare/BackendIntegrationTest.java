@@ -38,7 +38,10 @@ class BackendIntegrationTest {
                     + " 'swiftletcare'",
                 Integer.class))
         .isEqualTo(1);
-    assertThat(flyway.info().current().getVersion().toString()).isEqualTo("2");
+    assertThat(flyway.info().current().getVersion().toString()).isEqualTo("3");
+    assertThat(jdbc.queryForObject(
+        "select count(*) from information_schema.tables where table_schema='swiftletcare' and table_type='BASE TABLE'",
+        Integer.class)).isEqualTo(17);
     assertThat(flyway.migrate().migrationsExecuted).isZero();
     assertThat(entityManagerFactory.isOpen()).isTrue();
   }

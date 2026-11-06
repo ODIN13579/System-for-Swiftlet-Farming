@@ -1,5 +1,11 @@
 # SwiftletCare Backend — BUILD1-04 MVP
 
+## BUILD 2 trên htran — triển khai từng phần
+
+Xem [bàn giao BUILD 2](../docs/api/build2-handoff.md) và [tích hợp V3](../docs/api/build2-v3-integration.md). Đã có House tạo nguyên tử kèm initial Zone, đọc/list/sửa/disable/re-enable; Zone/Device quản lý, CountLog GET, actuator/command GET và ZoneConfig GET/PUT với version. Global ADMIN active được truy cập toàn hệ thống. **PUT config hiện chỉ lưu DB, trả syncStatus UNKNOWN, chưa publish MQTT.** V3 giữ nguyên nhóm, không tạo migration mới. Events có structured log, chưa persist; command dispatch/config sync và thống kê hôm nay còn chờ leader chốt.
+
+Test riêng từ repository root: `./scripts/test-build2.ps1 -IsolatedBuild -TestDatabase build2_v3_review_20261102` (JDK theo POM của checkout, DB review đã được tạo); dùng `-Offline` nếu cache đầy đủ. Nếu POM local yêu cầu Java25 nhưng máy chỉ có Java21, thêm `-Java21Compatibility`; đó là kiểm tra tương thích riêng. Kết quả trước fast-forward ngày 04/11/2026: **27/27 pass, không fail/error/skip**; [bảng sáu task và bằng chứng](../docs/api/build2-resume-review.md). DB/broker độc lập, không xóa volume. Thay đổi nâng Java25 local được tách khỏi commit BUILD2; xem [xác minh sau fast-forward](../docs/api/build2-push-verification.md).
+
 Java 21, Maven 3.6.3+, Spring Boot 4.0.8, PostgreSQL 17, Flyway, JPA, MQTT (Paho), REST, plain WebSocket, JWT HS256. Cần Docker Desktop Linux containers. Kết quả chạy thật xem [BUILD1-04 verification](../docs/api/build104-verification.md); contract bàn giao frontend/AI: [build104-mvp.md](../docs/api/build104-mvp.md), MQTT: [topics.md](../docs/mqtt/topics.md).
 
 ## Chạy Windows / PowerShell
