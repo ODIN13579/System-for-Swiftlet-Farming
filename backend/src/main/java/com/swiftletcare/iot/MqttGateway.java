@@ -1,10 +1,15 @@
 package com.swiftletcare.iot;
 
-import com.swiftletcare.realtime.Realtime;
-import jakarta.annotation.PreDestroy;
-import jakarta.validation.Validator;
 import java.util.Map;
-import org.eclipse.paho.client.mqttv3.*;
+
+import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttAsyncClient;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +17,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import com.swiftletcare.realtime.Realtime;
+
+import jakarta.annotation.PreDestroy;
+import jakarta.validation.Validator;
 import tools.jackson.databind.json.JsonMapper;
 
 @Component
@@ -25,6 +35,8 @@ public class MqttGateway implements MqttCallbackExtended {
   private final JsonMapper json;
   private final Validator validator;
   private final DeviceEvents deviceEvents;
+  private final DeviceConfigSync deviceConfigSync;
+  private volatile boolean configAckReady;
 
   public MqttGateway(
       Ingestion ingestion,
@@ -32,6 +44,7 @@ public class MqttGateway implements MqttCallbackExtended {
       JsonMapper json,
       Validator validator,
       DeviceEvents deviceEvents,
+      DeviceConfigSync deviceConfigSync,
       @Value("${app.mqtt.url}") String url,
       @Value("${app.mqtt.client-id:swiftletcare-backend}") String id,
       @Value("${app.mqtt.username:}") String username,
@@ -42,6 +55,7 @@ public class MqttGateway implements MqttCallbackExtended {
     this.json = json;
     this.validator = validator;
     this.deviceEvents = deviceEvents;
+    this.deviceConfigSync = deviceConfigSync;
     client = new MqttAsyncClient(url, id, new MemoryPersistence());
     client.setCallback(this);
     options.setAutomaticReconnect(true);
@@ -69,13 +83,41 @@ public class MqttGateway implements MqttCallbackExtended {
       client.subscribe(
           new String[] {"swiftletcare/+/+/+/telemetry", "swiftletcare/+/+/+/heartbeat", "swiftletcare/+/+/+/events"},
           new int[] {0, 0, 1});
+      configAckReady = false;
+      if (deviceConfigSync.enabled())
+        client.subscribe("swiftletcare/+/+/+/cfg_ack", 1, null, new IMqttActionListener() {
+          @Override public void onSuccess(IMqttToken token) {
+            int[] granted = token.getGrantedQos();
+            configAckReady = granted.length == 1 && granted[0] <= 2;
+            if (!configAckReady) log.warn("Broker refused cfg_ack subscription");
+          }
+
+          @Override public void onFailure(IMqttToken token, Throwable error) {
+            log.warn("Unable to subscribe to cfg_ack", error);
+          }
+        });
     } catch (MqttException e) {
       log.warn("MQTT subscription failed: {}", e.getReasonCode());
     }
   }
 
   public void connectionLost(Throwable cause) {
+    configAckReady = false;
     log.warn("MQTT connection lost; reconnect enabled");
+  }
+
+  @Scheduled(fixedDelayString = "${app.mqtt.config-sync-poll-ms:1000}")
+  public void sendPendingConfig() {
+    if (!configAckReady || !client.isConnected()) return;
+    for (var p : deviceConfigSync.pending()) {
+      if (!configAckReady || !client.isConnected()) break;
+      if (!deviceConfigSync.beginAttempt(p)) continue;
+      try {
+        client.publish(p.topic(), json.writeValueAsBytes(p.config()), 1, false);
+      } catch (MqttException e) {
+        log.warn("Could not send config for device {}: {}", p.deviceId(), e.getReasonCode());
+      }
+    }
   }
 
   public void deliveryComplete(IMqttDeliveryToken token) {}
@@ -106,6 +148,9 @@ public class MqttGateway implements MqttCallbackExtended {
           if (result.inserted())
             realtime.publish(result.data().deviceId(), "telemetry.updated", result.data());
         }
+      } else if (parts[4].equals("cfg_ack") && deviceConfigSync.enabled()) {
+        var ack = json.readValue(message.getPayload(), DeviceConfigSync.Ack.class);
+        deviceConfigSync.accept(house, zone, parts[3], ack);
       } else if (parts[4].equals("events")) {
         var p = json.readValue(message.getPayload(), DeviceEvents.Event.class);
         if (!parts[3].equals(p.device_id())) throw new IllegalArgumentException("Invalid event topic");

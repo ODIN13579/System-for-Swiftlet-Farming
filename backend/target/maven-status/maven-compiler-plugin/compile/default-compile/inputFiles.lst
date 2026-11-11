@@ -9,6 +9,7 @@ D:\New_folder\System-for-Swiftlet-Farming\backend\src\main\java\com\swiftletcare
 D:\New_folder\System-for-Swiftlet-Farming\backend\src\main\java\com\swiftletcare\api\Views.java
 D:\New_folder\System-for-Swiftlet-Farming\backend\src\main\java\com\swiftletcare\config\LocalData.java
 D:\New_folder\System-for-Swiftlet-Farming\backend\src\main\java\com\swiftletcare\iot\ControlReadController.java
+D:\New_folder\System-for-Swiftlet-Farming\backend\src\main\java\com\swiftletcare\iot\DeviceConfigSync.java
 D:\New_folder\System-for-Swiftlet-Farming\backend\src\main\java\com\swiftletcare\iot\DeviceEvents.java
 D:\New_folder\System-for-Swiftlet-Farming\backend\src\main\java\com\swiftletcare\iot\Ingestion.java
 D:\New_folder\System-for-Swiftlet-Farming\backend\src\main\java\com\swiftletcare\iot\MqttGateway.java

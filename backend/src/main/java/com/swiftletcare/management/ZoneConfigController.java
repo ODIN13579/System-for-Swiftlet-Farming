@@ -1,21 +1,32 @@
 package com.swiftletcare.management;
 
-import com.swiftletcare.api.ApiError;
-import com.swiftletcare.security.Access;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-/** V3 configuration storage. Device application is deliberately reported as UNKNOWN. */
+import com.swiftletcare.api.ApiError;
+import com.swiftletcare.iot.DeviceConfigSync;
+import com.swiftletcare.security.Access;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+
+/** Stores zone configuration and exposes device synchronization status. */
 @RestController
 @RequestMapping("/api/v1/zones/{zoneId}/config")
 public class ZoneConfigController {
@@ -33,8 +44,10 @@ public class ZoneConfigController {
   private final JdbcTemplate jdbc;
   private final Access access;
 
-  public ZoneConfigController(JdbcTemplate jdbc, Access access) {
-    this.jdbc=jdbc; this.access=access;
+  private final DeviceConfigSync deviceConfigSync;
+
+  public ZoneConfigController(JdbcTemplate jdbc, Access access, DeviceConfigSync deviceConfigSync) {
+    this.jdbc=jdbc; this.access=access; this.deviceConfigSync=deviceConfigSync;
   }
 
   @GetMapping
@@ -57,7 +70,10 @@ public class ZoneConfigController {
     var existing=jdbc.query("select * from swiftletcare.zone_configs where zone_id=?",this::map,zoneId);
     View old=existing.isEmpty()?null:existing.getFirst();
     if(p.version()!=(old==null?0:old.version())) throw versionConflict();
-    if(old!=null && unchanged(old,p)) return old;
+    if(old!=null && unchanged(old,p)) {
+      deviceConfigSync.queueForZone(zoneId, old.version());
+      return find(zoneId);
+    }
     if(old!=null && old.version()==Integer.MAX_VALUE)
       throw new ApiError.Failure(409,"VERSION_EXHAUSTED","Configuration version cannot increase");
     var args=new ArrayList<Object>(Arrays.asList(p.humidityOn(),p.humidityOff(),p.tempMin(),p.tempMax(),
@@ -78,14 +94,18 @@ public class ZoneConfigController {
           """,args.toArray());
       if(changed!=1) throw versionConflict();
     }
-    // No MQTT publish until sync schema and proof-of-application contract are approved.
+    deviceConfigSync.queueForZone(zoneId, old == null ? 1 : old.version() + 1);
     return find(zoneId);
   }
 
   private View find(long zone) {
     var rows=jdbc.query("select * from swiftletcare.zone_configs where zone_id=?",this::map,zone);
     if(rows.isEmpty()) throw ApiError.missing();
-    return rows.getFirst();
+    View v = rows.getFirst();
+    return new View(v.id(), v.zoneId(), v.humidityOn(), v.humidityOff(), v.tempMin(),
+        v.tempMax(), v.tempHysteresis(), v.co2Min(), v.co2Max(), v.lightMin(), v.lightMax(),
+        v.telemetryIntervalSec(), v.heartbeatIntervalSec(), v.version(), v.updatedAt(),
+        deviceConfigSync.statusForZone(zone, v.version()));
   }
 
   private View map(ResultSet rs,int row) throws SQLException {
