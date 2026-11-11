@@ -27,7 +27,7 @@ public class LocalData {
                 jdbc.update(
                     "UPDATE swiftletcare.users SET password_hash = ? WHERE email = ?",
                     encoder.encode(password),
-                    "local@example.test");
+                    "owner.demo@swiftletcare.local");
                 return;
                 }
 
