@@ -778,25 +778,64 @@ button {
 /* ===== Điện thoại ===== */
 
 @media (max-width: 650px) {
+
   .sidebar {
     position: fixed;
     top: 0;
     bottom: 0;
     left: 0;
-    z-index: 20;
+    z-index: 100;
+    display: flex;
+    flex: 0 0 250px;
     width: 250px;
-    min-width: 0;
+    min-width: 250px;
+    height: 100vh;
     height: 100dvh;
+    padding: 24px 16px 18px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    transform: translateX(0);
+    transition: transform 0.25s ease;
+    box-shadow: 8px 0 24px rgba(0, 0, 0, 0.12);
   }
 
-  .sidebar-collapsed {
-    position: sticky;
-    flex-basis: 60px;
-    width: 60px;
+  /* Trạng thái menu đóng trên điện thoại */
+  .sidebar.sidebar-collapsed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    flex: 0 0 250px;
+    width: 250px;
+    min-width: 250px;
     height: 100vh;
-    padding-right: 7px;
-    padding-left: 7px;
+    height: 100dvh;
+    padding: 24px 16px 18px;
+    transform: translateX(-105%);
+    overflow-y: auto;
   }
+
+  /* Khi menu mở, hiện đầy đủ tên chức năng */
+  .sidebar:not(.sidebar-collapsed) .brand {
+    justify-content: flex-start;
+    padding: 0 8px;
+  }
+
+  .sidebar:not(.sidebar-collapsed) .nav-item {
+    justify-content: flex-start;
+    padding: 12px;
+  }
+
+  .sidebar:not(.sidebar-collapsed) .connection-status {
+    justify-content: flex-start;
+    padding: 13px 10px;
+  }
+
+  .main-area {
+    width: 100%;
+    min-width: 0;
+    flex: 1 1 100%;
+  }
+
 
   .topbar {
     min-height: 60px;
@@ -1777,3 +1816,828 @@ button {
   font-size: 13px;
 }
 
+.zone-config-page {
+  padding: 24px;
+  color: #1f2937;
+}
+
+.zone-config-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.zone-config-heading h2 {
+  margin: 0 0 8px;
+}
+
+.zone-config-heading p,
+.zone-config-meta {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.zone-config-notice {
+  padding: 16px;
+  margin-bottom: 20px;
+  border: 1px solid #f2d28b;
+  border-radius: 10px;
+  background: #fff9e9;
+  color: #854d0e;
+}
+
+.zone-config-notice p {
+  margin-bottom: 0;
+}
+
+.zone-config-notice small {
+  margin-inline-start: 8px;
+}
+
+.zone-config-notice--applied {
+  border-color: #86cba0;
+  background: #ecfdf3;
+  color: #166534;
+}
+
+.zone-config-card {
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.zone-config-card h3 {
+  margin: 0 0 18px;
+  font-size: 17px;
+}
+
+.zone-config-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.zone-config-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.zone-config-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.zone-config-input-wrap input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font: inherit;
+}
+
+.zone-config-input-wrap input:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.zone-config-input-wrap input:disabled {
+  background: #f1f5f9;
+}
+
+.zone-config-card small {
+  display: block;
+  margin-top: 12px;
+  color: #64748b;
+}
+
+.zone-config-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.zone-config-actions button,
+.zone-config-heading button,
+.zone-config-page > button {
+  padding: 10px 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.zone-config-actions button[type='submit'] {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #fff;
+}
+
+.zone-config-actions button:disabled,
+.zone-config-heading button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.zone-config-error {
+  padding: 12px;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #b91c1c;
+  overflow-wrap: anywhere;
+}
+
+.zone-config-success {
+  padding: 12px;
+  border-radius: 8px;
+  background: #f0fdf4;
+  color: #166534;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  .zone-config-page {
+    padding: 14px;
+  }
+
+  .zone-config-heading {
+    align-items: flex-start;
+  }
+
+  .zone-config-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .zone-config-card {
+    padding: 16px;
+  }
+}
+
+.management-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.management-card {
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+  overflow-wrap: anywhere;
+}
+
+.management-card h2 {
+  margin: 12px 0;
+  font-size: 18px;
+}
+
+.management-card p {
+  margin: 8px 0;
+  color: #64748b;
+}
+
+.management-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.management-toolbar select {
+  min-width: 220px;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: white;
+}
+
+
+/* ===== Mobile sidebar overlay ===== */
+
+.sidebar-backdrop {
+  display: none;
+}
+
+@media (max-width: 650px) {
+  .sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+    background: rgba(12, 28, 22, 0.48);
+  }
+
+  .app-shell {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .main-area {
+    width: 100%;
+    min-width: 0;
+    flex: 1 1 100%;
+  }
+
+  .sidebar.sidebar-collapsed {
+    transform: translateX(-105%);
+    pointer-events: none;
+    visibility: hidden;
+  }
+
+  .sidebar:not(.sidebar-collapsed) {
+    transform: translateX(0);
+    visibility: visible;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar {
+    transition: none;
+  }
+}
+/* ===== Zones page: layout ===== */
+
+.zone-page {
+  min-width: 0;
+}
+
+.zone-page-header {
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.zone-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.zone-toolbar button,
+.zone-close-button,
+.zone-form-actions button,
+.zone-card button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.zone-house-selector {
+  display: grid;
+  grid-template-columns: auto minmax(180px, 275px);
+  align-items: center;
+  gap: 16px;
+  margin: 24px 0;
+  max-width: 100%;
+}
+
+.zone-house-selector label {
+  font-weight: 500;
+}
+
+.zone-house-selector select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #fff;
+  color: #172b3a;
+  font: inherit;
+}
+
+/* ===== Create / edit form ===== */
+
+.zone-form-card {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  margin: 24px 0;
+  padding: 24px;
+  border-radius: 16px;
+}
+
+.zone-form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.zone-form-header h2 {
+  margin: 0;
+  font-size: 21px;
+  line-height: 1.4;
+}
+
+.zone-close-button {
+  min-height: 40px;
+  padding: 8px 12px;
+}
+
+.zone-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 560px;
+  min-width: 0;
+}
+
+.zone-form .zone-form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+.zone-form .zone-form-group > label {
+  display: block;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.zone-form .zone-form-group > input:not([type="checkbox"]) {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  color: #172b3a;
+  font: inherit;
+}
+
+.zone-form .zone-form-group > input:not([type="checkbox"]):focus-visible,
+.zone-house-selector select:focus-visible,
+.zone-form button:focus-visible,
+.zone-toolbar button:focus-visible,
+.zone-card button:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 3px;
+}
+
+.zone-form .zone-form-group > input:not([type="checkbox"]):disabled,
+.zone-house-selector select:disabled {
+  background: #f1f5f9;
+  cursor: not-allowed;
+}
+
+.zone-field-hint {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.zone-checkbox-label {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.zone-checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  accent-color: #2563eb;
+}
+
+.zone-form-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.zone-form-actions button {
+  min-height: 42px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.zone-form-actions .zone-cancel-button {
+  background: #fff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+}
+
+.zone-form-actions button:disabled,
+.zone-toolbar button:disabled,
+.zone-close-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.zone-form-error,
+.zone-error-message {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #b91c1c;
+  line-height: 1.5;
+}
+
+.zone-form-error {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.zone-error-message {
+  margin: 16px 0;
+}
+
+.zone-error-message p {
+  margin: 0 0 10px;
+}
+
+/* ===== Zone cards ===== */
+
+.zone-grid {
+  min-width: 0;
+}
+
+.zone-card {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.zone-card h2 {
+  overflow-wrap: anywhere;
+}
+
+.zone-card-icon {
+  color: #2563eb;
+}
+
+/* ===== Mobile ===== */
+
+@media (max-width: 650px) {
+  .zone-page-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .zone-toolbar {
+    width: 100%;
+  }
+
+  .zone-toolbar button {
+    min-height: 42px;
+  }
+
+  .zone-house-selector {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    margin: 20px 0;
+  }
+
+  .zone-house-selector select {
+    max-width: 100%;
+  }
+
+  .zone-form-card {
+    padding: 16px;
+    margin: 18px 0;
+  }
+
+  .zone-form-header {
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+
+  .zone-form-header h2 {
+    font-size: 19px;
+  }
+
+  .zone-form {
+    max-width: 100%;
+    gap: 16px;
+  }
+
+  .zone-form-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .zone-form-actions button {
+    width: 100%;
+    min-width: 0;
+    padding: 10px 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zone-page *,
+  .zone-page *::before,
+  .zone-page *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+/* =========================================
+   HOUSE & DEVICE FORMS
+   Clean layout, consistent fields and buttons
+   ========================================= */
+
+.house-form-card,
+.device-form-panel {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  margin-bottom: 24px;
+  padding: 24px;
+  border-radius: 16px;
+}
+
+.house-form-card > .page-header,
+.device-form-panel > .devices-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.house-form-card > .page-header h2,
+.device-form-panel .devices-toolbar h2 {
+  margin: 0;
+  font-size: 21px;
+  line-height: 1.4;
+}
+
+.device-form-panel .devices-toolbar p {
+  margin: 6px 0 0;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+/* Stack labels and fields vertically */
+.house-form,
+.device-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  max-width: 620px;
+  min-width: 0;
+}
+
+.house-form .form-group,
+.device-form .form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+.house-form .form-group > label,
+.device-form .form-group > label {
+  display: block;
+  margin: 0;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.house-form .form-group input:not([type="checkbox"]),
+.house-form .form-group textarea,
+.device-form .form-group input:not([type="checkbox"]),
+.device-form .form-group select {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 11px 13px;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  background: #fff;
+  color: #172b3a;
+  font: inherit;
+  line-height: 1.5;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.house-form .form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.house-form .form-group input::placeholder,
+.house-form .form-group textarea::placeholder,
+.device-form .form-group input::placeholder {
+  color: #94a3b8;
+  opacity: 1;
+}
+
+.house-form .form-group input:focus-visible,
+.house-form .form-group textarea:focus-visible,
+.device-form .form-group input:focus-visible,
+.device-form .form-group select:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 1px;
+  border-color: #2563eb;
+}
+
+.house-form .form-group input:disabled,
+.house-form .form-group textarea:disabled,
+.device-form .form-group input:disabled,
+.device-form .form-group select:disabled {
+  background: #f1f5f9;
+  cursor: not-allowed;
+}
+
+/* Section describing the first zone when creating a house */
+.house-form > h3 {
+  margin: 8px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid #e2e8f0;
+  color: #172b3a;
+  font-size: 17px;
+}
+
+.house-form > p {
+  margin: -10px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Checkbox: keep the label and checkbox on one line */
+.house-form .form-group > label:has(input[type="checkbox"]),
+.device-form .form-group > label:has(input[type="checkbox"]) {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.house-form input[type="checkbox"],
+.device-form input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin: 0;
+  accent-color: #2563eb;
+}
+
+.device-form .form-group > p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Form errors */
+.house-form [role="alert"],
+.device-form [role="alert"] {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid #fecaca;
+  border-radius: 9px;
+  background: #fef2f2;
+  color: #b91c1c;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+/* Align submit and cancel buttons */
+.house-form > .management-toolbar,
+.device-form > .management-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.house-form > .management-toolbar button,
+.device-form > .management-toolbar button,
+.house-form-card > .page-header button,
+.device-form-panel .devices-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.house-form > .management-toolbar button:focus-visible,
+.device-form > .management-toolbar button:focus-visible,
+.house-form-card button:focus-visible,
+.device-form-panel button:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 3px;
+}
+
+.house-form button:disabled,
+.device-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive layout */
+@media (max-width: 650px) {
+  .house-form-card,
+  .device-form-panel {
+    padding: 16px;
+    margin-bottom: 18px;
+  }
+
+  .house-form-card > .page-header,
+  .device-form-panel > .devices-toolbar {
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+
+  .house-form-card > .page-header h2,
+  .device-form-panel .devices-toolbar h2 {
+    font-size: 19px;
+  }
+
+  .house-form,
+  .device-form {
+    max-width: 100%;
+    gap: 16px;
+  }
+
+  .house-form > .management-toolbar,
+  .device-form > .management-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .house-form > .management-toolbar button,
+  .device-form > .management-toolbar button {
+    width: 100%;
+    min-width: 0;
+    padding: 10px 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .house-form *,
+  .device-form *,
+  .house-form-card *,
+  .device-form-panel * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
