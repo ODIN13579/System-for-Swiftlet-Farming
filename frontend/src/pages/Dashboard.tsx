@@ -10,6 +10,7 @@ import {
   Cpu,
 } from 'lucide-react'
 import { api, type Device, type Telemetry } from '../services/api'
+import AiCounts from '../components/AiCounts'
 import { connectDeviceRealtime } from '../services/websocket'
 const zoneIdValue = import.meta.env.VITE_ZONE_ID
 const zoneId = zoneIdValue ? Number(zoneIdValue) : null
@@ -332,6 +333,8 @@ export default function Dashboard() {
           </div>
         </article>
       </div>
+
+      <AiCounts cameras={devices.filter((device) => device.type === 'CAMERA')} />
 
       <div className="bottom-note">
         <div className="note-icon">

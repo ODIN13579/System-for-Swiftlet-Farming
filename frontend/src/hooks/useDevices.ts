@@ -1,5 +1,6 @@
 
 import { useCallback, useEffect, useState } from 'react'
+
 import { api, type Device } from '../services/api'
 
 export function useDevices(zoneId: number | null) {

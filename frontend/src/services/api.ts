@@ -25,6 +25,18 @@ export type Telemetry = {
   light?: number | null
   [key: string]: unknown
 }
+export type CountLog = {
+  id: number
+  deviceId: number
+  periodStart: string
+  periodEnd: string
+  entryCount: number
+  exitCount: number
+  detectCount: number
+  aggregationType: 'HOURLY' | 'DAILY'
+  processedAt: string
+}
+
 export type PageInfo = {
   page: number
   size: number
@@ -71,6 +83,13 @@ async function request<T>(
   return response.json() as Promise<T>
 }
 export const api = {
+  getCountLogs(deviceId: number, from: string, to: string, signal?: AbortSignal) {
+    const params = new URLSearchParams({ from, to, page: '0', size: '10' })
+    return request<ListResponse<CountLog>>(
+      `/api/v1/devices/${deviceId}/count-logs?${params}`,
+      { signal },
+    )
+  },
   login(email: string, password: string) {
     return request<LoginResponse>('/api/v1/auth/login', {
       method: 'POST',
