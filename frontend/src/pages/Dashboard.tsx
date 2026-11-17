@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   Thermometer,
   Bell,
@@ -9,11 +9,18 @@ import {
   RefreshCw,
   Cpu,
 } from 'lucide-react'
-import { api, type Device, type Telemetry } from '../services/api'
-import AiCounts from '../components/AiCounts'
+import FanControl from '../components/FanControl'
+import {
+  api,
+  type Device,
+  type Telemetry,
+} from '../services/api'
+
 import { connectDeviceRealtime } from '../services/websocket'
+
 const zoneIdValue = import.meta.env.VITE_ZONE_ID
 const zoneId = zoneIdValue ? Number(zoneIdValue) : null
+
 type MetricValue = {
   label: string
   value: number | null
@@ -22,17 +29,55 @@ type MetricValue = {
   tone: string
 }
 
+type RealtimeStatus = 'connected' | 'disconnected' | 'error'
+
 function formatValue(value: number | null, digits = 1) {
-  return value === null ? '—' : value.toFixed(digits)
+  return value === null || !Number.isFinite(value)
+    ? '—'
+    : value.toFixed(digits)
+}
+
+function formatDateTime(value?: string | null) {
+  if (!value) return 'Chưa ghi nhận'
+
+  const date = new Date(value)
+
+  if (Number.isNaN(date.getTime())) {
+    return 'Thời gian không hợp lệ'
+  }
+
+  return new Intl.DateTimeFormat('vi-VN', {
+    timeZone: 'Asia/Ho_Chi_Minh',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  }).format(date)
 }
 
 function isSensor(device: Device) {
-  const text = `${device.name} ${device.type} ${device.deviceId}`.toLowerCase()
+  const text =
+    `${device.name} ${device.type} ${device.deviceId}`.toLowerCase()
+
   return (
     text.includes('esp32') ||
     text.includes('sensor') ||
     text.includes('cảm biến')
   )
+}
+
+function hasTelemetryValue(data: Telemetry | null) {
+  if (!data) return false
+
+  return [
+    data.temperature,
+    data.humidity,
+    data.co2,
+    data.light,
+  ].some((value) => value != null)
 }
 
 export default function Dashboard() {
@@ -41,10 +86,10 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [telemetryMessage, setTelemetryMessage] = useState('')
-  const [realtimeStatus, setRealtimeStatus] = useState<
-    'connected' | 'disconnected' | 'error'
-  >('disconnected')
-  async function loadDashboard() {
+  const [realtimeStatus, setRealtimeStatus] =
+    useState<RealtimeStatus>('disconnected')
+
+  const loadDashboard = useCallback(async () => {
     setLoading(true)
     setError('')
     setTelemetryMessage('')
@@ -56,13 +101,17 @@ export default function Dashboard() {
         !Number.isSafeInteger(zoneId) ||
         zoneId <= 0
       ) {
-        throw new Error('Vui lòng kiểm tra VITE_ZONE_ID trong file .env.')
+        throw new Error(
+          'Vui lòng kiểm tra VITE_ZONE_ID trong file .env.',
+        )
       }
 
       const result = await api.getDevices(zoneId)
-      setDevices(result.items)
+      const loadedDevices = result.items ?? []
 
-      const sensor = result.items.find(isSensor)
+      setDevices(loadedDevices)
+
+      const sensor = loadedDevices.find(isSensor)
 
       if (!sensor) {
         setTelemetryMessage(
@@ -73,14 +122,13 @@ export default function Dashboard() {
 
       try {
         const latest = await api.getLatestTelemetry(sensor.id)
+
         setTelemetry(latest)
-        if (
-          latest.temperature == null &&
-          latest.humidity == null &&
-          latest.co2 == null &&
-          latest.light == null
-        ) {
-          setTelemetryMessage('Bản ghi mới nhất chưa có số đo môi trường.')
+
+        if (!hasTelemetryValue(latest)) {
+          setTelemetryMessage(
+            'Bản ghi mới nhất chưa có số đo môi trường.',
+          )
         }
       } catch (err) {
         setTelemetryMessage(
@@ -98,16 +146,15 @@ export default function Dashboard() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     void loadDashboard()
-  }, [])
+  }, [loadDashboard])
+
   const sensorId = devices.find(isSensor)?.id ?? null
-  console.log('Devices:', devices)
-  console.log('Sensor ID:', sensorId)
+
   useEffect(() => {
-    console.log('WebSocket effect running, sensorId:', sensorId)
     if (sensorId === null) {
       setRealtimeStatus('disconnected')
       return
@@ -151,7 +198,6 @@ export default function Dashboard() {
     }
   }, [sensorId])
 
-
   const metrics: MetricValue[] = [
     {
       label: 'Nhiệt độ',
@@ -183,6 +229,14 @@ export default function Dashboard() {
     },
   ]
 
+  const realtimeLabel = loading
+    ? 'Đang tải dữ liệu'
+    : realtimeStatus === 'connected'
+      ? 'Realtime đang kết nối'
+      : realtimeStatus === 'error'
+        ? 'Lỗi kết nối realtime'
+        : 'Realtime chưa kết nối'
+
   return (
     <>
       <div className="page-heading">
@@ -194,22 +248,22 @@ export default function Dashboard() {
           </p>
         </div>
 
-        <div className="live-badge">
+        <div className="live-badge" role="status">
           <span className="status-dot" />
-          {loading
-            ? 'Đang tải dữ liệu'
-            : realtimeStatus === 'connected'
-              ? 'Realtime đang kết nối'
-              : realtimeStatus === 'error'
-                ? 'Lỗi kết nối realtime'
-                : 'Đang chờ realtime'}
+          {realtimeLabel}
         </div>
       </div>
 
       {error && (
-        <div className="panel" role="alert" style={{ padding: 16 }}>
+        <div
+          className="panel"
+          role="alert"
+          style={{ padding: 16, marginBottom: 16 }}
+        >
           <p>{error}</p>
+
           <button
+            type="button"
             className="devices-refresh"
             onClick={() => void loadDashboard()}
             disabled={loading}
@@ -221,7 +275,11 @@ export default function Dashboard() {
       )}
 
       {telemetryMessage && (
-        <div className="panel" role="status" style={{ padding: 12, marginBottom: 16 }}>
+        <div
+          className="panel"
+          role="status"
+          style={{ padding: 12, marginBottom: 16 }}
+        >
           {telemetryMessage}
         </div>
       )}
@@ -248,7 +306,7 @@ export default function Dashboard() {
                 {metric.value === null
                   ? 'Chưa có số đo'
                   : telemetry?.timestamp
-                    ? `Đo lúc ${new Date(telemetry.timestamp).toLocaleString('vi-VN')}`
+                    ? `Đo lúc ${formatDateTime(telemetry.timestamp)}`
                     : 'Số đo từ Backend'}
               </div>
             </article>
@@ -263,30 +321,44 @@ export default function Dashboard() {
               <h2>Trạng thái thiết bị</h2>
               <p>Tình trạng kết nối thiết bị trong nhà yến</p>
             </div>
-            <span className="subtle-badge">{devices.length} thiết bị</span>
-          </div>
 
+            <span className="subtle-badge">
+              {loading ? 'Đang tải...' : `${devices.length} thiết bị`}
+            </span>
+          </div>
+          {sensorId !== null && (
+            <FanControl deviceId={sensorId} />
+          )}
           <div className="device-list">
             {devices.map((device) => (
               <div className="device-row" key={device.id}>
                 <div
                   className={`device-symbol ${
-                    device.online ? 'device-online' : 'device-offline'
+                    device.online
+                      ? 'device-online'
+                      : 'device-offline'
                   }`}
                 >
                   <Cpu size={19} />
                 </div>
 
+                
                 <div className="device-info">
                   <strong>{device.name}</strong>
                   <span>
                     {device.type} · {device.deviceId}
                   </span>
+                  <span className="device-last-seen">
+                    Cập nhật lần cuối: {formatDateTime(device.lastSeenAt)}
+                  </span>
                 </div>
+
 
                 <span
                   className={`device-state ${
-                    device.online ? 'state-online' : 'state-offline'
+                    device.online
+                      ? 'state-online'
+                      : 'state-offline'
                   }`}
                 >
                   <span className="note-dot" />
@@ -295,15 +367,23 @@ export default function Dashboard() {
               </div>
             ))}
 
+            {loading && devices.length === 0 && (
+              <p style={{ padding: 16 }} role="status">
+                Đang tải danh sách thiết bị...
+              </p>
+            )}
+
             {!loading && devices.length === 0 && (
               <p style={{ padding: 16 }}>
-                {error ? 'Không tải được thiết bị.' : 'Khu vực chưa có thiết bị.'}
+                {error
+                  ? 'Không tải được danh sách thiết bị.'
+                  : 'Khu vực chưa có thiết bị.'}
               </p>
             )}
           </div>
 
           <div className="panel-footer">
-            Trạng thái thiết bị lấy từ Backend.
+            Trạng thái và thời điểm cập nhật lấy từ dữ liệu Backend.
           </div>
         </article>
 
@@ -313,7 +393,8 @@ export default function Dashboard() {
               <h2>Cảnh báo gần đây</h2>
               <p>Các sự kiện cần chú ý</p>
             </div>
-            <span className="subtle-badge">Demo</span>
+
+            <span className="subtle-badge">Chưa tích hợp API</span>
           </div>
 
           <div className="alert-list">
@@ -321,38 +402,47 @@ export default function Dashboard() {
               <div className="alert-symbol warning">
                 <Bell size={18} />
               </div>
+
               <div className="alert-info">
-                <strong>Chưa kết nối dữ liệu cảnh báo</strong>
-                <span>Đang chờ tích hợp API cảnh báo</span>
+                <strong>Chưa có dữ liệu cảnh báo</strong>
+                <span>
+                  Cần tích hợp API cảnh báo từ Backend để hiển thị sự kiện
+                  thực.
+                </span>
               </div>
             </div>
           </div>
 
           <div className="panel-footer">
-            Chưa hiển thị cảnh báo thực từ Backend.
+            Không sử dụng dữ liệu demo thay cho cảnh báo thực.
           </div>
         </article>
       </div>
-
-      <AiCounts cameras={devices.filter((device) => device.type === 'CAMERA')} />
 
       <div className="bottom-note">
         <div className="note-icon">
           <Bird size={20} />
         </div>
+
         <div>
-          <strong>SwiftletCare · Giám sát nhà yến thông minh</strong>
+          <strong>
+            SwiftletCare · Giám sát nhà yến thông minh
+          </strong>
+
           <p>
-            Thiết bị và số đo được tải từ REST API, sau đó cập nhật
-            qua WebSocket khi Backend phát sinh sự kiện realtime.
+            Số đo môi trường được tải từ REST API và cập nhật qua WebSocket
+            khi Backend phát sinh sự kiện realtime.
           </p>
+
           {telemetry?.timestamp && (
             <p>
               Thời điểm đo gần nhất:{' '}
-              {new Date(telemetry.timestamp).toLocaleString('vi-VN')}
+              {formatDateTime(telemetry.timestamp)}
             </p>
           )}
+
           <button
+            type="button"
             className="devices-refresh"
             onClick={() => void loadDashboard()}
             disabled={loading}
