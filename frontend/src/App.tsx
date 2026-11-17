@@ -16,14 +16,30 @@ import Devices from './pages/Devices'
 import Alerts from './pages/Alerts'
 import Reports from './pages/Reports'
 import Login from './pages/Login'
+import Houses from './pages/Houses'
+import Zones from './pages/Zones'
+import ZoneConfig from './pages/ZoneConfig'
 import { setAccessToken } from './services/api'
-type Page = 'dashboard' | 'environment' | 'alerts' | 'reports'
+
+type Page =
+  | 'dashboard'
+  | 'environment'
+  | 'alerts'
+  | 'reports'
+  | 'houses'
+  | 'zones'
+  | 'zone-config'
+
 const menuItems = [
   { id: 'dashboard' as const, label: 'Tổng quan', icon: LayoutDashboard },
   { id: 'environment' as const, label: 'Môi trường & Thiết bị', icon: Thermometer },
+  { id: 'houses' as const, label: 'Quản lý nhà yến', icon: Bird },
+  { id: 'zones' as const, label: 'Quản lý khu vực', icon: LayoutDashboard },
+  { id: 'zone-config' as const, label: 'Cấu hình ngưỡng', icon: Thermometer },
   { id: 'alerts' as const, label: 'Cảnh báo & AI Events', icon: Bell },
   { id: 'reports' as const, label: 'Thống kê & Báo cáo', icon: ChartNoAxesCombined },
 ]
+
 function App() {
   const [activePage, setActivePage] = useState<Page>('dashboard')
   const [sidebarOpen, setSidebarOpen] = useState(true)
@@ -116,12 +132,17 @@ function App() {
           </div>
         </header>
 
+        
         <section className="page-content">
           {activePage === 'dashboard' && <Dashboard />}
-          {activePage === 'environment' && <Devices />}          
+          {activePage === 'environment' && <Devices />}
+          {activePage === 'houses' && <Houses />}
+          {activePage === 'zones' && <Zones />}
+          {activePage === 'zone-config' && <ZoneConfig />}
           {activePage === 'alerts' && <Alerts />}
           {activePage === 'reports' && <Reports />}
         </section>
+
       </main>
     </div>
   )

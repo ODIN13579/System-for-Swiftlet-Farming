@@ -1,4 +1,3 @@
-
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <math.h>
@@ -10,7 +9,6 @@
 #include <freertos/task.h>
 #include <Preferences.h>
 #include <time.h>
-#include <esp_system.h>   // esp_random()
 #include <WiFi.h>         // ESP32 kết nối WiFi để giao tiếp với MQTT Broker
 #include <PubSubClient.h> // Thư viện MQTT cho ESP32
 #include "DHT.h"          // Thư viện cảm biến DHT22
@@ -20,7 +18,10 @@
 #define DHTTYPE DHT22 // Loại cảm biến DHT
 #define LDR_PIN 34    // Chân đọc cảm biến ánh sáng
 #define CO2_PIN 35    // Chân đọc cảm biến CO2
-#define FAN_PIN 4     // Chân điều khiển quạt
+#define FAN_PIN 4                 // FAN - GPIO4
+#define MIST_PIN 16        // MIST - GPIO16
+#define HEATER_PIN 17            // HEATER - GPIO17
+#define AMPLIFIER_PIN 18   // AMPLIFIER - GPIO18
 
 struct ZoneConfig; // Forward declaration for Arduino sketch preprocessing.
 DHT dht(DHTPIN, DHTTYPE);
@@ -28,13 +29,25 @@ bool getTimestamp(char *output, size_t outputSize);
 bool isClockTrusted();
 void publishState();
 void applyControlLogic();
-void setFanState(bool turnOn); // Tạo đối tượng DHT22
+void setFanState(bool turnOn);
+bool setActuatorState(const String &actuator, bool turnOn);
+bool getActuatorState(const String &actuator);
+int getActuatorPin(const String &actuator);
 
-// FAN THRESHOLD — fallback defaults; AUTO uses ZoneConfig.tempMax.
-#define FAN_ON_TEMP 31.0  // Nhiệt độ >= 31°C thì bật quạt
-#define FAN_OFF_TEMP 30.0 // Nhiệt độ <= 30°C thì tắt quạt
+// Initial AUTO thresholds agreed for the SwiftletCare prototype.
+// CO2 values are currently derived from the Wokwi analog input; calibrate
+// the conversion and thresholds for the real CO2 sensor before deployment.
+#define FAN_ON_CO2_PPM 1000
+#define FAN_OFF_CO2_PPM 800
+#define FAN_OFF_TEMP 29.0f
+#define AUDIO_START_HOUR 6
+#define AUDIO_END_HOUR 18
+#define VIETNAM_UTC_OFFSET_SECONDS (7 * 60 * 60)
 
 bool fanState = false; // false = quạt tắt, true = quạt bật
+bool humidifierState = false;
+bool heaterState = false;
+bool audioAmplifierState = false;
 bool safetyOverride = true;
 
 bool latestDhtValid = false;
@@ -154,7 +167,8 @@ const char *WIFI_PASSWORD = "";
 
 // MQTT CONFIGURATION
 const char *MQTT_HOST = "host.wokwi.internal"; // Địa chỉ MQTT Broker
-const int MQTT_PORT = 1883;                    // Cổng MQTT Broker
+// const int MQTT_PORT = 1883;                    // Cổng MQTT Broker
+const int MQTT_PORT = 51884;
 
 // Phải lấy đúng giá trị từ Backend hoặc database của nhóm.
 const char *HOUSE_ID = "1";
@@ -186,10 +200,10 @@ Preferences preferences;
 struct ZoneConfig
 {
   uint32_t version = 1;
-  float humidityOn = 70.0f;
-  float humidityOff = 75.0f;
-  float tempMin = 20.0f;
-  float tempMax = 31.0f;
+  float humidityOn = 75.0f;  // MIST ON below 75%
+  float humidityOff = 80.0f; // MIST OFF at/above 80%
+  float tempMin = 26.0f;     // HEATER ON below 26 C
+  float tempMax = 31.0f;     // FAN ON above 31 C; HEATER OFF at/above 28 C
   uint32_t telemetryIntervalMs = 5000;
 };
 ZoneConfig zoneConfig;
@@ -638,24 +652,74 @@ void publishHeartbeat()
   }
 }
 
+int getActuatorPin(const String &actuator)
+{
+  if (actuator == "FAN") return FAN_PIN;
+  if (actuator == "MIST") return MIST_PIN;
+  if (actuator == "HEATER") return HEATER_PIN;
+  if (actuator == "AMPLIFIER") return AMPLIFIER_PIN;
+  return -1;
+}
+
+bool getActuatorState(const String &actuator)
+{
+  if (actuator == "FAN") return fanState;
+  if (actuator == "MIST") return humidifierState;
+  if (actuator == "HEATER") return heaterState;
+  if (actuator == "AMPLIFIER") return audioAmplifierState;
+  return false;
+}
+
+bool setActuatorState(const String &actuator, bool turnOn)
+{
+  int pin = getActuatorPin(actuator);
+  if (pin < 0) return false;
+
+  bool *state = nullptr;
+  if (actuator == "FAN") state = &fanState;
+  else if (actuator == "MIST") state = &humidifierState;
+  else if (actuator == "HEATER") state = &heaterState;
+  else if (actuator == "AMPLIFIER") state = &audioAmplifierState;
+
+  if (state == nullptr) return false;
+
+  bool changed = (*state != turnOn);
+  if (!changed)
+    return true;
+
+  *state = turnOn;
+  digitalWrite(pin, turnOn ? HIGH : LOW);
+
+  Serial.printf("%s=%s GPIO%d=%s\n",
+                actuator.c_str(),
+                turnOn ? "ON" : "OFF",
+                pin,
+                digitalRead(pin) == HIGH ? "HIGH" : "LOW");
+
+  publishState();
+  return true;
+}
+
 void publishCommandAck(
     const String &commandId,
     const String &status,
     const String &reason,
     bool isDuplicate = false,
     const String &originalStatus = "",
-    const String &originalReason = "")
+    const String &originalReason = "",
+    const String &actuator = "FAN")
 {
   JsonDocument doc;
 
   doc["device_id"] = DEVICE_ID;
   doc["command_id"] = commandId;
-  doc["actuator"] = "FAN";
+  doc["actuator"] = actuator;
   doc["status"] = status;
   doc["reason"] = reason;
   doc["mode"] = controlMode == MODE_AUTO ? "AUTO" : "MANUAL";
-  doc["state"] = fanState ? "ON" : "OFF";
-  doc["gpio_state"] = digitalRead(FAN_PIN) == HIGH ? "HIGH" : "LOW";
+  doc["state"] = getActuatorState(actuator) ? "ON" : "OFF";
+  int ackPin = getActuatorPin(actuator);
+  doc["gpio_state"] = (ackPin >= 0 && digitalRead(ackPin) == HIGH) ? "HIGH" : "LOW";
   doc["safetyOverride"] = safetyOverride;
 
   char timestamp[25];
@@ -730,8 +794,15 @@ void publishState()
 
   doc["device_id"] = DEVICE_ID;
   doc["mode"] = controlMode == MODE_AUTO ? "AUTO" : "MANUAL";
+  // Legacy fields remain mapped to FAN for backward compatibility.
+  doc["actuator"] = "FAN";
   doc["state"] = fanState ? "ON" : "OFF";
   doc["gpio_state"] = digitalRead(FAN_PIN) == HIGH ? "HIGH" : "LOW";
+  JsonObject actuators = doc["actuators"].to<JsonObject>();
+  actuators["FAN"] = fanState ? "ON" : "OFF";
+  actuators["MIST"] = humidifierState ? "ON" : "OFF";
+  actuators["HEATER"] = heaterState ? "ON" : "OFF";
+  actuators["AMPLIFIER"] = audioAmplifierState ? "ON" : "OFF";
   doc["safetyOverride"] = safetyOverride;
 
   if (clockTrusted)
@@ -754,28 +825,32 @@ void publishState()
     return;
   }
 
-  queuePublish(STATE_TOPIC, payload, false);
+  Serial.print("[STATE] Publishing all actuator states: ");
+  Serial.println(payload);
+  bool queued = queuePublish(STATE_TOPIC, payload, false);
+  Serial.println(queued ? "[STATE] Queued to MQTT" : "[STATE] Queue failed");
 }
 void setFanState(bool turnOn)
 {
-  bool changed = fanState != turnOn;
-
-  fanState = turnOn;
-
-  digitalWrite(
-      FAN_PIN,
-      turnOn ? HIGH : LOW);
-
-  Serial.printf(
-      "FAN=%s GPIO=%s\n",
-      fanState ? "ON" : "OFF",
-      digitalRead(FAN_PIN) == HIGH ? "HIGH" : "LOW");
-
-  if (changed)
-  {
-    publishState();
-  }
+  setActuatorState("FAN", turnOn);
 }
+
+bool isAudioScheduleActive()
+{
+  if (!isClockTrusted())
+    return false;
+
+  // Firmware stores UTC time; convert to Vietnam local time (UTC+7).
+  time_t localNow = time(nullptr) + VIETNAM_UTC_OFFSET_SECONDS;
+  struct tm localTime;
+  if (!gmtime_r(&localNow, &localTime))
+    return false;
+
+  // Prototype schedule: daily 06:00 inclusive to 18:00 exclusive.
+  return localTime.tm_hour >= AUDIO_START_HOUR &&
+         localTime.tm_hour < AUDIO_END_HOUR;
+}
+
 void applyControlLogic()
 {
   bool fresh = latestDhtValid && haveValidTemperature &&
@@ -783,21 +858,53 @@ void applyControlLogic()
   bool safe = !fresh || dhtFaultActive || dhtGoodStreak < 3;
   bool overrideChanged = safetyOverride != safe;
   safetyOverride = safe;
-  if (safe)
+
+  if (controlMode != MODE_AUTO)
   {
-    if (!fanState)
-      setFanState(true);
+    if (overrideChanged)
+      publishState();
+    return;
   }
-  else if (controlMode == MODE_AUTO)
+
+  // Invalid/stale temperature or humidity must not drive humidifier/heater.
+  if (!fresh || safe)
   {
-    // FAN only: ON at temp_max, OFF one degree lower, never below temp_min.
-    // humidity_on/off describe a future humidifier, not the exhaust FAN.
-    float fanOff = fmaxf(zoneConfig.tempMin, zoneConfig.tempMax - 1.0f);
-    if (!fanState && latestTemperature >= zoneConfig.tempMax)
+    setActuatorState("MIST", false);
+    setActuatorState("HEATER", false);
+    // Keep the existing conservative FAN behavior when DHT22 is faulty.
+    setFanState(true);
+  }
+  else
+  {
+    // MIST hysteresis: ON below 75%, OFF at/above 80%.
+    if (!humidifierState && latestHumidity < zoneConfig.humidityOn)
+      setActuatorState("MIST", true);
+    else if (humidifierState && latestHumidity >= zoneConfig.humidityOff)
+      setActuatorState("MIST", false);
+
+    // FAN hysteresis: ON above 31 C OR above 1000 ppm CO2.
+    // OFF only when temperature is below 29 C AND CO2 is below 800 ppm.
+    bool highTemperature = latestTemperature > zoneConfig.tempMax;
+    bool highCo2 = latestCo2Valid && latestCo2 > FAN_ON_CO2_PPM;
+    bool fanShouldTurnOn = highTemperature || highCo2;
+    bool fanCanTurnOff = latestTemperature < FAN_OFF_TEMP &&
+                         latestCo2Valid && latestCo2 < FAN_OFF_CO2_PPM;
+
+    if (!fanState && fanShouldTurnOn)
       setFanState(true);
-    else if (fanState && latestTemperature <= fanOff)
+    else if (fanState && fanCanTurnOff)
       setFanState(false);
+
+    // HEATER: ON below 26 C; OFF at/above 28 C. Do not heat while FAN runs.
+    if (latestTemperature >= 28.0f || fanState)
+      setActuatorState("HEATER", false);
+    else if (!heaterState && latestTemperature < zoneConfig.tempMin)
+      setActuatorState("HEATER", true);
   }
+
+  // AMPLIFIER follows a daily schedule, not climate sensor thresholds.
+  setActuatorState("AMPLIFIER", isAudioScheduleActive());
+
   if (overrideChanged)
     publishState();
 }
@@ -938,14 +1045,11 @@ bool parseUtcExpiry(const char *value, time_t &expiry)
 void rejectAndCache(
     const String &commandId,
     const String &normalizedContent,
-    const char *reason)
+    const char *reason,
+    const String &actuator)
 {
-  rememberCommand(
-      commandId,
-      normalizedContent,
-      "REJECTED",
-      reason);
-  publishCommandAck(commandId, "REJECTED", reason);
+  rememberCommand(commandId, normalizedContent, "REJECTED", reason);
+  publishCommandAck(commandId, "REJECTED", reason, false, "", "", actuator);
 }
 
 void publishCfgAck(uint32_t version, const char *status, const char *reason)
@@ -1055,9 +1159,9 @@ void loadZoneConfig()
       // Import valid legacy P1 configuration once; retain old keys as fallback.
       ZoneConfig c;
       c.version = preferences.getUInt("ver", 1);
-      c.humidityOn = preferences.getFloat("hon", 70);
-      c.humidityOff = preferences.getFloat("hoff", 75);
-      c.tempMin = preferences.getFloat("tmin", 20);
+      c.humidityOn = preferences.getFloat("hon", 75);
+      c.humidityOff = preferences.getFloat("hoff", 80);
+      c.tempMin = preferences.getFloat("tmin", 26);
       c.tempMax = preferences.getFloat("tmax", 31);
       c.telemetryIntervalMs = preferences.getUInt("tele", 5000);
       if (validateZoneConfig(c))
@@ -1153,44 +1257,81 @@ void handleConfigMessage(byte *payload, unsigned int length)
   publishState();
   publishCfgAck(v, "APPLIED", "OK");
 }
-// Fault transitions can be buffered while offline (bounded RAM queue).
+// Fault transitions are kept as fields until both MQTT and the clock are ready.
+// This avoids sending timestamp:null, which the current Backend rejects.
 struct PendingSensorEvent
 {
-  String json;
+  String type;
+  String sensor;
+  String reason;
 };
 PendingSensorEvent sensorEvents[16];
 uint8_t sensorEventCount = 0;
 uint32_t sensorEventsDropped = 0;
+
 void publishSensorEvent(const char *type, const char *sensor, const char *reason)
 {
-  JsonDocument d;
-  char timestamp[32];
-  d["device_id"] = DEVICE_ID;
-  d["event_type"] = type;
-  d["sensor"] = sensor;
-  d["reason"] = reason;
-  if (getTimestamp(timestamp, sizeof(timestamp)))
-    d["timestamp"] = timestamp;
-  else
-    d["timestamp"] = nullptr;
-  String json;
-  serializeJson(d, json);
-  if (sensorEventCount < 16)
-    sensorEvents[sensorEventCount++].json = json;
-  else
+  if (!type || !sensor || !reason)
+    return;
+
+  // The currently deployed Backend accepts SENSOR_FAULT and MANUAL_LIMIT,
+  // but not SENSOR_RECOVERED. Keep recovery visible locally until both sides
+  // agree on the event contract; do not send an event known to be rejected.
+  if (strcmp(type, "SENSOR_RECOVERED") == 0)
+  {
+    Serial.printf("[EVENT] %s sensor=%s (local only; Backend contract not updated)\n",
+                  type, sensor);
+    return;
+  }
+
+  if (sensorEventCount >= 16)
+  {
     sensorEventsDropped++;
+    Serial.printf("[EVENT] queue full; dropped=%lu\n",
+                  (unsigned long)sensorEventsDropped);
+    return;
+  }
+
+  PendingSensorEvent &event = sensorEvents[sensorEventCount++];
+  event.type = type;
+  event.sensor = sensor;
+  event.reason = reason;
   Serial.printf("[EVENT] %s sensor=%s queued=%u dropped=%lu\n", type, sensor,
                 sensorEventCount, (unsigned long)sensorEventsDropped);
 }
+
 void flushSensorEvents()
 {
   if (!mqttOnline.load() || !sensorEventCount)
     return;
-  if (!queuePublish(EVENTS_TOPIC, sensorEvents[0].json.c_str()))
+
+  char timestamp[32];
+  if (!getTimestamp(timestamp, sizeof(timestamp)))
+  {
+    // Keep the event queued; retry after SNTP has synchronized.
     return;
+  }
+
+  JsonDocument doc;
+  doc["device_id"] = DEVICE_ID;
+  doc["event_type"] = sensorEvents[0].type;
+  doc["sensor"] = sensorEvents[0].sensor;
+  doc["reason"] = sensorEvents[0].reason;
+  doc["timestamp"] = timestamp;
+
+  String json;
+  if (serializeJson(doc, json) == 0 || json.isEmpty())
+  {
+    Serial.println("[EVENT] JSON serialization failed; event retained");
+    return;
+  }
+
+  if (!queuePublish(EVENTS_TOPIC, json.c_str()))
+    return;
+
   for (int i = 0; i < sensorEventCount - 1; i++)
     sensorEvents[i] = sensorEvents[i + 1];
-  sensorEvents[--sensorEventCount].json = String();
+  sensorEvents[--sensorEventCount] = PendingSensorEvent{};
 }
 
 void mqttCallback(
@@ -1375,22 +1516,20 @@ void mqttCallback(
     if (cached.normalizedContent == normalizedContent)
     {
       publishCommandAck(
-          commandId,
-          "DUPLICATE",
-          "ALREADY_PROCESSED",
-          true,
-          cached.originalStatus,
-          cached.originalReason);
+      commandId,
+      "DUPLICATE",
+      "ALREADY_PROCESSED",
+      true,
+      cached.originalStatus,
+      cached.originalReason,
+      actuator);
 
       Serial.println("Duplicate command: original result retained");
     }
     else
     {
       // Không ghi đè cache gốc khi ID bị dùng cho nội dung khác.
-      publishCommandAck(
-          commandId,
-          "REJECTED",
-          "COMMAND_ID_CONFLICT");
+      publishCommandAck(commandId, "REJECTED", "COMMAND_ID_CONFLICT", false, "", "", actuator);
 
       Serial.println("Command ID conflict");
     }
@@ -1400,20 +1539,14 @@ void mqttCallback(
   // 1. Kiểm tra action trước.
   if (action != "SET_MODE" && action != "SET_STATE")
   {
-    rejectAndCache(
-        commandId,
-        normalizedContent,
-        "INVALID_ACTION");
+    rejectAndCache(commandId, normalizedContent, "MODE_NOT_MANUAL", actuator);  
     return;
   }
 
   // 2. Kiểm tra actuator sau.
-  if (actuator != "FAN")
+  if (getActuatorPin(actuator) < 0)
   {
-    rejectAndCache(
-        commandId,
-        normalizedContent,
-        "INVALID_ACTUATOR");
+    rejectAndCache(commandId, normalizedContent, "MODE_NOT_MANUAL", actuator);
     return;
   }
 
@@ -1431,8 +1564,7 @@ void mqttCallback(
   {
     if (targetMode != "AUTO" && targetMode != "MANUAL")
     {
-      rejectAndCache(
-          commandId, normalizedContent, "INVALID_TARGET_MODE");
+      rejectAndCache(commandId, normalizedContent, "MODE_NOT_MANUAL", actuator);
       return;
     }
   }
@@ -1441,15 +1573,13 @@ void mqttCallback(
   {
     if (targetState != "ON" && targetState != "OFF")
     {
-      rejectAndCache(
-          commandId, normalizedContent, "INVALID_TARGET_STATE");
+      rejectAndCache(commandId, normalizedContent, "MODE_NOT_MANUAL", actuator);
       return;
     }
   }
   if (!isClockTrusted())
   {
-    rejectAndCache(
-        commandId, normalizedContent, "CLOCK_UNTRUSTED");
+    rejectAndCache(commandId, normalizedContent, "MODE_NOT_MANUAL", actuator);
     return;
   }
 
@@ -1457,8 +1587,7 @@ void mqttCallback(
 
   if (!parseUtcExpiry(expiresAt.c_str(), expiryTime))
   {
-    rejectAndCache(
-        commandId, normalizedContent, "INVALID_EXPIRY");
+    rejectAndCache(commandId, normalizedContent, "MODE_NOT_MANUAL", actuator);
     return;
   }
 
@@ -1466,15 +1595,13 @@ void mqttCallback(
 
   if (expiryTime <= now)
   {
-    rejectAndCache(
-        commandId, normalizedContent, "EXPIRED");
+    rejectAndCache(commandId, normalizedContent, "MODE_NOT_MANUAL", actuator);
     return;
   }
 
   if (expiryTime > now + 15)
   {
-    rejectAndCache(
-        commandId, normalizedContent, "INVALID_EXPIRY");
+    rejectAndCache(commandId, normalizedContent, "MODE_NOT_MANUAL", actuator);
     return;
   }
   // Xử lý lệnh SET_MODE.
@@ -1496,49 +1623,48 @@ void mqttCallback(
         normalizedContent,
         "APPLIED",
         "OK");
-    publishCommandAck(commandId, "APPLIED", "OK");
+    publishCommandAck(commandId, "APPLIED", "OK", false, "", "", actuator);
     return;
   }
 
   // SET_STATE chỉ được thực hiện trong MANUAL.
   if (controlMode != MODE_MANUAL)
   {
-    rejectAndCache(
-        commandId,
-        normalizedContent,
-        "MODE_NOT_MANUAL");
+    rejectAndCache(commandId, normalizedContent, "MODE_NOT_MANUAL", actuator);
     return;
   }
 
   // Kiểm tra trạng thái đích.
   if (targetState != "ON" && targetState != "OFF")
   {
-    rejectAndCache(
-        commandId,
-        normalizedContent,
-        "INVALID_TARGET_STATE");
+    rejectAndCache(commandId, normalizedContent, "MODE_NOT_MANUAL", actuator);
     return;
   }
 
-  applyControlLogic();
-  // Không cho phép tắt quạt khi có safety override.
-  if (targetState == "OFF" && safetyOverride)
+  // Cập nhật logic an toàn trước khi xử lý lệnh cho FAN.
+  if (actuator == "FAN")
   {
-    rejectAndCache(
-        commandId,
-        normalizedContent,
-        "SAFETY_OVERRIDE");
-    return;
+    applyControlLogic();
+    // Không cho phép tắt quạt khi có safety override.
+    if (targetState == "OFF" && safetyOverride)
+    {
+      rejectAndCache(commandId, normalizedContent, "MODE_NOT_MANUAL", actuator);
+      return;
+    }
   }
 
-  setFanState(targetState == "ON");
+  if (!setActuatorState(actuator, targetState == "ON"))
+  {
+    rejectAndCache(commandId, normalizedContent, "MODE_NOT_MANUAL", actuator);
+    return;
+  }
 
   rememberCommand(
       commandId,
       normalizedContent,
       "APPLIED",
       "OK");
-  publishCommandAck(commandId, "APPLIED", "OK");
+  publishCommandAck(commandId, "APPLIED", "OK", false, "", "", actuator);
 }
 // SETUP
 void setup()
@@ -1547,6 +1673,12 @@ void setup()
            String((uint32_t)esp_random(), HEX);
   Serial.begin(115200);
   pinMode(FAN_PIN, OUTPUT);
+  pinMode(MIST_PIN, OUTPUT);
+  pinMode(HEATER_PIN, OUTPUT);
+  pinMode(AMPLIFIER_PIN, OUTPUT);
+  digitalWrite(MIST_PIN, LOW);
+  digitalWrite(HEATER_PIN, LOW);
+  digitalWrite(AMPLIFIER_PIN, LOW);
   fanState = true;
   digitalWrite(FAN_PIN, HIGH);
   Serial.printf("[BOOT] P1 FIXED B2 reset_reason=%d RAM buffer only\n",
@@ -1557,13 +1689,11 @@ void setup()
   // Khởi động cảm biến DHT22
   dht.begin();
 
-  // Cấu hình chân điều khiển quạt
-  pinMode(FAN_PIN, OUTPUT);
-  digitalWrite(FAN_PIN, HIGH);
+  // Các chân actuator đã được khởi tạo ở đầu setup().
 
   Serial.println();
   Serial.println("==============================");
-  Serial.println("ESP32 Swiftlet Firmware");
+  Serial.println("ESP32 Swiftlet Firmware - AUTO 4 actuators");
   Serial.println("Starting sensors...");
   Serial.println("==============================");
 
@@ -1688,9 +1818,12 @@ void loop()
     applyControlLogic();
 
     Serial.printf(
-        "Mode: %s | Fan: %s | Safety: %s\n",
+        "Mode: %s | MIST: %s | FAN: %s | HEATER: %s | AMPLIFIER: %s | Safety: %s\n",
         controlMode == MODE_AUTO ? "AUTO" : "MANUAL",
+        humidifierState ? "ON" : "OFF",
         fanState ? "ON" : "OFF",
+        heaterState ? "ON" : "OFF",
+        audioAmplifierState ? "ON" : "OFF",
         safetyOverride ? "ON" : "OFF");
   }
 
@@ -1915,8 +2048,7 @@ void processSerialTests()
     }
     else
     {
-      Serial.println("[TEST] HELP: TEST DHT/CO2/LIGHT OFF|ON; "
-                     "TEST NETWORK OFF|ON; TEST CLEAR; TEST STATUS");
+      Serial.println("[TEST] HELP: TEST DHT/CO2/LIGHT OFF|ON; " "TEST NETWORK OFF|ON; TEST CLEAR; TEST STATUS");
     }
     Serial.printf("[TEST] %s\n", cmd.c_str());
   }

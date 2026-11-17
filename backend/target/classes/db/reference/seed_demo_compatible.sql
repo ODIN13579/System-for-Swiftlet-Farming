@@ -35,7 +35,7 @@ WHERE d.type = 'ESP32'
 INSERT INTO swiftletcare.actuators (device_id, kind, mode, "on")
 SELECT d.id, x.kind, 'AUTO', FALSE
 FROM swiftletcare.devices d
-CROSS JOIN (VALUES ('MIST'), ('FAN')) AS x(kind)
+CROSS JOIN (VALUES ('MIST'), ('FAN'), ('HEATER'), ('AMPLIFIER')) AS x(kind)
 WHERE d.type = 'ESP32'
   AND NOT EXISTS (
       SELECT 1 FROM swiftletcare.actuators a
@@ -125,5 +125,29 @@ WHERE u.active = TRUE
       SELECT 1 FROM swiftletcare.notification_deliveries n
       WHERE n.alert_id = a.id AND n.user_id = u.id AND n.channel = 'WEB'
   );
+
+COMMIT;
+
+-- Add devices
+INSERT INTO swiftletcare.actuators
+    (device_id, kind, mode, "on", manual_until)
+SELECT
+    1,
+    x.kind,
+    'AUTO',
+    FALSE,
+    NULL
+FROM (VALUES
+    ('MIST'),
+    ('FAN'),
+    ('HEATER'),
+    ('AMPLIFIER')
+) AS x(kind)
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM swiftletcare.actuators a
+    WHERE a.device_id = 1
+      AND a.kind = x.kind
+);
 
 COMMIT;

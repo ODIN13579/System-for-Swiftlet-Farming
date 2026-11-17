@@ -36,7 +36,9 @@ public class MqttGateway implements MqttCallbackExtended {
   private final Validator validator;
   private final DeviceEvents deviceEvents;
   private final DeviceConfigSync deviceConfigSync;
+  private final ControlCommands control;
   private volatile boolean configAckReady;
+  private volatile boolean controlSubscribed;
 
   public MqttGateway(
       Ingestion ingestion,
@@ -45,6 +47,7 @@ public class MqttGateway implements MqttCallbackExtended {
       Validator validator,
       DeviceEvents deviceEvents,
       DeviceConfigSync deviceConfigSync,
+      ControlCommands control,
       @Value("${app.mqtt.url}") String url,
       @Value("${app.mqtt.client-id:swiftletcare-backend}") String id,
       @Value("${app.mqtt.username:}") String username,
@@ -56,6 +59,7 @@ public class MqttGateway implements MqttCallbackExtended {
     this.validator = validator;
     this.deviceEvents = deviceEvents;
     this.deviceConfigSync = deviceConfigSync;
+    this.control = control;
     client = new MqttAsyncClient(url, id, new MemoryPersistence());
     client.setCallback(this);
     options.setAutomaticReconnect(true);
@@ -79,11 +83,12 @@ public class MqttGateway implements MqttCallbackExtended {
   }
 
   public void connectComplete(boolean reconnect, String uri) {
+    configAckReady = false;
+    controlSubscribed = false;
     try {
       client.subscribe(
           new String[] {"swiftletcare/+/+/+/telemetry", "swiftletcare/+/+/+/heartbeat", "swiftletcare/+/+/+/events"},
           new int[] {0, 0, 1});
-      configAckReady = false;
       if (deviceConfigSync.enabled())
         client.subscribe("swiftletcare/+/+/+/cfg_ack", 1, null, new IMqttActionListener() {
           @Override public void onSuccess(IMqttToken token) {
@@ -99,10 +104,52 @@ public class MqttGateway implements MqttCallbackExtended {
     } catch (MqttException e) {
       log.warn("MQTT subscription failed: {}", e.getReasonCode());
     }
+    subscribeControl();
+  }
+
+  private void subscribeControl() {
+    if (!control.enabled()) return;
+    try {
+      client.subscribe(new String[] {"swiftletcare/+/+/+/command_ack", "swiftletcare/+/+/+/state"},
+          new int[] {1, 1}, null, new IMqttActionListener() {
+            @Override public void onSuccess(IMqttToken token) {
+              int[] granted = token.getGrantedQos();
+              controlSubscribed = granted.length == 2 && granted[0] <= 2 && granted[1] <= 2;
+              if (!controlSubscribed) log.warn("Broker refused actuator subscriptions");
+            }
+
+            @Override public void onFailure(IMqttToken token, Throwable error) {
+              log.warn("Unable to subscribe to actuator topics", error);
+            }
+          });
+    } catch (MqttException e) {
+      log.warn("Could not subscribe to actuator topics: {}", e.getReasonCode());
+    }
+  }
+
+  boolean controlReady() {
+    return controlSubscribed && client.isConnected();
+  }
+
+  @Scheduled(fixedDelay = 200)
+  public void sendPendingCommands() {
+    if (!controlReady()) return;
+    for (String id : control.pending()) {
+      if (!controlReady()) break;
+      var command = control.claim(id);
+      if (command == null) continue;
+      try {
+        client.publish(command.topic(), json.writeValueAsBytes(command.payload()), 1, false);
+      } catch (Exception e) {
+        control.publishFailed(id);
+        log.warn("Could not send actuator command {} ({})", id, e.getClass().getSimpleName());
+      }
+    }
   }
 
   public void connectionLost(Throwable cause) {
     configAckReady = false;
+    controlSubscribed = false;
     log.warn("MQTT connection lost; reconnect enabled");
   }
 
@@ -148,6 +195,10 @@ public class MqttGateway implements MqttCallbackExtended {
           if (result.inserted())
             realtime.publish(result.data().deviceId(), "telemetry.updated", result.data());
         }
+      } else if (parts[4].equals("command_ack") && control.enabled()) {
+        control.acceptAck(house, zone, parts[3], json.readValue(message.getPayload(), ControlCommands.Ack.class));
+      } else if (parts[4].equals("state") && control.enabled()) {
+        control.acceptState(house, zone, parts[3], json.readValue(message.getPayload(), ControlCommands.State.class));
       } else if (parts[4].equals("cfg_ack") && deviceConfigSync.enabled()) {
         var ack = json.readValue(message.getPayload(), DeviceConfigSync.Ack.class);
         deviceConfigSync.accept(house, zone, parts[3], ack);

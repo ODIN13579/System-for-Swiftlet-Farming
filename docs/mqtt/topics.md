@@ -1,6 +1,6 @@
 # MQTT contract MVP — BUILD1-04
 
-BUILD 2: giữ nguyên contract telemetry/heartbeat/telemetry_ack bên dưới. Đã đối chiếu firmware `origin/main` 0c9cd10 và thêm subscription `events` cho structured log; command/config chưa publish/subscribe ở backend. Ma trận bàn giao và câu hỏi leader: [V3 integration](../api/build2-v3-integration.md).
+BUILD 2: giữ nguyên contract telemetry/heartbeat/telemetry_ack bên dưới. Đã đối chiếu firmware `origin/main` 0c9cd10 và thêm subscription `events` cho structured log; B2-10 bổ sung luồng command/command_ack/state tùy cấu hình. Ma trận bàn giao và câu hỏi leader: [V3 integration](../api/build2-v3-integration.md).
 
 Bổ sung ngày 23/10/2026: file này trước đó rỗng. Đây là lựa chọn triển khai MVP dựa trên `docs/design/iot/iot-offline-recovery.md`; cần P1/P4 review trước khi tích hợp firmware thực.
 
@@ -54,3 +54,29 @@ Envelope quan sát trong `origin/main:firmware/src/sketch.ino` (0c9cd10):
 Backend nhận SENSOR_FAULT/MANUAL_LIMIT; sensor bắt buộc 1..80 ký tự, reason 1..200, device_id 1..100; timestamp có timezone và không quá 5 phút tương lai. Device/topic/House/Zone phải khớp, ESP32 enabled và ancestors active; retained input bị từ chối như các MQTT input khác. Unknown fields/type bị từ chối. Firmware hiện chưa có producer MANUAL_LIMIT; test loại này dùng payload mô phỏng theo envelope trên, chờ xác nhận. SENSOR_RECOVERED hiện không thuộc hai type được yêu cầu.
 
 Log JSON chứa category=device.event, deviceId/deviceCode, houseId/zoneId, type/sensor/reason và occurredAt/receivedAt. Không ghi anomaly_events hoặc phát alert; chưa persist device_events, không có application ACK/dedup khi chưa có stable event_id. Firmware timestamp rỗng lúc chưa đồng bộ NTP sẽ bị từ chối. B2-16 cần thêm ACL SUB events cho backend, PUB events cho đúng device; backend không chỉnh broker ACL/auth.
+
+
+### B2-10 — Điều khiển bốn actuator
+
+Bật bằng `CONTROL_COMMANDS_ENABLED=true` trên broker test được cô lập. Khi triển khai
+broker dùng chung, chỉ cấp quyền publish `command` cho Backend và chỉ cho ESP32 publish
+`command_ack`/`state` trên topic của chính thiết bị đó. Backend chờ broker xác nhận
+subscription trước khi nhận lệnh qua REST.
+
+| Suffix | Hướng | QoS publish | Retain |
+|---|---|---:|---|
+| `command` | Backend → ESP32 | 1 | false |
+| `command_ack` | ESP32 → Backend | 0 | false |
+| `state` | ESP32 → Backend | 0 | false |
+
+`command_id` là UUID. `expiresAt` dùng UTC nguyên giây. `SET_MODE` có riêng
+`targetMode` (AUTO/MANUAL); `SET_STATE` có riêng `targetState` (ON/OFF trên MQTT,
+boolean trên REST). `actuator` là FAN, MIST, HEATER hoặc AMPLIFIER. Mode áp dụng
+chung cho ESP32. Bản tin `state.actuators` chứa trạng thái của từng đầu ra; các
+trường `actuator/state/gpio_state` ngoài cùng là bản chiếu FAN cho firmware cũ.
+
+REST 202 là đã lưu PENDING. Backend chỉ kết thúc ACKNOWLEDGED khi nhận ACK APPLIED
+phù hợp (hoặc DUPLICATE với originalStatus=APPLIED); trạng thái đầu ra lấy từ
+`state`. ACK sai thiết bị, sai loại actuator hoặc đến sau hạn không đổi kết quả.
+ACK REJECTED giữ reason của firmware; quá hạn chờ ACK thành FAILED/ACK_TIMEOUT.
+Lệnh còn PENDING khi quá hạn thành EXPIRED. Không tự gửi lại lệnh ở tầng ứng dụng.

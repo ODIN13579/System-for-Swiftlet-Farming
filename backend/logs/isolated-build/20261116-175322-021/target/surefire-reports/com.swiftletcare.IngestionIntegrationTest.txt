@@ -1,0 +1,41 @@
+-------------------------------------------------------------------------------
+Test set: com.swiftletcare.IngestionIntegrationTest
+-------------------------------------------------------------------------------
+Tests run: 13, Failures: 5, Errors: 0, Skipped: 0, Time elapsed: 8.959 s <<< FAILURE! -- in com.swiftletcare.IngestionIntegrationTest
+com.swiftletcare.IngestionIntegrationTest.deviceEventsValidateSourceAndWriteStructuredLogsOnly -- Time elapsed: 0.031 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: 
+
+expected: "MANUAL_LIMIT"
+ but was: "SENSOR_FAULT"
+	at com.swiftletcare.IngestionIntegrationTest.deviceEventsValidateSourceAndWriteStructuredLogsOnly(IngestionIntegrationTest.java:781)
+
+com.swiftletcare.IngestionIntegrationTest.mqttCommitAckDuplicateConflictInvalidAndWebsocket -- Time elapsed: 0.057 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: 
+
+expected: null
+ but was: "{"event_id":"mqtt-96044348-8e4c-45a9-a392-28e955dc6a1d","status":"STORED","device_id":"ESP-e91ac147-1db2-48d7-baeb-b1c501b13c3b"}"
+	at com.swiftletcare.IngestionIntegrationTest.mqttCommitAckDuplicateConflictInvalidAndWebsocket(IngestionIntegrationTest.java:334)
+
+com.swiftletcare.IngestionIntegrationTest.heartbeatOnlineTimeoutOfflineRecovery -- Time elapsed: 4.113 s <<< FAILURE!
+java.lang.AssertionError: 
+
+Expecting actual:
+  "{"type":"device.status.changed","data":{"id":41,"deviceId":"ESP-e91ac147-1db2-48d7-baeb-b1c501b13c3b","zoneId":87,"name":"ESP","type":"ESP32","enabled":true,"online":false,"lastSeenAt":"2026-11-16T10:53:48.003813Z"}}"
+to contain:
+  ""online":true" 
+	at com.swiftletcare.IngestionIntegrationTest.heartbeatOnlineTimeoutOfflineRecovery(IngestionIntegrationTest.java:441)
+
+com.swiftletcare.IngestionIntegrationTest.precisionNullStatusRetainedAndDisabledDevice -- Time elapsed: 0.017 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: 
+
+expected: null
+ but was: "{"event_id":"precision-d937b897-a5ae-492c-8406-64c77d332ae9","status":"STORED","device_id":"ESP-e91ac147-1db2-48d7-baeb-b1c501b13c3b"}"
+	at com.swiftletcare.IngestionIntegrationTest.precisionNullStatusRetainedAndDisabledDevice(IngestionIntegrationTest.java:636)
+
+com.swiftletcare.IngestionIntegrationTest.telemetryRejectsBothSidesOfEveryNfrMeasurementRangeWithoutAckOrRow -- Time elapsed: 0.014 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: 
+
+expected: null
+ but was: "{"event_id":"nfr-barrier-5cdbc7a4-b3e4-4448-8210-ef514ac04862","status":"STORED","device_id":"ESP-e91ac147-1db2-48d7-baeb-b1c501b13c3b"}"
+	at com.swiftletcare.IngestionIntegrationTest.telemetryRejectsBothSidesOfEveryNfrMeasurementRangeWithoutAckOrRow(IngestionIntegrationTest.java:716)
+

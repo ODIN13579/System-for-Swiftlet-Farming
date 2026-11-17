@@ -41,7 +41,7 @@ try {
         Write-Warning 'Compatibility run on Java 21; this does not verify the Java 25 baseline in pom.xml.'
         $mavenArgs += '-Djava.version=21'
     }
-    $mavenArgs += @('clean','verify')
+    $mavenArgs += @('-DforkCount=1','-DreuseForks=false','-DargLine=-Duser.timezone=UTC','clean','verify')
     $ErrorActionPreference = 'Continue'
     & mvn @mavenArgs 2>&1 | Tee-Object -FilePath backend/logs/build2-verify.log
     $mavenExit = $LASTEXITCODE
@@ -51,6 +51,7 @@ try {
     $reports = @(Get-ChildItem (Join-Path $buildRoot 'target/surefire-reports') -Filter 'TEST-*.xml')
     $requiredSuites = @('com.swiftletcare.BackendIntegrationTest',
         'com.swiftletcare.IngestionIntegrationTest', 'com.swiftletcare.Build2ManagementIntegrationTest',
+        'com.swiftletcare.ControlCommandsIntegrationTest',
         'com.swiftletcare.management.ZoneConfigValidationTest')
     $suiteResults = @()
     foreach ($report in $reports) {

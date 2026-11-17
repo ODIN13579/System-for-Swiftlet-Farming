@@ -1,9 +1,47 @@
 import { useEffect, useState } from 'react'
+import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { api, type CountLog, type Device } from '../services/api'
 import { connectDeviceRealtime } from '../services/websocket'
 
 function time(value: string) {
   return new Date(value).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })
+}
+
+const chartTime = new Intl.DateTimeFormat('vi-VN', {
+  timeZone: 'Asia/Ho_Chi_Minh',
+  day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+})
+
+function HourlyCountsChart({ rows }: { rows: CountLog[] }) {
+  const hourlyRows = rows.filter((row) => row.aggregationType === 'HOURLY')
+    .sort((a, b) => Date.parse(a.periodStart) - Date.parse(b.periodStart))
+
+  return (
+    <section aria-label="Biểu đồ lượt chim vào và ra theo giờ" style={{ marginBlock: 20 }}>
+      <h3>Biểu đồ lượt vào/ra theo giờ</h3>
+      <p>Dữ liệu từ hệ thống · Tối đa 10 kỳ API trả về trong 30 ngày · Giờ Việt Nam</p>
+      {hourlyRows.length === 0 ? (
+        <p>Chưa có bản ghi đếm theo giờ cho camera này.</p>
+      ) : (
+        <ResponsiveContainer width="100%" height={280}>
+          <BarChart data={hourlyRows}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="periodStart" tickFormatter={(value: string) => chartTime.format(new Date(value))}
+              minTickGap={28} tick={{ fill: '#a7bbb7', fontSize: 12 }} />
+            <YAxis allowDecimals={false} domain={[0, (maximum: number) => Math.max(1, maximum)]}
+              tick={{ fill: '#a7bbb7', fontSize: 12 }} width={36} />
+            <Tooltip labelFormatter={(label, payload) => {
+              const row = payload[0]?.payload as CountLog | undefined
+              return row ? `${time(row.periodStart)} – ${time(row.periodEnd)}` : label
+            }} />
+            <Legend />
+            <Bar dataKey="entryCount" name="Lượt vào" fill="#56bd98" maxBarSize={32} />
+            <Bar dataKey="exitCount" name="Lượt ra" fill="#6aaefd" maxBarSize={32} />
+          </BarChart>
+        </ResponsiveContainer>
+      )}
+    </section>
+  )
 }
 
 export default function AiCounts({ cameras }: { cameras: Device[] }) {
@@ -140,6 +178,7 @@ export default function AiCounts({ cameras }: { cameras: Device[] }) {
               <p>Kỳ đếm: {time(latest.periodStart)} → {time(latest.periodEnd)}</p>
               <p>Loại: {latest.aggregationType} · Xử lý lúc: {time(latest.processedAt)}</p>
               <p>Đây là số liệu của kỳ trên, không phải tổng đàn hiện có hoặc tổng hôm nay.</p>
+              <HourlyCountsChart rows={rows} />
               <details>
                 <summary>10 kỳ gần nhất trong khoảng tìm kiếm</summary>
                 <div style={{ overflowX: 'auto' }}>

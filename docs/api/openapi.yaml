@@ -1075,7 +1075,7 @@ paths:
       operationId: createControlCommand
       summary: Yêu cầu SET_MODE hoặc SET_STATE
       description: 'Async: 202 means Backend accepted and persisted command; not evidence actuator changed. SET_STATE
-        requires MANUAL and safety validation; expires 15s, ACK wait 10s per DSN-05 baseline.'
+        requires MANUAL and safety validation; expires within 15s, ACK wait at most 10s per DSN-05 baseline.'
       parameters:
       - name: actuatorId
         in: path
@@ -1110,7 +1110,7 @@ paths:
                 $ref: '#/components/schemas/ControlCommandResponse'
               example:
                 id: 501
-                commandId: CMD-000501
+                commandId: 3e39f1c4-a25a-4d05-958f-32baa226a80c
                 actuatorId: 25
                 requestedBy: 1
                 action: SET_STATE
@@ -1132,11 +1132,13 @@ paths:
           $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
+        '503':
+          description: MQTT control is disabled or the broker is unavailable
       security:
       - bearerAuth: []
       x-build-priority: MVP
       x-requirement-group: FR-IOT/CONTROL
-      x-api-spec-status: PROPOSED_NEEDS_REVIEW
+      x-api-spec-status: IMPLEMENTED_BUILD2
     get:
       x-build104-implemented: false
       tags:

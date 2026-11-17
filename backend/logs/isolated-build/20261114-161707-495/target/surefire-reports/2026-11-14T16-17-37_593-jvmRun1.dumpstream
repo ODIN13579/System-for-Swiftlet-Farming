@@ -1,0 +1,3 @@
+# Created at 2026-11-14T16:17:37.965
+Corrupted channel by directly writing to native stream in forked JVM 1. Stream '[0.019s][warning][cds] This file is not the one used while building the shared archive file: 'C:\Users\ACER\AppData\Roaming\Code\User\globalStorage\pleiades.java-extension-pack-jdk\java\latest\lib\modules', size has changed'.
+

@@ -1,12 +1,11 @@
 package com.swiftletcare;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import jakarta.persistence.EntityManagerFactory;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
@@ -14,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import jakarta.persistence.EntityManagerFactory;
 
 @EnabledIfEnvironmentVariable(named = "DB_TEST_ENABLED", matches = "true")
 @SpringBootTest(
@@ -38,10 +39,16 @@ class BackendIntegrationTest {
                     + " 'swiftletcare'",
                 Integer.class))
         .isEqualTo(1);
-    assertThat(flyway.info().current().getVersion().toString()).isEqualTo("3");
+    assertThat(flyway.info().current().getVersion().toString()).isEqualTo("5");
     assertThat(jdbc.queryForObject(
         "select count(*) from information_schema.tables where table_schema='swiftletcare' and table_type='BASE TABLE'",
-        Integer.class)).isEqualTo(17);
+        Integer.class)).isEqualTo(18);
+    assertThat(jdbc.queryForObject("""
+        select exists (
+          select 1 from information_schema.tables
+          where table_schema = 'swiftletcare' and table_name = 'device_config_sync'
+        )
+        """, Boolean.class)).isTrue();
     assertThat(flyway.migrate().migrationsExecuted).isZero();
     assertThat(entityManagerFactory.isOpen()).isTrue();
   }
@@ -60,6 +67,13 @@ class BackendIntegrationTest {
         assertThat(response.statusCode()).isEqualTo(200);
         assertThat(response.body()).contains("\"status\":\"UP\"");
         assertThat(response.body()).doesNotContain("jdbc:postgresql", "password");
+        assertThat(jdbc.queryForObject("""
+                                        SELECT EXISTS (
+                                            SELECT 1 FROM information_schema.tables
+                                            WHERE table_schema = 'swiftletcare'
+                                              AND table_name = 'device_config_sync'
+                                        )
+                                        """, Boolean.class)).isTrue();
       }
     }
   }

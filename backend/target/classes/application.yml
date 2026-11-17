@@ -49,6 +49,7 @@ app:
   status-scan-ms: ${STATUS_SCAN_MS:1000}
   mqtt:
     enabled: ${MQTT_ENABLED:true}
+    control-commands-enabled: ${CONTROL_COMMANDS_ENABLED:false}
     url: ${MQTT_URL:tcp://localhost:1883}
     client-id: ${MQTT_CLIENT_ID:swiftletcare-backend}
     username: ${MQTT_USERNAME:}

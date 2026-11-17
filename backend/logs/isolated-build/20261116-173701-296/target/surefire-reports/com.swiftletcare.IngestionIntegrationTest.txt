@@ -1,0 +1,41 @@
+-------------------------------------------------------------------------------
+Test set: com.swiftletcare.IngestionIntegrationTest
+-------------------------------------------------------------------------------
+Tests run: 13, Failures: 4, Errors: 0, Skipped: 0, Time elapsed: 9.082 s <<< FAILURE! -- in com.swiftletcare.IngestionIntegrationTest
+com.swiftletcare.IngestionIntegrationTest.deviceEventsValidateSourceAndWriteStructuredLogsOnly -- Time elapsed: 0.049 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: 
+
+expected: "MANUAL_LIMIT"
+ but was: "SENSOR_FAULT"
+	at com.swiftletcare.IngestionIntegrationTest.deviceEventsValidateSourceAndWriteStructuredLogsOnly(IngestionIntegrationTest.java:781)
+
+com.swiftletcare.IngestionIntegrationTest.mqttCommitAckDuplicateConflictInvalidAndWebsocket -- Time elapsed: 1.254 s <<< FAILURE!
+java.lang.AssertionError: 
+
+Expecting actual:
+  "{"type":"device.status.changed","data":{"id":32,"deviceId":"ESP-172d5c97-87e6-45a3-8910-2a4402f009cf","zoneId":69,"name":"ESP","type":"ESP32","enabled":true,"online":false,"lastSeenAt":"2026-11-16T10:37:46.072262Z"}}"
+to contain:
+  ["telemetry.updated",
+    "mqtt-e883063b-a49c-4ec6-9505-4ab7558a1226",
+    "PARTIAL_ERROR"]
+but could not find:
+  ["telemetry.updated",
+    "mqtt-e883063b-a49c-4ec6-9505-4ab7558a1226",
+    "PARTIAL_ERROR"]
+ 
+	at com.swiftletcare.IngestionIntegrationTest.mqttCommitAckDuplicateConflictInvalidAndWebsocket(IngestionIntegrationTest.java:323)
+
+com.swiftletcare.IngestionIntegrationTest.precisionNullStatusRetainedAndDisabledDevice -- Time elapsed: 0.024 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: 
+
+expected: null
+ but was: "{"event_id":"precision-a8388a7a-e9fe-4cef-b017-f14c180eadd6","status":"STORED","device_id":"ESP-172d5c97-87e6-45a3-8910-2a4402f009cf"}"
+	at com.swiftletcare.IngestionIntegrationTest.precisionNullStatusRetainedAndDisabledDevice(IngestionIntegrationTest.java:636)
+
+com.swiftletcare.IngestionIntegrationTest.telemetryRejectsBothSidesOfEveryNfrMeasurementRangeWithoutAckOrRow -- Time elapsed: 0.015 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: 
+
+expected: null
+ but was: "{"event_id":"nfr-barrier-8117108e-4d4f-447a-9cdc-6baf44d95f30","status":"STORED","device_id":"ESP-172d5c97-87e6-45a3-8910-2a4402f009cf"}"
+	at com.swiftletcare.IngestionIntegrationTest.telemetryRejectsBothSidesOfEveryNfrMeasurementRangeWithoutAckOrRow(IngestionIntegrationTest.java:716)
+
