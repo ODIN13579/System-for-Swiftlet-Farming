@@ -1,311 +1,90 @@
+import { RefreshCw, Power } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { actuatorPanelRequest as req } from '../services/api'
 
-import { useEffect, useState } from 'react'
-import { Fan, RefreshCw, Power } from 'lucide-react'
-import { api, type Actuator } from '../services/api'
+const devices = [
+  ['FAN', 'Quạt thông gió'], ['MIST', 'Máy phun sương'],
+  ['HEATER', 'Thiết bị sưởi'], ['AMPLIFIER', 'Bộ khuếch đại âm thanh'],
+] as const
+type Row = { id: number; deviceId: number; kind: string; mode: string; on: boolean }
+type Result = { commandId: string; status: string; failureReason?: string }
+type Body = {action:'SET_MODE';targetMode:'AUTO'|'MANUAL'} | {action:'SET_STATE';targetState:boolean}
+type Props = { deviceId?: number | null }
+const pause = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+const msg = (e: unknown) => e instanceof Error ? e.message : String(e)
 
-type Props = {
-  deviceId: number
+export default function FanControl({deviceId}: Props) {
+  return deviceId ? <Panel key={deviceId} id={deviceId}/> : <p>Chưa chọn ESP32.</p>
 }
-
-const FINAL_STATUSES = new Set([
-  'ACKNOWLEDGED',
-  'REJECTED',
-  'FAILED',
-  'EXPIRED',
-])
-
-function statusText(status: string) {
-  const labels: Record<string, string> = {
-    PENDING: 'Đang chờ thiết bị phản hồi',
-    ACKNOWLEDGED: 'Thiết bị đã xác nhận lệnh',
-    REJECTED: 'Thiết bị từ chối lệnh',
-    FAILED: 'Gửi lệnh thất bại',
-    EXPIRED: 'Lệnh đã hết hạn',
-  }
-
-  return labels[status] ?? status
-}
-
-export default function FanControl({ deviceId }: Props) {
-  const [actuator, setActuator] = useState<Actuator | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [sending, setSending] = useState(false)
+function Panel({id}: {id:number}) {
+  const [rows, setRows] = useState<Row[]>([])
+  const [notice, setNotice] = useState('')
   const [error, setError] = useState('')
-  const [message, setMessage] = useState('')
-  const [pendingCommandId, setPendingCommandId] = useState<string | null>(null)
-  const [commandStatus, setCommandStatus] = useState('')
-
-  async function loadActuator() {
-    setError('')
-
+  const [refreshing,setRefreshing]=useState(false)
+  const [busy, setBusy] = useState(false)
+  const lock = useRef(false)
+  const alive = useRef(false)
+  const version = useRef(0)
+  async function read() {
+    const v = ++version.current
     try {
-      const result = await api.getActuators(deviceId)
-      const fan = result.items.find((item) => item.kind === 'FAN')
-
-      setActuator(fan ?? null)
-
-      if (!fan) {
-        setMessage('Thiết bị chưa có actuator FAN.')
-      } else {
-        setMessage('')
+      const data = await req<{items:Row[]}>(`/api/v1/devices/${id}/actuators?page=0&size=20`)
+      if (alive.current && v===version.current) {
+        setRows(data.items.filter(x => x.deviceId===id)); setError('')
       }
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Không thể tải trạng thái quạt.',
-      )
-    } finally {
-      setLoading(false)
-    }
+    } catch(e) { if (alive.current && v===version.current) setError(msg(e)) }
   }
-
   useEffect(() => {
-    let cancelled = false
-
-    async function initialLoad() {
-      try {
-        const result = await api.getActuators(deviceId)
-
-        if (cancelled) return
-
-        const fan = result.items.find((item) => item.kind === 'FAN')
-        setActuator(fan ?? null)
-        setMessage(fan ? '' : 'Thiết bị chưa có actuator FAN.')
-        setError('')
-      } catch (err) {
-        if (!cancelled) {
-          setError(
-            err instanceof Error
-              ? err.message
-              : 'Không thể tải trạng thái quạt.',
-          )
-        }
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-
-    setLoading(true)
-    void initialLoad()
-
-    return () => {
-      cancelled = true
-    }
-  }, [deviceId])
-
-  // Kiểm tra trạng thái lệnh đến khi có kết quả cuối cùng.
-  useEffect(() => {
-    if (!pendingCommandId) return
-
-    let cancelled = false
-    let timer: ReturnType<typeof setTimeout> | undefined
-    let attempts = 0
-
-    async function checkStatus() {
-      try {
-        const commandId = pendingCommandId
-        if (!commandId) return
-
-        const result = await api.getCommandStatus(commandId)
-
-        if (cancelled) return
-
-        setCommandStatus(result.status)
-
-        if (FINAL_STATUSES.has(result.status)) {
-          setPendingCommandId(null)
-
-          if (result.status === 'ACKNOWLEDGED') {
-            setMessage('Thiết bị đã xác nhận lệnh.')
-            await loadActuator()
-          } else {
-            setError(
-              result.failureReason
-                ? `${statusText(result.status)}: ${result.failureReason}`
-                : statusText(result.status),
-            )
-          }
-
-          return
-        }
-      } catch {
-        if (!cancelled) {
-          setError('Chưa đọc được trạng thái lệnh. Hãy thử làm mới.')
-        }
-      }
-
-      attempts += 1
-
-      if (!cancelled && attempts < 10) {
-        timer = setTimeout(() => void checkStatus(), 1000)
-      } else if (!cancelled) {
-        setPendingCommandId(null)
-        setError(
-          'Chưa nhận được kết quả cuối cùng. Hãy làm mới trạng thái trước khi gửi lệnh khác.',
-        )
-      }
-    }
-
-    void checkStatus()
-
-    return () => {
-      cancelled = true
-      if (timer) clearTimeout(timer)
-    }
-  }, [pendingCommandId])
-
-  async function sendMode(mode: 'AUTO' | 'MANUAL') {
-    if (!actuator || sending || pendingCommandId) return
-
-    setSending(true)
-    setError('')
-    setMessage('')
-
+    alive.current=true
+    void read()
+    const timer=setInterval(() => { if (!lock.current) void read() }, 3000)
+    return () => {alive.current=false; ++version.current; clearInterval(timer)}
+  }, [id])
+  async function send(row:Row, body:Body) {
+    if(lock.current) return
+    lock.current=true; setBusy(true)
+    const label = body.action==='SET_MODE' ? 'Chế độ '+body.targetMode : row.kind+' '+(body.targetState?'ON':'OFF')
+    setNotice(label+': đang gửi…')
     try {
-      const result = await api.createActuatorCommand(actuator.id, {
-        action: 'SET_MODE',
-        targetMode: mode,
-      })
-
-      setCommandStatus(result.status)
-      setPendingCommandId(result.commandId)
-      setMessage('Đã gửi lệnh đổi chế độ.')
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Không thể gửi lệnh điều khiển.',
-      )
-    } finally {
-      setSending(false)
-    }
+      let r=await req<Result>(`/api/v1/actuators/${row.id}/commands`, {method:'POST',body:JSON.stringify(body)})
+      const deadline=Date.now()+22000
+      while(alive.current && ['PENDING','SENT'].includes(r.status) && Date.now()<deadline) {
+        await pause(600)
+        if(!alive.current) return
+        r=await req<Result>(`/api/v1/commands/${encodeURIComponent(r.commandId)}`)
+      }
+      if(alive.current) setNotice(label+': '+(r.status==='ACKNOWLEDGED'?'thiết bị đã xác nhận':
+        ['PENDING','SENT'].includes(r.status)?'chưa có xác nhận':r.status+(r.failureReason?' — '+r.failureReason:'')))
+    } catch(e) { if(alive.current) setNotice(label+': '+msg(e)) }
+    finally { if(alive.current) { await read(); lock.current=false; setBusy(false) } }
   }
-
-  async function sendState(state: 'ON' | 'OFF') {
-    if (!actuator || sending || pendingCommandId) return
-
-    if (actuator.mode !== 'MANUAL') {
-      setError('Hãy chuyển sang chế độ MANUAL trước.')
-      return
-    }
-
-    setSending(true)
-    setError('')
-    setMessage('')
-
-    try {
-      const result = await api.createActuatorCommand(actuator.id, {
-        action: 'SET_STATE',
-        targetState: state,
-      })
-
-      setCommandStatus(result.status)
-      setPendingCommandId(result.commandId)
-      setMessage('Đã gửi lệnh bật/tắt quạt.')
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Không thể gửi lệnh điều khiển.',
-      )
-    } finally {
-      setSending(false)
-    }
-  }
-
-  return (
-    <section className="panel fan-control-panel">
-      <div className="fan-control-heading">
-        <div>
-          <h2><Fan size={19} /> Điều khiển quạt</h2>
-          <p>Thiết bị ID: {deviceId}</p>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => void loadActuator()}
-          disabled={loading || sending || !!pendingCommandId}
-          aria-label="Làm mới trạng thái quạt"
-        >
-          <RefreshCw size={16} />
-          Làm mới
-        </button>
+  const anchor=rows.find(x=>x.kind==='FAN') ?? rows[0]
+  const mode=anchor && rows.every(x=>x.mode===anchor.mode) ? anchor.mode : '—'
+  const disabled=busy || !!error
+  return <section className="sc-actuator-panel" aria-label="Điều khiển thiết bị" style={{padding:16,border:'1px solid #62706c',borderRadius:12}}>
+    <style>{`
+.sc-actuator-panel .sc-act-head,.sc-actuator-panel .sc-act-modes{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sc-actuator-panel .sc-act-head{justify-content:space-between}
+.sc-actuator-panel .sc-act-head h3{margin:0}
+.sc-actuator-panel .sc-act-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:7px 13px;border:1px solid #414548;border-radius:8px;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.sc-actuator-panel .sc-act-btn:hover:not(:disabled){border-color:#6d9d8a;background:rgba(110,150,135,.12)}
+.sc-actuator-panel .sc-act-btn:disabled{opacity:.48;cursor:not-allowed}
+.sc-actuator-panel .sc-act-btn:focus-visible{outline:2px solid #54b79a;outline-offset:2px}
+`}</style>
+    <div className="sc-act-head"><h3>Điều khiển thiết bị</h3><button type="button" className="sc-act-btn" disabled={refreshing || busy} onClick={async()=>{setRefreshing(true);try{await read()}finally{if(alive.current)setRefreshing(false)}}}><RefreshCw size={15} aria-hidden="true"/>{refreshing?"Đang tải…":"Làm mới"}</button></div>
+    <p>ESP32 #{id} · Chế độ chung: <strong>{mode}</strong></p>
+    <div className="sc-act-modes">{(['AUTO','MANUAL'] as const).map(m=><button type="button" className="sc-act-btn" key={m} disabled={disabled || !anchor || mode===m}
+      onClick={()=>anchor && void send(anchor,{action:'SET_MODE',targetMode:m})}>{m}</button>)}</div>
+    {devices.map(([kind,title])=>{
+      const row=rows.find(x=>x.kind===kind)
+      return <div key={kind} style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap',padding:'10px 0',borderBottom:'1px solid #62706c'}}>
+        <strong style={{flex:'1 1 140px'}}>{title}</strong>
+        <span>{row?(row.on?'ON':'OFF'):'Chưa có dữ liệu'}</span>
+        {([true,false] as const).map(on=><button type="button" className="sc-act-btn" key={String(on)} aria-label={(on?'Bật ':'Tắt ')+title}
+          disabled={disabled || !row || mode!=='MANUAL' || row.on===on}
+          onClick={()=>row && void send(row,{action:'SET_STATE',targetState:on})}><Power size={14} aria-hidden="true"/>{on?'Bật':'Tắt'}</button>)}
       </div>
-
-      {loading ? (
-        <p role="status">Đang tải trạng thái quạt...</p>
-      ) : !actuator ? (
-        <p role="status">
-          {error || message || 'Không tìm thấy actuator FAN.'}
-        </p>
-      ) : (
-        <>
-          <div className="fan-control-status">
-            <span>Chế độ: <strong>{actuator.mode}</strong></span>
-            <span>
-              Trạng thái: <strong>{actuator.on ? 'ON' : 'OFF'}</strong>
-            </span>
-          </div>
-
-          <div className="fan-control-actions">
-            <button
-              type="button"
-              onClick={() => void sendMode('AUTO')}
-              disabled={sending || !!pendingCommandId || actuator.mode === 'AUTO'}
-            >
-              AUTO
-            </button>
-
-            <button
-              type="button"
-              onClick={() => void sendMode('MANUAL')}
-              disabled={sending || !!pendingCommandId || actuator.mode === 'MANUAL'}
-            >
-              MANUAL
-            </button>
-          </div>
-
-          <div className="fan-control-actions">
-            <button
-              type="button"
-              onClick={() => void sendState('ON')}
-              disabled={
-                sending ||
-                !!pendingCommandId ||
-                actuator.mode !== 'MANUAL' ||
-                actuator.on
-              }
-            >
-              <Power size={16} /> Bật quạt
-            </button>
-
-            <button
-              type="button"
-              onClick={() => void sendState('OFF')}
-              disabled={
-                sending ||
-                !!pendingCommandId ||
-                actuator.mode !== 'MANUAL' ||
-                !actuator.on
-              }
-            >
-              Tắt quạt
-            </button>
-          </div>
-        </>
-      )}
-
-      {sending && <p role="status">Đang gửi lệnh...</p>}
-
-      {pendingCommandId && (
-        <p role="status">
-          Lệnh: {commandStatus || 'PENDING'} — đang chờ ACK
-        </p>
-      )}
-
-      {message && <p role="status">{message}</p>}
-      {error && <p role="alert">{error}</p>}
-    </section>
-  )
+    })}
+    <p role="status">{error || notice || (mode==='AUTO'?'Chuyển sang MANUAL để điều khiển từng thiết bị.':'')}</p>
+  </section>
 }

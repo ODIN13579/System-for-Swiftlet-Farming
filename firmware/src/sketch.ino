@@ -167,8 +167,8 @@ const char *WIFI_PASSWORD = "";
 
 // MQTT CONFIGURATION
 const char *MQTT_HOST = "host.wokwi.internal"; // Địa chỉ MQTT Broker
-// const int MQTT_PORT = 1883;                    // Cổng MQTT Broker
-const int MQTT_PORT = 51884;
+const int MQTT_PORT = 1883;                    // Cổng MQTT Broker
+// const int MQTT_PORT = 51884;
 
 // Phải lấy đúng giá trị từ Backend hoặc database của nhóm.
 const char *HOUSE_ID = "1";
@@ -268,6 +268,7 @@ void onTimeSync(struct timeval *)
 {
   lastNtpSyncMs.store(millis());
   ntpSynced.store(true);
+  Serial.println("[CLOCK] SNTP sync OK");
 }
 
 // WIFI CONNECT
@@ -1539,14 +1540,14 @@ void mqttCallback(
   // 1. Kiểm tra action trước.
   if (action != "SET_MODE" && action != "SET_STATE")
   {
-    rejectAndCache(commandId, normalizedContent, "MODE_NOT_MANUAL", actuator);  
+    rejectAndCache(commandId, normalizedContent, "INVALID_ACTION", actuator);  
     return;
   }
 
   // 2. Kiểm tra actuator sau.
   if (getActuatorPin(actuator) < 0)
   {
-    rejectAndCache(commandId, normalizedContent, "MODE_NOT_MANUAL", actuator);
+    rejectAndCache(commandId, normalizedContent, "INVALID_ACTUATOR", actuator);
     return;
   }
 
@@ -1564,7 +1565,7 @@ void mqttCallback(
   {
     if (targetMode != "AUTO" && targetMode != "MANUAL")
     {
-      rejectAndCache(commandId, normalizedContent, "MODE_NOT_MANUAL", actuator);
+      rejectAndCache(commandId, normalizedContent, "INVALID_TARGET_MODE", actuator);
       return;
     }
   }
@@ -1573,13 +1574,13 @@ void mqttCallback(
   {
     if (targetState != "ON" && targetState != "OFF")
     {
-      rejectAndCache(commandId, normalizedContent, "MODE_NOT_MANUAL", actuator);
+      rejectAndCache(commandId, normalizedContent, "INVALID_TARGET_STATE", actuator);
       return;
     }
   }
   if (!isClockTrusted())
   {
-    rejectAndCache(commandId, normalizedContent, "MODE_NOT_MANUAL", actuator);
+    rejectAndCache(commandId, normalizedContent, "CLOCK_UNTRUSTED", actuator);
     return;
   }
 
@@ -1587,21 +1588,27 @@ void mqttCallback(
 
   if (!parseUtcExpiry(expiresAt.c_str(), expiryTime))
   {
-    rejectAndCache(commandId, normalizedContent, "MODE_NOT_MANUAL", actuator);
+    rejectAndCache(commandId, normalizedContent, "INVALID_EXPIRY", actuator);
     return;
   }
+  const uint32_t syncAgeMs =
+    (uint32_t)(millis() - lastNtpSyncMs.load());
 
+  Serial.printf("[CLOCK-CHECK] synced=%d sync_age_s=%lu\n",
+                ntpSynced.load() ? 1 : 0,
+                (unsigned long)(syncAgeMs / 1000UL));
   time_t now = time(nullptr);
+  Serial.printf("[B2-41] id=%s action=%s now=%lld expires=%lld ttl_s=%lld\n", commandId.c_str(), action.c_str(), (long long)now, (long long)expiryTime, (long long)expiryTime - (long long)now);
 
   if (expiryTime <= now)
   {
-    rejectAndCache(commandId, normalizedContent, "MODE_NOT_MANUAL", actuator);
+    rejectAndCache(commandId, normalizedContent, "EXPIRED", actuator);
     return;
   }
 
   if (expiryTime > now + 15)
   {
-    rejectAndCache(commandId, normalizedContent, "MODE_NOT_MANUAL", actuator);
+    rejectAndCache(commandId, normalizedContent, "INVALID_EXPIRY", actuator);
     return;
   }
   // Xử lý lệnh SET_MODE.
@@ -1637,7 +1644,7 @@ void mqttCallback(
   // Kiểm tra trạng thái đích.
   if (targetState != "ON" && targetState != "OFF")
   {
-    rejectAndCache(commandId, normalizedContent, "MODE_NOT_MANUAL", actuator);
+    rejectAndCache(commandId, normalizedContent, "INVALID_TARGET_STATE", actuator);
     return;
   }
 
@@ -1648,14 +1655,14 @@ void mqttCallback(
     // Không cho phép tắt quạt khi có safety override.
     if (targetState == "OFF" && safetyOverride)
     {
-      rejectAndCache(commandId, normalizedContent, "MODE_NOT_MANUAL", actuator);
+      rejectAndCache(commandId, normalizedContent, "SAFETY_OVERRIDE", actuator);
       return;
     }
   }
 
   if (!setActuatorState(actuator, targetState == "ON"))
   {
-    rejectAndCache(commandId, normalizedContent, "MODE_NOT_MANUAL", actuator);
+    rejectAndCache(commandId, normalizedContent, "INVALID_ACTUATOR", actuator);
     return;
   }
 
@@ -1672,6 +1679,8 @@ void setup()
   bootId = String((uint32_t)esp_random(), HEX) +
            String((uint32_t)esp_random(), HEX);
   Serial.begin(115200);
+  Serial.println("[BOOT] B2-41 CLOCK-TEST-01");
+  Serial.println("[B2-41] fan command diagnostics v1");
   pinMode(FAN_PIN, OUTPUT);
   pinMode(MIST_PIN, OUTPUT);
   pinMode(HEATER_PIN, OUTPUT);
@@ -1964,6 +1973,7 @@ void networkTask(void *)
     }
     if (!ntpConfigured)
     {
+      sntp_set_sync_interval(60000UL);
       configTime(0, 0, "pool.ntp.org", "time.google.com");
       ntpConfigured = true;
     }

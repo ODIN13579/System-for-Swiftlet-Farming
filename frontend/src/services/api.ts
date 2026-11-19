@@ -395,7 +395,8 @@ export const api = {
     actuatorId: number,
     data:
       | { action: 'SET_MODE'; targetMode: 'AUTO' | 'MANUAL'; targetState?: never }
-      | { action: 'SET_STATE'; targetState: 'ON' | 'OFF'; targetMode?: never },
+      // | { action: 'SET_STATE'; targetState: 'ON' | 'OFF'; targetMode?: never },
+      | { action: 'SET_STATE'; targetState: boolean; targetMode?: never },
   ) {
     return request<CommandCreated>(
       `/api/v1/actuators/${actuatorId}/commands`,
@@ -413,3 +414,5 @@ export const api = {
   },
 
 }
+
+export { request as actuatorPanelRequest }

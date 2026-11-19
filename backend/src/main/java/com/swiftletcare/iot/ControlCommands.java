@@ -1,18 +1,20 @@
 package com.swiftletcare.iot;
 
-import com.swiftletcare.api.ApiError;
-import com.swiftletcare.security.Access;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.swiftletcare.api.ApiError;
+import com.swiftletcare.security.Access;
 
 @Service
 public class ControlCommands {
@@ -111,7 +113,7 @@ public class ControlCommands {
     return jdbc.queryForObject("""
         insert into swiftletcare.control_commands
           (actuator_id,requested_by,command_id,action,target_state,target_mode,expires_at)
-        values (?,?,?,?,?,?,date_trunc('second',clock_timestamp())+interval '15 seconds')
+        values (?,?,?,?,?,?,date_trunc('second',clock_timestamp())+interval '10 seconds')
         returning *
         """, ControlReadController::readCommand, actuatorId, user, UUID.randomUUID().toString(),
         request.action(), request.targetState(), request.targetMode());
