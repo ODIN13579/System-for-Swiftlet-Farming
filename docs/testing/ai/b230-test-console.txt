@@ -1,0 +1,18 @@
+Ultralytics 8.4.215  Python-3.14.6 torch-2.15.0+cpu CPU (12th Gen Intel Core i5-12450H)
+Model summary (fused): 73 layers, 3,132,707 parameters, 0 gradients, 8.6 GFLOPs
+WARNING [34m[1mval: [0mSlow image access detected (ping: 0.2┬▒0.0 ms, read: 5.0┬▒1.5 MB/s, size: 34.8 KB). Use local storage instead of remote/mounted storage for better performance. See https://docs.ultralytics.com/guides/model-training-tips
+
+[K[34m[1mval: [0mScanning D:\New_folder\System-for-Swiftlet-Farming\ai\outputs\b230_sessions\test\labels... 15 images, 2 backgrounds, 0 corrupt: 25% ΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 15/59 42.4it/s 0.1s<1.0s
+[K[34m[1mval: [0mScanning D:\New_folder\System-for-Swiftlet-Farming\ai\outputs\b230_sessions\test\labels... 55 images, 2 backgrounds, 0 corrupt: 93% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöÇ 55/59 132.4it/s 0.2s<0.0s
+[K[34m[1mval: [0mScanning D:\New_folder\System-for-Swiftlet-Farming\ai\outputs\b230_sessions\test\labels... 59 images, 3 backgrounds, 0 corrupt: 100% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü 59/59 248.8it/s 0.2s
+[34m[1mval: [0mNew cache created: D:\New_folder\System-for-Swiftlet-Farming\ai\outputs\b230_sessions\test\labels.cache
+
+[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 25% ΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 1/4 3.2s/it 1.0s<9.6s
+[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ΓöüΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ 2/4 1.5s/it 1.6s<3.0s
+[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 75% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöÇΓöÇΓöÇ 3/4 1.1s/it 2.4s<1.1s
+[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöüΓöü 4/4 1.4it/s 2.8s
+                   all         59         61      0.181      0.213      0.135     0.0409
+Speed: 1.3ms preprocess, 35.1ms inference, 0.0ms loss, 0.8ms postprocess per image
+Results saved to [1mD:\New_folder\System-for-Swiftlet-Farming\ai\outputs\b230_runs\test[0m
+ Learn more at https://docs.ultralytics.com/modes/val
+[34m[1mVS Code:[0m view Ultralytics VS Code Extension  at https://docs.ultralytics.com/integrations/vscode

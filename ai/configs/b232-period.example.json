@@ -1,0 +1,9 @@
+{
+  "deviceId": 1,
+  "aggregationType": "HOURLY",
+  "periodStart": "DIEN_GIO_BAT_DAU_CO_MUI_GIO",
+  "periodEnd": "DIEN_GIO_KET_THUC_CO_MUI_GIO",
+  "clips": [
+    {"id": "sample01", "start": "DIEN_GIO_QUAY_THUC_TE", "end": "DIEN_GIO_KET_THUC_CLIP"}
+  ]
+}
