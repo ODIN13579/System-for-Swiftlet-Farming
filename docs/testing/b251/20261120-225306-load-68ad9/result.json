@@ -1,0 +1,20 @@
+[
+  [
+    "10 thiết bị: publish → MQTT broker",
+    "100/100",
+    5.4,
+    7.7,
+    9.8,
+    "nhận đủ, không SLA tốc độ",
+    "Pass"
+  ],
+  [
+    "10 thiết bị: publish → Backend STORED",
+    "0/100",
+    "—",
+    "—",
+    "—",
+    "nhận đủ, không SLA tốc độ",
+    "Not Tested"
+  ]
+]

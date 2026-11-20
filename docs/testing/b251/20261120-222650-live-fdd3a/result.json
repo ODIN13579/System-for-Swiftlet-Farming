@@ -1,0 +1,47 @@
+[
+  [
+    "Telemetry MQTT observer → WS",
+    "110/229",
+    10.0,
+    19,
+    25,
+    2000,
+    "Fail"
+  ],
+  [
+    "Telemetry MQTT observer → DOM",
+    "110/229",
+    54.0,
+    63,
+    90,
+    2000,
+    "Fail"
+  ],
+  [
+    "Click → ACK APPLIED",
+    "5/16",
+    568,
+    742,
+    742,
+    2000,
+    "Fail"
+  ],
+  [
+    "Heartbeat cuối → DB offline (poll)",
+    "0/1",
+    "—",
+    "—",
+    "—",
+    10000,
+    "Fail"
+  ],
+  [
+    "Heartbeat cuối → DOM Offline",
+    "0/1",
+    "—",
+    "—",
+    "—",
+    10000,
+    "Fail"
+  ]
+]

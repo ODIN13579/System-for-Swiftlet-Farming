@@ -3,6 +3,7 @@ com\swiftletcare\Build2ManagementIntegrationTest.class
 com\swiftletcare\IngestionIntegrationTest.class
 com\swiftletcare\IngestionIntegrationTest$3.class
 com\swiftletcare\Build2ManagementIntegrationTest$1.class
+com\swiftletcare\ConfigAckIntegrationTest.class
 com\swiftletcare\IngestionIntegrationTest$1.class
 com\swiftletcare\IngestionIntegrationTest$2.class
 com\swiftletcare\ControlCommandsIntegrationTest.class

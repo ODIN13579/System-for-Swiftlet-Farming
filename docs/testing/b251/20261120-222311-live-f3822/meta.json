@@ -1,0 +1,9 @@
+{
+  "time": "2026-11-20T15:23:11.279Z",
+  "os": "Windows-11-10.0.26200-SP0",
+  "cpu": "Intel Core i5-12450H",
+  "python": "3.14.6",
+  "network": "Windows localhost; Docker/Wokwi (ghi rõ nếu khác)",
+  "ci": false,
+  "task": "live"
+}

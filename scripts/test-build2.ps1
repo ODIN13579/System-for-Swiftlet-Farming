@@ -35,7 +35,7 @@ try {
         Copy-Item backend/src -Destination $buildRoot -Recurse
         Write-Host "Isolated Maven source snapshot: $buildRoot"
     }
-    $mavenArgs = @('-f',(Join-Path $buildRoot 'pom.xml'),"-Dmaven.repo.local=$env:USERPROFILE\.m2\repository")
+    $mavenArgs = @('-f',(Join-Path $buildRoot 'pom.xml'))
     if ($Offline) { $mavenArgs += '-o' }
     if ($Java21Compatibility) {
         Write-Warning 'Compatibility run on Java 21; this does not verify the Java 25 baseline in pom.xml.'
@@ -51,7 +51,7 @@ try {
     $reports = @(Get-ChildItem (Join-Path $buildRoot 'target/surefire-reports') -Filter 'TEST-*.xml')
     $requiredSuites = @('com.swiftletcare.BackendIntegrationTest',
         'com.swiftletcare.IngestionIntegrationTest', 'com.swiftletcare.Build2ManagementIntegrationTest',
-        'com.swiftletcare.ControlCommandsIntegrationTest',
+        'com.swiftletcare.ControlCommandsIntegrationTest', 'com.swiftletcare.ConfigAckIntegrationTest',
         'com.swiftletcare.management.ZoneConfigValidationTest')
     $suiteResults = @()
     foreach ($report in $reports) {

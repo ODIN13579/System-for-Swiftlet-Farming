@@ -1,0 +1,29 @@
+[
+  [
+    "AI POST RTT (bao gồm replay)",
+    "10/10",
+    8.5,
+    57.3,
+    57.3,
+    "chưa chốt",
+    "Not Tested"
+  ],
+  [
+    "AI upload KB/h (1 POST/h, không retry)",
+    10,
+    "—",
+    "—",
+    0.609,
+    "KB/h, chưa chốt",
+    "Not Tested"
+  ],
+  [
+    "AI cùng ID khi replay",
+    10,
+    "—",
+    "—",
+    "—",
+    "1 ID",
+    "Pass"
+  ]
+]
