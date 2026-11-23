@@ -1,0 +1,47 @@
+[
+  [
+    "Telemetry MQTT observer → WS",
+    "0/0",
+    "—",
+    "—",
+    "—",
+    2000,
+    "Not Tested"
+  ],
+  [
+    "Telemetry MQTT observer → DOM",
+    "0/0",
+    "—",
+    "—",
+    "—",
+    2000,
+    "Not Tested"
+  ],
+  [
+    "Click → ACK APPLIED",
+    "0/0",
+    "—",
+    "—",
+    "—",
+    2000,
+    "Not Tested"
+  ],
+  [
+    "Heartbeat cuối → DB offline (poll)",
+    "0/0",
+    "—",
+    "—",
+    "—",
+    10000,
+    "Not Tested"
+  ],
+  [
+    "Heartbeat cuối → DOM Offline",
+    "0/0",
+    "—",
+    "—",
+    "—",
+    10000,
+    "Not Tested"
+  ]
+]

@@ -78,5 +78,47 @@ Thời gian latency: ms. P95 nearest-rank. Max dùng để xét giới hạn t�
 | 50 thiết bị: publish → MQTT broker | 500/500 | 6.5 | 15.2 | 21.0 | nhận đủ, không SLA tốc độ | Pass |
 | 50 thiết bị: publish → Backend STORED | 0/500 | — | — | — | nhận đủ, không SLA tốc độ | Not Tested |
 
+## 20261122-105834-live-86c28
+
+2026-11-22T03:58:34.014Z · Windows-11-10.0.26200-SP0 · Intel Core i5-12450H · Python 3.14.6 · Windows localhost; Docker/Wokwi (ghi rõ nếu khác) · CI: False
+
+[Dữ liệu gốc](b251/20261122-105834-live-86c28/)
+
+| Phép đo | Nhận/tổng | Median | P95 | Max hoặc KB/h | Mục tiêu | Kết quả |
+|---|---:|---:|---:|---:|---|---|
+| Telemetry MQTT observer → WS | 0/0 | — | — | — | 2000 | Not Tested |
+| Telemetry MQTT observer → DOM | 0/0 | — | — | — | 2000 | Not Tested |
+| Click → ACK APPLIED | 0/0 | — | — | — | 2000 | Not Tested |
+| Heartbeat cuối → DB offline (poll) | 0/0 | — | — | — | 10000 | Not Tested |
+| Heartbeat cuối → DOM Offline | 0/0 | — | — | — | 10000 | Not Tested |
+
+## 20261122-111149-live-83247
+
+2026-11-22T04:11:49.020Z · Windows-11-10.0.26200-SP0 · Intel Core i5-12450H · Python 3.14.6 · Windows localhost; Docker/Wokwi (ghi rõ nếu khác) · CI: False
+
+[Dữ liệu gốc](b251/20261122-111149-live-83247/)
+
+| Phép đo | Nhận/tổng | Median | P95 | Max hoặc KB/h | Mục tiêu | Kết quả |
+|---|---:|---:|---:|---:|---|---|
+| Telemetry MQTT observer → WS | 72/72 | 17.0 | 39 | 160 | 2000 | Not Tested |
+| Telemetry MQTT observer → DOM | 72/72 | 62.0 | 95 | 212 | 2000 | Not Tested |
+| Click → ACK APPLIED | 4/13 | 619.0 | 658 | 658 | 2000 | Fail |
+| Heartbeat cuối → DB offline (poll) | 2/1 | 7037.5 | 7456 | 7456 | 10000 | Pass |
+| Heartbeat cuối → DOM Offline | 2/1 | 6823.5 | 7072 | 7072 | 10000 | Pass |
+
+## 20261122-114037-live-1bb76
+
+2026-11-22T04:40:37.827Z · Windows-11-10.0.26200-SP0 · Intel Core i5-12450H · Python 3.14.6 · Windows localhost; Docker/Wokwi (ghi rõ nếu khác) · CI: False
+
+[Dữ liệu gốc](b251/20261122-114037-live-1bb76/)
+
+| Phép đo | Nhận/tổng | Median | P95 | Max hoặc KB/h | Mục tiêu | Kết quả |
+|---|---:|---:|---:|---:|---|---|
+| Telemetry MQTT observer → WS | 123/190 | 19 | 51 | 99 | 2000 | Fail |
+| Telemetry MQTT observer → DOM | 123/190 | 69 | 109 | 157 | 2000 | Fail |
+| Click → ACK APPLIED | 0/2 | — | — | — | 2000 | Fail |
+| Heartbeat cuối → DB offline (poll) | 0/0 | — | — | — | 10000 | Not Tested |
+| Heartbeat cuối → DOM Offline | 0/0 | — | — | — | 10000 | Not Tested |
+
 Mục chưa có lượt đo: xem từng dòng và đối chiếu đủ 10/50 thiết bị.
 Phương pháp, sai số và điều kiện nghiệm thu: xem B251-runbook.md.
