@@ -1,22 +1,30 @@
 
 package com.swiftletcare.alert;
 
-import com.swiftletcare.api.ApiError;
-import com.swiftletcare.api.Views;
-import com.swiftletcare.realtime.HouseAlertRealtime;
-import com.swiftletcare.security.Access;
-import com.swiftletcare.security.Access.Permission;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.swiftletcare.api.ApiError;
+import com.swiftletcare.api.Views;
+import com.swiftletcare.realtime.HouseAlertRealtime;
+import com.swiftletcare.security.Access;
+import com.swiftletcare.security.Access.Permission;
 
 @RestController
 @RequestMapping("/api/v1/alerts")
@@ -36,13 +44,15 @@ public class AlertController {
       long id,
       long houseId,
       long zoneId,
+      Long deviceId,
       Long anomalyEventId,
       String type,
       String level,
       Status status,
       String message,
       Instant createdAt,
-      Instant handledAt
+      Instant handledAt,
+      Instant clearedAt
   ) {}
 
   public record History(
@@ -60,18 +70,20 @@ public class AlertController {
 
   private static final RowMapper<Alert> MAPPER = (rs, index) -> {
     Timestamp handled = rs.getTimestamp("handled_at");
-
+    Timestamp cleared = rs.getTimestamp("cleared_at");
     return new Alert(
         rs.getLong("id"),
         rs.getLong("house_id"),
         rs.getLong("zone_id"),
+        rs.getObject("device_id", Long.class),
         rs.getObject("anomaly_event_id", Long.class),
         rs.getString("type"),
         rs.getString("level"),
         Status.valueOf(rs.getString("status")),
         rs.getString("message"),
         rs.getTimestamp("created_at").toInstant(),
-        handled == null ? null : handled.toInstant()
+        handled == null ? null : handled.toInstant(),
+        cleared == null ? null : cleared.toInstant()
     );
   };
 

@@ -758,15 +758,31 @@ class IngestionIntegrationTest {
   @Autowired com.swiftletcare.iot.MqttGateway gateway;
 
   @Test
-  void deviceEventsValidateSourceAndWriteStructuredLogsOnly() throws Exception {
+  void deviceEventsValidateSourceLogAndCreateSensorFaultAlert() throws Exception {
     var logger=(ch.qos.logback.classic.Logger)org.slf4j.LoggerFactory.getLogger(com.swiftletcare.iot.DeviceEvents.class);
     var logs=new LinkedBlockingQueue<String>();
     var appender=new ch.qos.logback.core.AppenderBase<ch.qos.logback.classic.spi.ILoggingEvent>() {
       protected void append(ch.qos.logback.classic.spi.ILoggingEvent e) { logs.add(e.getFormattedMessage()); }
     };
     appender.setContext(logger.getLoggerContext()); appender.start(); logger.addAppender(appender);
-    long anomalies=jdbc.queryForObject("select count(*) from swiftletcare.anomaly_events",Long.class);
-    long alerts=jdbc.queryForObject("select count(*) from swiftletcare.alerts",Long.class);
+    
+    long anomalies = jdbc.queryForObject(
+      "select count(*) from swiftletcare.anomaly_events",
+      Long.class
+    );
+
+    String faultCountSql =
+      "select count(*) from swiftletcare.alerts"
+      + " where zone_id=? and device_id=?"
+      + " and type='SENSOR_FAULT'";
+
+    long faultAlertsBefore = jdbc.queryForObject(
+      faultCountSql,
+      Long.class,
+      zone,
+      device
+    );
+
     try {
       for(String type:List.of("SENSOR_FAULT","MANUAL_LIMIT")) {
         String payload=json.writeValueAsString(Map.of("device_id",code,"timestamp",Instant.now().toString(),
@@ -780,6 +796,46 @@ class IngestionIntegrationTest {
         assertThat(data.get("deviceId").asLong()).isEqualTo(device);
         assertThat(data.get("type").asText()).isEqualTo(type);
       }
+
+      // SENSOR_FAULT must create exactly one new alert.
+      long faultAlertsAfterValid = jdbc.queryForObject(
+        faultCountSql,
+        Long.class,
+        zone,
+        device
+      );
+
+      assertThat(faultAlertsAfterValid)
+        .isEqualTo(faultAlertsBefore + 1);
+
+      // Verify the generated alert.
+      long newAlertId = jdbc.queryForObject(
+        "select id from swiftletcare.alerts"
+        + " where zone_id=? and device_id=?"
+        + " and type='SENSOR_FAULT'"
+        + " order by id desc limit 1",
+        Long.class,
+        zone,
+        device
+      );
+
+      assertThat(jdbc.queryForObject(
+        "select status from swiftletcare.alerts where id=?",
+        String.class,
+        newAlertId
+      )).isEqualTo("NEW");
+
+      // Automatically generated alerts have no human author.
+      assertThat(jdbc.queryForObject(
+        "select count(*) from swiftletcare.alert_histories"
+        + " where alert_id=?"
+        + " and changed_by is null"
+        + " and from_status is null"
+        + " and to_status='NEW'",
+        Long.class,
+        newAlertId
+      )).isEqualTo(1L);
+
       for(var invalid:List.of(
           Map.of("device_id",code,"timestamp",Instant.now().plusSeconds(600).toString(),"event_type","SENSOR_FAULT","sensor","DHT22","reason","bad time"),
           Map.of("device_id",code,"timestamp",Instant.now().toString(),"event_type","UNKNOWN","sensor","DHT22","reason","bad type"),
@@ -792,7 +848,12 @@ class IngestionIntegrationTest {
       retained.setRetained(true); gateway.messageArrived(topic+"/events",retained);
       assertThat(logs.poll(100,TimeUnit.MILLISECONDS)).isNull();
       assertThat(jdbc.queryForObject("select count(*) from swiftletcare.anomaly_events",Long.class)).isEqualTo(anomalies);
-      assertThat(jdbc.queryForObject("select count(*) from swiftletcare.alerts",Long.class)).isEqualTo(alerts);
+      assertThat(jdbc.queryForObject(
+          faultCountSql,
+          Long.class,
+          zone,
+          device
+      )).isEqualTo(faultAlertsAfterValid);
     } finally { logger.detachAppender(appender); appender.stop(); }
   }
 }

@@ -55,6 +55,11 @@ app:
     username: ${MQTT_USERNAME:}
     password: ${MQTT_PASSWORD:}
 
+  alert:
+    device-offline-ms: ${ALERT_DEVICE_OFFLINE_MS:9000}
+    dedup-ms: ${ALERT_DEDUP_MS:300000}
+    manual-min-ms: ${ALERT_MANUAL_MIN_MS:300000}
+    scan-ms: ${ALERT_SCAN_MS:1000}
 # Keep HTTP body logging off: login responses contain credentials even in debug mode.
 logging:
   level:

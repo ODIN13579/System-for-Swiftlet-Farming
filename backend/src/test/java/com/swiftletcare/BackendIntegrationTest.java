@@ -39,10 +39,16 @@ class BackendIntegrationTest {
                     + " 'swiftletcare'",
                 Integer.class))
         .isEqualTo(1);
-    assertThat(flyway.info().current().getVersion().toString()).isEqualTo("5");
+    assertThat(flyway.info().current().getVersion().toString()).isEqualTo("6");
+    assertThat(jdbc.queryForObject(
+        "select count(*) from information_schema.tables"
+            + " where table_schema='swiftletcare'"
+            + " and table_type='BASE TABLE'",
+        Integer.class
+    )).isEqualTo(20);
     assertThat(jdbc.queryForObject(
         "select count(*) from information_schema.tables where table_schema='swiftletcare' and table_type='BASE TABLE'",
-        Integer.class)).isEqualTo(18);
+        Integer.class)).isEqualTo(20);
     assertThat(jdbc.queryForObject("""
         select exists (
           select 1 from information_schema.tables
