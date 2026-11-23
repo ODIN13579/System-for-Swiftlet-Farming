@@ -37,9 +37,11 @@ int getActuatorPin(const String &actuator);
 // Initial AUTO thresholds agreed for the SwiftletCare prototype.
 // CO2 values are currently derived from the Wokwi analog input; calibrate
 // the conversion and thresholds for the real CO2 sensor before deployment.
+#define FAN_ON_TEMP 31.0f
+#define FAN_OFF_TEMP 30.0f
+
 #define FAN_ON_CO2_PPM 1000
 #define FAN_OFF_CO2_PPM 800
-#define FAN_OFF_TEMP 29.0f
 #define AUDIO_START_HOUR 6
 #define AUDIO_END_HOUR 18
 #define VIETNAM_UTC_OFFSET_SECONDS (7 * 60 * 60)
@@ -883,14 +885,15 @@ void applyControlLogic()
     else if (humidifierState && latestHumidity >= zoneConfig.humidityOff)
       setActuatorState("MIST", false);
 
-    // FAN hysteresis: ON above 31 C OR above 1000 ppm CO2.
-    // OFF only when temperature is below 29 C AND CO2 is below 800 ppm.
-    bool highTemperature = latestTemperature > zoneConfig.tempMax;
-    bool highCo2 = latestCo2Valid && latestCo2 > FAN_ON_CO2_PPM;
-    bool fanShouldTurnOn = highTemperature || highCo2;
-    bool fanCanTurnOff = latestTemperature < FAN_OFF_TEMP &&
-                         latestCo2Valid && latestCo2 < FAN_OFF_CO2_PPM;
-
+// FAN hysteresis:
+// ON when temperature >= 31 C OR CO2 > 1000 ppm.
+// OFF only when temperature <= 30 C AND valid CO2 < 800 ppm.
+bool highTemperature = latestTemperature >= FAN_ON_TEMP;
+bool highCo2 = latestCo2Valid && latestCo2 > FAN_ON_CO2_PPM;
+bool fanShouldTurnOn = highTemperature || highCo2;
+bool fanCanTurnOff = latestTemperature <= FAN_OFF_TEMP &&
+                     latestCo2Valid &&
+                     latestCo2 < FAN_OFF_CO2_PPM;
     if (!fanState && fanShouldTurnOn)
       setFanState(true);
     else if (fanState && fanCanTurnOff)
