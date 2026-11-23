@@ -41,18 +41,19 @@ public class AlertController {
   public record Update(Status status, String note) {}
 
   public record Alert(
-      long id,
-      long houseId,
-      long zoneId,
-      Long deviceId,
-      Long anomalyEventId,
-      String type,
-      String level,
-      Status status,
-      String message,
-      Instant createdAt,
-      Instant handledAt,
-      Instant clearedAt
+    long id,
+    long houseId,
+    long zoneId,
+    Long deviceId,
+    Long anomalyEventId,
+    Long snapshotId,
+    String type,
+    String level,
+    Status status,
+    String message,
+    Instant createdAt,
+    Instant handledAt,
+    Instant clearedAt
   ) {}
 
   public record History(
@@ -77,6 +78,7 @@ public class AlertController {
         rs.getLong("zone_id"),
         rs.getObject("device_id", Long.class),
         rs.getObject("anomaly_event_id", Long.class),
+        rs.getObject("snapshot_id", Long.class),
         rs.getString("type"),
         rs.getString("level"),
         Status.valueOf(rs.getString("status")),

@@ -1,18 +1,28 @@
 package com.swiftletcare.security;
 
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+
 import javax.crypto.spec.SecretKeySpec;
+
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.*;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.*;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 public class SecurityConfig {
@@ -58,16 +68,22 @@ public class SecurityConfig {
     var resolver = new DefaultBearerTokenResolver();
     h.csrf(c -> c.disable())
         .cors(c -> c.configurationSource(corsConfigurationSource))
-        .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(
-            a ->
-                a.requestMatchers(
-                        "/actuator/health/**",
-                        "/api/v1/auth/login",
-                        "/api/v1/internal/ai/count-logs")
-                    .permitAll()
-                    .anyRequest()
-                    .authenticated())
+        .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))        
+        .authorizeHttpRequests(a -> a
+          .requestMatchers(
+              "/actuator/health/**",
+              "/api/v1/auth/login",
+              "/api/v1/internal/ai/count-logs"
+          ).permitAll()
+          // Service key is validated by AiPredatorController.
+          .requestMatchers(
+              HttpMethod.POST,
+              "/api/ai/snapshots",
+              "/api/ai/events"
+          ).permitAll()
+          // Snapshot GET is intentionally NOT public.
+          .anyRequest().authenticated()
+        )
         .oauth2ResourceServer(
             o ->
                 o.bearerTokenResolver(
