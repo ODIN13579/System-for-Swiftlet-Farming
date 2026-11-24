@@ -23,11 +23,19 @@ public class AlertEngine {
   private static final Logger log =
       LoggerFactory.getLogger(AlertEngine.class);
 
-  record Thresholds(
-      Double rhOn, Double rhOff,
-      Double tempMin, Double tempMax, Double hysteresis) {}
 
-  record Sample(Double humidity, Double temperature, String status, Instant receivedAt) {}
+  record Thresholds(
+    Double rhOn, Double rhOff,
+    Double tempMin, Double tempMax, Double hysteresis,
+    Double co2Min, Double co2Max,
+    Double lightMin, Double lightMax
+  ) {}
+
+  record Sample(
+    Double humidity, Double temperature,
+    Double co2, Double light,
+    String status, Instant receivedAt
+  ) {}
 
   record Offline(long id, long zoneId, String code) {}
 
@@ -69,31 +77,41 @@ public class AlertEngine {
 
   private Thresholds thresholds(long zone) {
     var values = db.query("""
-        select humidity_on,humidity_off,temp_min,temp_max,
-               temp_hysteresis
-        from swiftletcare.zone_configs where zone_id=?
+        select humidity_on, humidity_off,
+                temp_min, temp_max, temp_hysteresis,
+                co2_min, co2_max, light_min, light_max
+        from swiftletcare.zone_configs
+        where zone_id=?
         """, (rs, i) -> new Thresholds(
             (Double) rs.getObject("humidity_on"),
             (Double) rs.getObject("humidity_off"),
             (Double) rs.getObject("temp_min"),
             (Double) rs.getObject("temp_max"),
-            (Double) rs.getObject("temp_hysteresis")
+            (Double) rs.getObject("temp_hysteresis"),
+            (Double) rs.getObject("co2_min"),
+            (Double) rs.getObject("co2_max"),
+            (Double) rs.getObject("light_min"),
+            (Double) rs.getObject("light_max")
         ), zone);
 
     return values.isEmpty() ? null : values.getFirst();
   }
 
 
+
   private List<Sample> recent(long device) {
     return db.query("""
-        select humidity,temperature,sensor_status,received_at
+        select humidity, temperature, co2, light,
+                sensor_status, received_at
         from swiftletcare.telemetry
         where device_id=?
-        order by received_at desc,id desc
+        order by received_at desc, id desc
         limit 3
         """, (rs, i) -> new Sample(
             (Double) rs.getObject("humidity"),
             (Double) rs.getObject("temperature"),
+            (Double) rs.getObject("co2"),
+            (Double) rs.getObject("light"),
             rs.getString("sensor_status"),
             rs.getTimestamp("received_at").toInstant()
         ), device);
@@ -101,25 +119,44 @@ public class AlertEngine {
   
 
   private boolean configured(Thresholds c) {
-    return c != null &&
-        (c.rhOn() != null || c.tempMin() != null
-            || c.tempMax() != null);
+    return c != null && (
+        c.rhOn() != null ||
+        c.tempMin() != null || c.tempMax() != null ||
+        c.co2Min() != null || c.co2Max() != null ||
+        c.lightMin() != null || c.lightMax() != null
+    );
   }
 
   private String violation(Thresholds c, Sample s) {
     if (!configured(c)) return null;
 
     if (c.rhOn() != null && s.humidity() != null
-        && s.humidity() < c.rhOn())
-      return "LOW_HUMIDITY";
+            && s.humidity() < c.rhOn())
+        return "LOW_HUMIDITY";
 
     if (c.tempMin() != null && s.temperature() != null
-        && s.temperature() < c.tempMin())
-      return "LOW_TEMPERATURE";
+            && s.temperature() < c.tempMin())
+        return "LOW_TEMPERATURE";
 
     if (c.tempMax() != null && s.temperature() != null
-        && s.temperature() > c.tempMax())
-      return "HIGH_TEMPERATURE";
+            && s.temperature() > c.tempMax())
+        return "HIGH_TEMPERATURE";
+
+    if (c.co2Min() != null && s.co2() != null
+            && s.co2() < c.co2Min())
+        return "LOW_CO2";
+
+    if (c.co2Max() != null && s.co2() != null
+            && s.co2() > c.co2Max())
+        return "HIGH_CO2";
+
+    if (c.lightMin() != null && s.light() != null
+            && s.light() < c.lightMin())
+        return "LOW_LIGHT";
+
+    if (c.lightMax() != null && s.light() != null
+            && s.light() > c.lightMax())
+        return "HIGH_LIGHT";
 
     return null;
   }
@@ -139,22 +176,43 @@ public class AlertEngine {
 
   private boolean healthy(Thresholds c, Sample s) {
     if (!configured(c)) return false;
-    double hysteresis = c.hysteresis() == null
-        ? 0.0 : c.hysteresis();
+
+    double hysteresis =
+        c.hysteresis() == null ? 0.0 : c.hysteresis();
 
     if (c.rhOn() != null) {
-      double recovery = c.rhOff() == null ? c.rhOn() : c.rhOff();
-      if (s.humidity() == null || s.humidity() < recovery)
-        return false;
+        double recovery =
+            c.rhOff() == null ? c.rhOn() : c.rhOff();
+
+        if (s.humidity() == null || s.humidity() < recovery)
+            return false;
     }
+
     if (c.tempMin() != null &&
-        (s.temperature() == null
-            || s.temperature() < c.tempMin() + hysteresis))
-      return false;
+            (s.temperature() == null ||
+              s.temperature() < c.tempMin() + hysteresis))
+        return false;
+
     if (c.tempMax() != null &&
-        (s.temperature() == null
-            || s.temperature() > c.tempMax() - hysteresis))
-      return false;
+            (s.temperature() == null ||
+              s.temperature() > c.tempMax() - hysteresis))
+        return false;
+
+    if (c.co2Min() != null &&
+            (s.co2() == null || s.co2() < c.co2Min()))
+        return false;
+
+    if (c.co2Max() != null &&
+            (s.co2() == null || s.co2() > c.co2Max()))
+        return false;
+
+    if (c.lightMin() != null &&
+            (s.light() == null || s.light() < c.lightMin()))
+        return false;
+
+    if (c.lightMax() != null &&
+            (s.light() == null || s.light() > c.lightMax()))
+        return false;
 
     return true;
   }
@@ -307,7 +365,8 @@ public class AlertEngine {
               insert into swiftletcare.alert_sensor_faults
                   (device_id,sensor)
               values(?,?)
-              on conflict(device_id,sensor) do nothing
+              on conflict(device_id,sensor) do update
+              set detected_at = clock_timestamp()
               """, device, sensor);
 
           raise(house, zone, device,

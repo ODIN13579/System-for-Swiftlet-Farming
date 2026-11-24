@@ -1,9 +1,10 @@
 package com.swiftletcare.security;
 
-import com.swiftletcare.api.ApiError;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
+
+import com.swiftletcare.api.ApiError;
 
 @Service
 public class Access {
@@ -33,12 +34,36 @@ public class Access {
     return allowed(jwt, "device", device, Permission.READ);
   }
 
+
   public long requireGlobalAdmin(Jwt jwt) {
-    long id=requireActiveAccount(jwt);
-    requireAllowed(Boolean.TRUE.equals(jdbc.queryForObject(
-        "select exists(select 1 from swiftletcare.users where id=? and active and role='ADMIN')",Boolean.class,id)));
+    long id = requireActiveAccount(jwt);
+
+    boolean isAdmin = Boolean.TRUE.equals(
+        jdbc.queryForObject("""
+            SELECT EXISTS(
+                SELECT 1
+                FROM swiftletcare.users
+                WHERE id = ?
+                  AND active = true
+                  AND role = 'ADMIN'
+            )
+            """,
+            Boolean.class,
+            id
+        )
+    );
+
+    if (!isAdmin) {
+        throw new ApiError.Failure(
+            403,
+            "ACCESS_DENIED",
+            "Global ADMIN permission required"
+        );
+    }
+
     return id;
   }
+
 
   public void requireHouseLifecycle(Jwt jwt,long house) {
     requireAllowed(allowed(jwt,"house",house,Permission.OWNER,false));
@@ -99,11 +124,13 @@ public class Access {
             "select exists(select 1 from swiftletcare.houses h" + relation
                 + "join swiftletcare.users u on u.id=?"
                 + " left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where " + target
-                + " and u.active" + (activeHouse?" and h.active":"")
+                + " and u.active and u.token_version=?" + (activeHouse?" and h.active":"")
                 + " and (u.role='ADMIN' or (m.active and " + role + ")))",
             Boolean.class,
             user,
-            id));
+            id,
+            tokenVersion(jwt)
+          ));
   }
 
   public void require(Jwt jwt, long device) {
@@ -113,5 +140,16 @@ public class Access {
   private void requireAllowed(boolean allowed) {
     if (!allowed)
       throw new ApiError.Failure(403, "ACCESS_DENIED", "No active house membership");
+  }
+
+  private static long tokenVersion(Jwt jwt) {
+    if (jwt == null) return -1;
+
+    Object claim = jwt.getClaims().get("token_version");
+
+    if (claim == null) return 0;
+
+    return claim instanceof Number n
+        ? n.longValue() : -1;
   }
 }
