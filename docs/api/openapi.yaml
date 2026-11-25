@@ -450,7 +450,7 @@ paths:
       tags:
       - Memberships
       operationId: updateHouseMember
-      summary: Cập nhật quyền thành viên
+      summary: Đổi vai trò thành viên trong House
       parameters:
       - name: houseId
         in: path
@@ -493,9 +493,10 @@ paths:
       - bearerAuth: []
       x-build-priority: Extended
       x-requirement-group: FR-RBAC
-      x-api-spec-status: PROPOSED_NEEDS_REVIEW
-      description: Design endpoint for BUILD, subject to validation, authorization and cross-review as documented in
-        DSN-09.
+      x-api-spec-status: IMPLEMENTED_B3_16
+      description: Active House OWNER or Global ADMIN. Changes only the role of a membership in the named active House.
+        An actual self-role change or removal of the last active OWNER is rejected with 409.
+        The current JWT remains valid and subsequent requests use the updated membership.
   /api/v1/houses/{houseId}/zones:
     get:
       x-build104-implemented: false
@@ -2400,11 +2401,11 @@ components:
       additionalProperties: false
     MembershipUpdateRequest:
       type: object
+      required:
+      - role
       properties:
         role:
           $ref: '#/components/schemas/HouseRole'
-        active:
-          type: boolean
       additionalProperties: false
     DeviceResponse:
       type: object

@@ -1,0 +1,32 @@
+{
+  "model_path": "animal_training/combined_4class_v1/weights/best.pt",
+  "device_id": 1,
+  "camera_id": "CAM-001",
+  "class_name": "swiftlet",
+  "zone_id": "ZONE-01",
+  "counting_line_normalized": [
+    0.5,
+    0.0925926,
+    0.5,
+    0.6018519
+  ],
+  "inside_direction": 1,
+  "hysteresis_px": 8,
+  "cooldown_frames": 20,
+  "confidence": 0.1,
+  "imgsz": 640,
+  "bird_detection_confidence": 0.25,
+  "predator_thresholds": {
+    "snake": 0.3,
+    "rat": 0.3,
+    "owl": 0.3
+  },
+  "predator_confirm_frames": 3,
+  "predator_cooldown_seconds": 60,
+  "snapshot_max_bytes": 307200,
+  "heartbeat_interval_seconds": 10,
+  "backend_base_url": "http://localhost:8080",
+  "backend_api_url": "http://localhost:8080/api/v1/internal/ai/count-logs",
+  "model_version": "combined_4class_v1",
+  "aggregation_type": "HOURLY"
+}

@@ -108,18 +108,15 @@ public class HouseAlertRealtime extends TextWebSocketHandler {
       var session = entry.getValue();
 
       try {
-        if (!allowed(session)) {
-          session.close(CloseStatus.POLICY_VIOLATION);
-          sessions.remove(entry.getKey());
-          continue;
-        }
-
-        if (houseId(session) != targetHouseId) {
-          continue;
-        }
-
         synchronized (session) {
-          session.sendMessage(new TextMessage(payload));
+          if (!allowed(session)) {
+            session.close(CloseStatus.POLICY_VIOLATION);
+            sessions.remove(entry.getKey());
+            continue;
+          }
+          if (houseId(session) == targetHouseId) {
+            session.sendMessage(new TextMessage(payload));
+          }
         }
       } catch (Exception e) {
         sessions.remove(entry.getKey());

@@ -36,7 +36,7 @@
 |---|---|---|---|---|---|
 | `GET` | `/api/v1/houses/{houseId}/members` | `—` | `MembershipListResponse` | Extended | Design only / outside BUILD1-04 |
 | `POST` | `/api/v1/houses/{houseId}/members` | `MembershipCreateRequest` | `HouseMembershipResponse` | Extended | Design only / outside BUILD1-04 |
-| `PATCH` | `/api/v1/houses/{houseId}/members/{membershipId}` | `MembershipUpdateRequest` | `HouseMembershipResponse` | Extended | Design only / outside BUILD1-04 |
+| `PATCH` | `/api/v1/houses/{houseId}/members/{membershipId}` | `MembershipUpdateRequest` | `HouseMembershipResponse` | Extended | B3-16, đổi role bởi House OWNER hoặc Global ADMIN |
 
 ## Zones
 

@@ -39,7 +39,17 @@ class BackendIntegrationTest {
                     + " 'swiftletcare'",
                 Integer.class))
         .isEqualTo(1);
-    assertThat(flyway.info().current().getVersion().toString()).isEqualTo("9");
+    assertThat(flyway.info().current().getVersion().toString()).isEqualTo("11");
+    assertThat(jdbc.queryForObject("""
+        select to_regclass('swiftletcare.idx_count_logs_device_period_id') is not null
+        """, Boolean.class)).isTrue();
+    assertThat(jdbc.queryForObject("""
+        select exists (
+          select 1 from information_schema.columns
+          where table_schema='swiftletcare' and table_name='devices'
+            and column_name='camera_source_ok' and data_type='boolean'
+        )
+        """, Boolean.class)).isTrue();
     assertThat(jdbc.queryForObject(
         "select count(*) from information_schema.tables"
             + " where table_schema='swiftletcare'"

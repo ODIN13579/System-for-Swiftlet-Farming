@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.swiftletcare.alert.CameraHeartbeatService;
 import com.swiftletcare.api.ApiError;
 
 import jakarta.validation.Valid;
@@ -29,10 +30,12 @@ import jakarta.validation.Valid;
 public class AiPredatorController {
 
   private final AiPredatorService service;
+  private final CameraHeartbeatService heartbeats;
   private final byte[] serviceKey;
 
   public AiPredatorController(
       AiPredatorService service,
+      CameraHeartbeatService heartbeats,
       @Value("${app.ai-service-key}") String key
   ) {
     if (key.length() < 24)
@@ -41,6 +44,7 @@ public class AiPredatorController {
       );
 
     this.service = service;
+    this.heartbeats = heartbeats;
     this.serviceKey = key.getBytes(StandardCharsets.UTF_8);
   }
 
@@ -111,6 +115,16 @@ public class AiPredatorController {
     return ResponseEntity.status(
         result.created() ? HttpStatus.CREATED : HttpStatus.OK
     ).body(result);
+  }
+
+  @PostMapping("/api/ai/heartbeat")
+  public ResponseEntity<Void> heartbeat(
+      @RequestHeader(value = "X-Service-Key", defaultValue = "") String provided,
+      @Valid @RequestBody CameraHeartbeatService.Heartbeat input
+  ) {
+    requireServiceKey(provided);
+    heartbeats.receive(input);
+    return ResponseEntity.noContent().build();
   }
 
   @GetMapping("/api/snapshots/{id}")

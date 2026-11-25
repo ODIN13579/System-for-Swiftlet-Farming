@@ -132,7 +132,8 @@ public class SecurityConfig {
           .requestMatchers(
               HttpMethod.POST,
               "/api/ai/snapshots",
-              "/api/ai/events"
+              "/api/ai/events",
+              "/api/ai/heartbeat"
           ).permitAll()
           // Snapshot GET is intentionally NOT public.
           .anyRequest().authenticated()
