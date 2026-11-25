@@ -15,9 +15,12 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
 import tools.jackson.databind.json.JsonMapper;
 
 @EnabledIfEnvironmentVariable(named="DB_TEST_ENABLED",matches="true")
+// Close the wildcard MQTT subscriptions before the next suite uses the broker.
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.RANDOM_PORT, properties={
   "CONFIG_SYNC_ENABLED=true","app.mqtt.url=${TEST_MQTT_URL:tcp://localhost:51884}",
   "app.mqtt.client-id=b250-config-backend","app.jwt-secret=build104-test-secret-at-least-32-bytes",

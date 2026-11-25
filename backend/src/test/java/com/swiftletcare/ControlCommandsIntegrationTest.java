@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -31,6 +32,8 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import tools.jackson.databind.json.JsonMapper;
 
 @EnabledIfEnvironmentVariable(named = "DB_TEST_ENABLED", matches = "true")
+// Close the wildcard MQTT subscriptions before the next suite uses the broker.
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
     "app.jwt-secret=build104-test-secret-at-least-32-bytes",
     "app.ai-service-key=build104-test-service-key-at-least-24",
