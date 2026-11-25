@@ -43,17 +43,19 @@ Heartbeat mặc định mỗi 2 giây, timeout 6000 ms, scheduler mỗi 1000 ms;
 
 Broker Compose chỉ dành cho local: anonymous, bind host 127.0.0.1. Trước triển khai ngoài local cần MQTT authentication/ACL theo device/topic và TLS; topic khớp payload không thay thế xác thực publisher.
 
-## Device events — BUILD2 log, chưa persist
+## Device events — BUILD 3
 
-Envelope quan sát trong `origin/main:firmware/src/sketch.ino` (0c9cd10):
+Ví dụ payload lỗi cảm biến:
 
 ```json
 {"device_id":"ESP32-LOCAL","event_type":"SENSOR_FAULT","sensor":"DHT22","reason":"INVALID_OR_NAN_READING","timestamp":"2026-11-02T14:00:00Z"}
 ```
 
-Backend nhận SENSOR_FAULT/MANUAL_LIMIT; sensor bắt buộc 1..80 ký tự, reason 1..200, device_id 1..100; timestamp có timezone và không quá 5 phút tương lai. Device/topic/House/Zone phải khớp, ESP32 enabled và ancestors active; retained input bị từ chối như các MQTT input khác. Unknown fields/type bị từ chối. Firmware hiện chưa có producer MANUAL_LIMIT; test loại này dùng payload mô phỏng theo envelope trên, chờ xác nhận. SENSOR_RECOVERED hiện không thuộc hai type được yêu cầu.
+Backend nhận `SENSOR_FAULT`, `SENSOR_RECOVERED` và `MANUAL_LIMIT`. `sensor` bắt buộc 1–80 ký tự, `reason` 1–200 và `device_id` 1–100. Timestamp UTC hoặc có offset, tối đa 5 phút trong tương lai. Device/topic/House/Zone phải khớp, ESP32 enabled, House và Zone active. Retained input, trường lạ và loại lạ bị từ chối.
 
-Log JSON chứa category=device.event, deviceId/deviceCode, houseId/zoneId, type/sensor/reason và occurredAt/receivedAt. Không ghi anomaly_events hoặc phát alert; chưa persist device_events, không có application ACK/dedup khi chưa có stable event_id. Firmware timestamp rỗng lúc chưa đồng bộ NTP sẽ bị từ chối. B2-16 cần thêm ACL SUB events cho backend, PUB events cho đúng device; backend không chỉnh broker ACL/auth.
+Firmware đưa `SENSOR_RECOVERED` vào cùng hàng đợi sự kiện sau 3 lần đọc DHT22 hợp lệ liên tiếp, với `sensor=DHT22` và `reason=THREE_GOOD_READINGS`. Khi nhận sự kiện, Alert Engine bỏ điều kiện lỗi của cảm biến tương ứng. Cảnh báo Zone được ghi `cleared_at` khi không còn điều kiện lỗi hoạt động. Trạng thái workflow vẫn do API xử lý cảnh báo quản lý. `MANUAL_LIMIT` là thông tin chẩn đoán. Cảnh báo manual dựa vào mode và telemetry kéo dài theo luật của Alert Engine.
+
+Backend ghi structured log và lưu trạng thái qua Alert Engine. Kênh này không có application ACK hoặc bảng log raw `device_events`. Firmware chờ đồng bộ thời gian trước khi gửi từ hàng đợi. Broker triển khai cần ACL theo đúng topic thiết bị và subscription của Backend.
 
 
 ### B2-10 — Điều khiển bốn actuator

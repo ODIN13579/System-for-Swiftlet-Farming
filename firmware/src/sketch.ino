@@ -1278,16 +1278,6 @@ void publishSensorEvent(const char *type, const char *sensor, const char *reason
   if (!type || !sensor || !reason)
     return;
 
-  // The currently deployed Backend accepts SENSOR_FAULT and MANUAL_LIMIT,
-  // but not SENSOR_RECOVERED. Keep recovery visible locally until both sides
-  // agree on the event contract; do not send an event known to be rejected.
-  if (strcmp(type, "SENSOR_RECOVERED") == 0)
-  {
-    Serial.printf("[EVENT] %s sensor=%s (local only; Backend contract not updated)\n",
-                  type, sensor);
-    return;
-  }
-
   if (sensorEventCount >= 16)
   {
     sensorEventsDropped++;

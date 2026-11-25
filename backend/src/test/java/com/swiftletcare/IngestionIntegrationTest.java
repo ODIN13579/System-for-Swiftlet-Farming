@@ -847,6 +847,26 @@ class IngestionIntegrationTest {
         newAlertId
       )).isEqualTo(1L);
 
+      // Firmware emits this after three valid DHT22 reads. The broker path must
+      // clear the live condition without resolving the workflow or cloning the alert.
+      assertThat(jdbc.queryForObject(
+          "select cleared_at is null from swiftletcare.alerts where id=?",
+          Boolean.class, newAlertId)).isTrue();
+      mqtt.publish(topic + "/events", new MqttMessage(json.writeValueAsBytes(Map.of(
+          "device_id", code, "timestamp", Instant.now().toString(),
+          "event_type", "SENSOR_RECOVERED", "sensor", "DHT22",
+          "reason", "THREE_GOOD_READINGS"))));
+      String recovery = logs.poll(5, TimeUnit.SECONDS);
+      assertThat(recovery).isNotNull();
+      assertThat(json.readTree(recovery).get("type").asText()).isEqualTo("SENSOR_RECOVERED");
+      assertThat(jdbc.queryForObject("""
+          select status='NEW' and cleared_at is not null
+          from swiftletcare.alerts where id=?
+          """, Boolean.class, newAlertId)).isTrue();
+      assertThat(jdbc.queryForObject(
+          "select count(*) from swiftletcare.alert_histories where alert_id=?",
+          Long.class, newAlertId)).isEqualTo(1L);
+
       for(var invalid:List.of(
           Map.of("device_id",code,"timestamp",Instant.now().plusSeconds(600).toString(),"event_type","SENSOR_FAULT","sensor","DHT22","reason","bad time"),
           Map.of("device_id",code,"timestamp",Instant.now().toString(),"event_type","UNKNOWN","sensor","DHT22","reason","bad type"),
