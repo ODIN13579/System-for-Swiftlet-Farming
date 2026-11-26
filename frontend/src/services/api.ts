@@ -8,6 +8,30 @@ export type LoginResponse = {
   expiresIn: number
 }
 
+export type Account = {
+  id: number
+  email: string
+  fullName: string | null
+  phone: string | null
+  role: 'OWNER' | 'ADMIN' | string
+  active: boolean
+}
+
+export type CreateAccountInput = {
+  email: string
+  password: string
+  role: 'OWNER' | 'ADMIN'
+  fullName?: string
+  phone?: string
+  houseId?: number
+  houseRole?: 'OWNER' | 'ADMIN' | 'VIEWER'
+}
+
+export type UpdateProfileInput = {
+  fullName?: string | null
+  phone?: string | null
+}
+
 export type Device = {
   id: number
   deviceId: string
@@ -153,7 +177,33 @@ export type CountLog = {
   aggregationType: 'HOURLY' | 'DAILY'
   processedAt: string
 }
+export type AlertStatus = 'NEW' | 'IN_PROGRESS' | 'RESOLVED'
+export type AlertLevel = 'WARNING' | 'CRITICAL'
 
+export type AlertRecord = {
+  id: number
+  houseId: number
+  zoneId: number
+  deviceId: number | null
+  anomalyEventId: number | null
+  snapshotId: number | null
+  type: string
+  level: AlertLevel
+  status: AlertStatus
+  message: string
+  createdAt: string
+  handledAt: string | null
+  clearedAt: string | null
+}
+
+export type AlertHistory = {
+  id: number
+  changedBy: number | null
+  fromStatus: AlertStatus | null
+  toStatus: AlertStatus
+  changedAt: string
+  note: string | null
+}
 let accessToken: string | null = null
 
 export function setAccessToken(token: string | null) {
@@ -411,6 +461,147 @@ export const api = {
     return request<ControlCommandStatus>(
       `/api/v1/commands/${encodeURIComponent(commandId)}`,
     )
+  },
+
+  getMe() {
+    return request<Account>('/api/v1/me')
+  },
+
+  updateMe(data: UpdateProfileInput) {
+    return request<Account>('/api/v1/me', {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    })
+  },
+
+  changePassword(currentPassword: string, newPassword: string) {
+    return request<void>('/api/v1/me/change-password', {
+      method: 'POST',
+      body: JSON.stringify({ currentPassword, newPassword }),
+    })
+  },
+
+  logout() {
+    return request<void>('/api/v1/auth/logout', {
+      method: 'POST',
+    })
+  },
+
+  getAccounts(page = 0, size = 20) {
+    const params = new URLSearchParams({
+      page: String(page),
+      size: String(size),
+    })
+
+    return request<ListResponse<Account>>(
+      `/api/v1/admin/users?${params}`,
+    )
+  },
+
+  createAccount(data: CreateAccountInput) {
+    return request<Account>('/api/v1/admin/users', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  },
+
+  setAccountActive(id: number, active: boolean) {
+    return request<Account>(`/api/v1/admin/users/${id}/active`, {
+      method: 'PATCH',
+      body: JSON.stringify({ active }),
+    })
+  },
+
+  getAlerts(
+    houseId: number,
+    filters: {
+      zoneId?: number
+      status?: AlertStatus
+      level?: AlertLevel
+      page?: number
+      size?: number
+    } = {},
+    signal?: AbortSignal,
+  ) {
+    const params = new URLSearchParams({
+      houseId: String(houseId),
+      page: String(filters.page ?? 0),
+      size: String(filters.size ?? 100),
+    })
+
+    if (filters.zoneId !== undefined) {
+      params.set('zoneId', String(filters.zoneId))
+    }
+    if (filters.status) params.set('status', filters.status)
+    if (filters.level) params.set('level', filters.level)
+
+    return request<ListResponse<AlertRecord>>(
+      `/api/v1/alerts?${params}`,
+      { signal },
+    )
+  },
+
+  getAlert(id: number, signal?: AbortSignal) {
+    return request<AlertRecord>(
+      `/api/v1/alerts/${id}`,
+      { signal },
+    )
+  },
+
+  getAlertHistory(id: number, signal?: AbortSignal) {
+    return request<AlertHistory[]>(
+      `/api/v1/alerts/${id}/history`,
+      { signal },
+    )
+  },
+
+  updateAlertStatus(
+    id: number,
+    status: AlertStatus,
+    note?: string,
+  ) {
+    return request<AlertRecord>(
+      `/api/v1/alerts/${id}/status`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({ status, note }),
+      },
+    )
+  },
+
+  async getSnapshotBlob(id: number): Promise<Blob> {
+    const headers = new Headers()
+
+    if (accessToken) {
+      headers.set('Authorization', `Bearer ${accessToken}`)
+    }
+
+    let response: Response
+
+    try {
+      response = await fetch(
+        `${API_BASE_URL}/api/snapshots/${id}`,
+        {
+          headers,
+          credentials: 'include',
+        },
+      )
+    } catch {
+      throw new Error('Không thể kết nối để tải ảnh bằng chứng.')
+    }
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.')
+      }
+      if (response.status === 403) {
+        throw new Error('Bạn không có quyền xem ảnh bằng chứng này.')
+      }
+
+      throw new Error(`Không tải được ảnh bằng chứng (HTTP ${response.status}).`)
+    }
+
+    return response.blob()
   },
 
 }

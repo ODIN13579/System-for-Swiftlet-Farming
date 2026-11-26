@@ -1,15 +1,13 @@
 import AiCounts from '../components/AiCounts'
+import DashboardAlerts from '../components/DashboardAlerts'
 import { useCallback, useEffect, useState } from 'react'
 import {
   Thermometer,
-  Bell,
   ChartNoAxesCombined,
   Bird,
   Wifi,
   RefreshCw,
-  Cpu,
 } from 'lucide-react'
-import FanControl from '../components/FanControl'
 import {
   api,
   type Device,
@@ -80,7 +78,11 @@ function hasTelemetryValue(data: Telemetry | null) {
   ].some((value) => value != null)
 }
 
-export default function Dashboard() {
+export default function Dashboard({
+  onNavigateToAlerts,
+}: {
+  onNavigateToAlerts: () => void
+}) {
   const [devices, setDevices] = useState<Device[]>([])
   const [telemetry, setTelemetry] = useState<Telemetry | null>(null)
   const [loading, setLoading] = useState(true)
@@ -315,108 +317,11 @@ export default function Dashboard() {
       </div>
 
       <div className="dashboard-grid">
-        <article className="panel">
-          <div className="panel-heading">
-            <div>
-              <h2>Trạng thái thiết bị</h2>
-              <p>Tình trạng kết nối thiết bị trong nhà yến</p>
-            </div>
+        <DashboardAlerts
+          zoneId={zoneId!}
+          onOpenAlerts={onNavigateToAlerts}
+        />
 
-            <span className="subtle-badge">
-              {loading ? 'Đang tải...' : `${devices.length} thiết bị`}
-            </span>
-          </div>
-          {sensorId !== null && (
-            <FanControl deviceId={sensorId} />
-          )}
-          <div className="device-list">
-            {devices.map((device) => (
-              <div className="device-row" key={device.id}>
-                <div
-                  className={`device-symbol ${
-                    device.online
-                      ? 'device-online'
-                      : 'device-offline'
-                  }`}
-                >
-                  <Cpu size={19} />
-                </div>
-
-                
-                <div className="device-info">
-                  <strong>{device.name}</strong>
-                  <span>
-                    {device.type} · {device.deviceId}
-                  </span>
-                  <span className="device-last-seen">
-                    Cập nhật lần cuối: {formatDateTime(device.lastSeenAt)}
-                  </span>
-                </div>
-
-
-                <span
-                  className={`device-state ${
-                    device.online
-                      ? 'state-online'
-                      : 'state-offline'
-                  }`}
-                >
-                  <span className="note-dot" />
-                  {device.online ? 'Online' : 'Offline'}
-                </span>
-              </div>
-            ))}
-
-            {loading && devices.length === 0 && (
-              <p style={{ padding: 16 }} role="status">
-                Đang tải danh sách thiết bị...
-              </p>
-            )}
-
-            {!loading && devices.length === 0 && (
-              <p style={{ padding: 16 }}>
-                {error
-                  ? 'Không tải được danh sách thiết bị.'
-                  : 'Khu vực chưa có thiết bị.'}
-              </p>
-            )}
-          </div>
-
-          <div className="panel-footer">
-            Trạng thái và thời điểm cập nhật lấy từ dữ liệu Backend.
-          </div>
-        </article>
-
-        <article className="panel">
-          <div className="panel-heading">
-            <div>
-              <h2>Cảnh báo gần đây</h2>
-              <p>Các sự kiện cần chú ý</p>
-            </div>
-
-            <span className="subtle-badge">Chưa tích hợp API</span>
-          </div>
-
-          <div className="alert-list">
-            <div className="alert-row">
-              <div className="alert-symbol warning">
-                <Bell size={18} />
-              </div>
-
-              <div className="alert-info">
-                <strong>Chưa có dữ liệu cảnh báo</strong>
-                <span>
-                  Cần tích hợp API cảnh báo từ Backend để hiển thị sự kiện
-                  thực.
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="panel-footer">
-            Không sử dụng dữ liệu demo thay cho cảnh báo thực.
-          </div>
-        </article>
       </div>
 
       <AiCounts cameras={devices.filter((device) => device.type === 'CAMERA')} />

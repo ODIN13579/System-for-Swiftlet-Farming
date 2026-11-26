@@ -1,4 +1,3 @@
-
 const WS_BASE_URL =
   import.meta.env.VITE_WS_BASE_URL || 'ws://localhost:8080'
 
@@ -44,3 +43,44 @@ export function connectDeviceRealtime(
 
   return socket
 }
+
+export function connectHouseAlertRealtime(
+  houseId: number,
+  onMessage: (message: RealtimeMessage) => void,
+  onStatus?: (status: 'connected' | 'disconnected' | 'error') => void,
+): WebSocket {
+  const wsUrl = `${WS_BASE_URL}/ws/houses/${houseId}`
+  console.log('[Alert WS] Connecting:', wsUrl)
+
+  const socket = new WebSocket(wsUrl)
+
+  socket.onopen = () => {
+    console.log('[Alert WS] Connected')
+    onStatus?.('connected')
+  }
+
+  socket.onmessage = (event: MessageEvent<string>) => {
+    try {
+      const message = JSON.parse(event.data) as RealtimeMessage
+
+      console.log('[Alert WS] Message received:', message.type, message.data)
+
+      onMessage(message)
+    } catch (error) {
+      console.error('[Alert WS] Invalid message:', error, event.data)
+    }
+  }
+
+  socket.onclose = (event) => {
+    console.warn('[Alert WS] Closed:', event.code, event.reason)
+    onStatus?.('disconnected')
+  }
+
+  socket.onerror = (event) => {
+    console.error('[Alert WS] Error:', event)
+    onStatus?.('error')
+  }
+
+  return socket
+}
+

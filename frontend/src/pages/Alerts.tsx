@@ -1,5 +1,5 @@
 
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   AlertTriangle,
   Bell,
@@ -9,142 +9,429 @@ import {
   Search,
   ShieldAlert,
   X,
+  RefreshCw,
+  BellRing,
+  BellOff,
 } from 'lucide-react'
-
-type Severity = 'Nghiêm trọng' | 'Cảnh báo' | 'Thông tin'
-type AlertStatus = 'Mới' | 'Đang xử lý' | 'Đã xử lý'
-
-type AlertItem = {
-  id: number
-  title: string
-  description: string
-  type: string
-  severity: Severity
-  status: AlertStatus
-  zone: string
-  time: string
-  detail: string
-}
-
-const initialAlerts: AlertItem[] = [
-  {
-    id: 1,
-    title: 'Nhiệt độ vượt ngưỡng',
-    description: 'Nhiệt độ trong nhà yến đang cao hơn mức cài đặt.',
-    type: 'Môi trường',
-    severity: 'Nghiêm trọng',
-    status: 'Mới',
-    zone: 'Khu vực A',
-    time: '19:25:10',
-    detail:
-      'Cảm biến mô phỏng ghi nhận nhiệt độ 33.2°C. Cần kiểm tra thông gió và thiết bị làm mát.',
-  },
-  {
-    id: 2,
-    title: 'Camera AI mất kết nối',
-    description: 'Camera tại khu vực giám sát không phản hồi.',
-    type: 'Thiết bị',
-    severity: 'Cảnh báo',
-    status: 'Đang xử lý',
-    zone: 'Khu vực A',
-    time: '19:18:42',
-    detail:
-      'Thiết bị camera đang ở trạng thái Offline trong dữ liệu minh họa. Hãy kiểm tra nguồn điện và kết nối mạng.',
-  },
-  {
-    id: 3,
-    title: 'Độ ẩm nằm ngoài ngưỡng',
-    description: 'Độ ẩm hiện tại thấp hơn ngưỡng mục tiêu.',
-    type: 'Môi trường',
-    severity: 'Cảnh báo',
-    status: 'Mới',
-    zone: 'Khu vực B',
-    time: '19:10:05',
-    detail:
-      'Độ ẩm mô phỏng là 68%. Cần kiểm tra cảm biến và hệ thống phun sương trước khi điều chỉnh thiết bị.',
-  },
-  {
-    id: 4,
-    title: 'Phát hiện chuyển động bất thường',
-    description: 'Camera AI ghi nhận một sự kiện cần kiểm tra.',
-    type: 'AI Event',
-    severity: 'Nghiêm trọng',
-    status: 'Mới',
-    zone: 'Khu vực C',
-    time: '18:55:30',
-    detail:
-      'Đây là sự kiện AI minh họa, chưa có ảnh bằng chứng thực tế. Cần kiểm tra camera và xác minh sự kiện.',
-  },
-  {
-    id: 5,
-    title: 'Thiết bị hoạt động bình thường',
-    description: 'Bộ điều khiển đã gửi dữ liệu mô phỏng thành công.',
-    type: 'Thiết bị',
-    severity: 'Thông tin',
-    status: 'Đã xử lý',
-    zone: 'Khu vực A',
-    time: '18:40:12',
-    detail:
-      'Thông báo minh họa xác nhận thiết bị đã gửi dữ liệu. Trạng thái này không đại diện cho kết nối thật.',
-  },
-]
+import {
+  api,
+  type AlertHistory,
+  type AlertLevel,
+  type AlertRecord,
+  type AlertStatus,
+  type House,
+  type Zone,
+} from '../services/api'
+import {
+  connectHouseAlertRealtime,
+  type RealtimeMessage,
+} from '../services/websocket'
+import {
+  requestNotificationPermission,
+  showAlertNotification,
+} from '../services/browserNotifications'
+type Severity = 'Nghiêm trọng' | 'Cảnh báo'
+type StatusLabel = 'Mới' | 'Đang xử lý' | 'Đã xử lý'
 
 const severityClass: Record<Severity, string> = {
   'Nghiêm trọng': 'severity-critical',
   'Cảnh báo': 'severity-warning',
-  'Thông tin': 'severity-info',
 }
 
-const statusClass: Record<AlertStatus, string> = {
+const statusClass: Record<StatusLabel, string> = {
   'Mới': 'alert-status-new',
   'Đang xử lý': 'alert-status-progress',
   'Đã xử lý': 'alert-status-done',
 }
 
+function severityLabel(level: AlertLevel): Severity {
+  return level === 'CRITICAL' ? 'Nghiêm trọng' : 'Cảnh báo'
+}
+
+function statusLabel(status: AlertStatus): StatusLabel {
+  switch (status) {
+    case 'IN_PROGRESS':
+      return 'Đang xử lý'
+    case 'RESOLVED':
+      return 'Đã xử lý'
+    default:
+      return 'Mới'
+  }
+}
+
+function eventTitle(type: string, message: string): string {
+  if (message.trim()) return message
+  return type.replaceAll('_', ' ')
+}
+
+function formatDate(value: string | null | undefined): string {
+  if (!value) return '—'
+
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return value
+
+  return date.toLocaleString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  })
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error
+    ? error.message
+    : 'Đã xảy ra lỗi không xác định.'
+}
+
 export default function Alerts() {
-  const [alerts, setAlerts] = useState(initialAlerts)
+  const [houses, setHouses] = useState<House[]>([])
+  const [zones, setZones] = useState<Zone[]>([])
+  const [houseId, setHouseId] = useState<number | ''>('')
+  const [zoneId, setZoneId] = useState<number | ''>('')
+
+  const [alerts, setAlerts] = useState<AlertRecord[]>([])
   const [search, setSearch] = useState('')
-  const [severityFilter, setSeverityFilter] = useState('all')
-  const [statusFilter, setStatusFilter] = useState('all')
-  const [selectedAlert, setSelectedAlert] = useState<AlertItem | null>(null)
+  const [severityFilter, setSeverityFilter] = useState<'all' | AlertLevel>('all')
+  const [statusFilter, setStatusFilter] = useState<'all' | AlertStatus>('all')
+
+  const [selectedAlert, setSelectedAlert] = useState<AlertRecord | null>(null)
+  const [history, setHistory] = useState<AlertHistory[]>([])
+  const [snapshotUrl, setSnapshotUrl] = useState<string | null>(null)
+
+  const [loadingHouses, setLoadingHouses] = useState(true)
+  const [loadingAlerts, setLoadingAlerts] = useState(false)
+  const [loadingDetail, setLoadingDetail] = useState(false)
+  const [savingStatus, setSavingStatus] = useState(false)
+  const [pageError, setPageError] = useState('')
+  const [detailError, setDetailError] = useState('')
+  const [snapshotError, setSnapshotError] = useState('')
+  const [wsStatus, setWsStatus] = useState<
+    'connected' | 'disconnected' | 'error'
+  >('disconnected')
+  const [notificationPermission, setNotificationPermission] =
+    useState<NotificationPermission | 'unsupported'>(() => {
+      if (!('Notification' in window)) return 'unsupported'
+      return Notification.permission
+    })
+
+  const [notificationsEnabled, setNotificationsEnabled] = useState(
+    () => localStorage.getItem('swiftletcare-notifications-enabled') === 'true',
+  )
+
+  async function toggleBrowserNotifications() {
+    if (notificationsEnabled) {
+      localStorage.setItem('swiftletcare-notifications-enabled', 'false')
+      setNotificationsEnabled(false)
+      return
+    }
+
+    const permission = await requestNotificationPermission()
+    setNotificationPermission(permission)
+
+    if (permission === 'granted') {
+      localStorage.setItem('swiftletcare-notifications-enabled', 'true')
+      setNotificationsEnabled(true)
+    }
+  }
+  const zoneNames = useMemo(
+    () => new Map(zones.map((zone) => [zone.id, zone.name])),
+    [zones],
+  )
+
+  const refreshAlerts = useCallback(async () => {
+    if (houseId === '') {
+      setAlerts([])
+      return
+    }
+
+    setLoadingAlerts(true)
+    setPageError('')
+
+    try {
+      const result = await api.getAlerts(houseId, {
+        zoneId: zoneId === '' ? undefined : zoneId,
+        level: severityFilter === 'all' ? undefined : severityFilter,
+        status: statusFilter === 'all' ? undefined : statusFilter,
+        page: 0,
+        size: 100,
+      })
+
+      setAlerts(result.items)
+    } catch (error) {
+      setPageError(errorMessage(error))
+    } finally {
+      setLoadingAlerts(false)
+    }
+  }, [houseId, zoneId, severityFilter, statusFilter])
+
+  // Tải danh sách nhà yến khi mở trang.
+  useEffect(() => {
+    const controller = new AbortController()
+
+    async function loadHouses() {
+      setLoadingHouses(true)
+      setPageError('')
+
+      try {
+        const result = await api.getHouses(0, 100)
+        const activeHouses = result.items.filter((house) => house.active)
+
+        setHouses(activeHouses)
+
+        if (activeHouses.length > 0) {
+          setHouseId(activeHouses[0].id)
+        } else {
+          setHouseId('')
+        }
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          setPageError(errorMessage(error))
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoadingHouses(false)
+        }
+      }
+    }
+
+    void loadHouses()
+
+    return () => controller.abort()
+  }, [])
+
+  // Tải khu vực khi đổi nhà yến.
+  useEffect(() => {
+    if (houseId === '') {
+      setZones([])
+      setZoneId('')
+      return
+    }
+
+    let cancelled = false
+
+    async function loadZones() {
+      try {
+        const result = await api.getZones(Number(houseId), 0, 100)
+        if (!cancelled) {
+          setZones(result.items.filter((zone) => zone.active))
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setZones([])
+          setPageError(errorMessage(error))
+        }
+      }
+    }
+
+    setZoneId('')
+    void loadZones()
+
+    return () => {
+      cancelled = true
+    }
+  }, [houseId])
+
+  // Lấy dữ liệu thật từ API khi nhà yến hoặc bộ lọc thay đổi.
+  useEffect(() => {
+    void refreshAlerts()
+  }, [refreshAlerts])
+
+  // Nhận sự kiện realtime theo nhà yến.
+  useEffect(() => {
+    if (houseId === '') {
+      setWsStatus('disconnected')
+      return
+    }
+
+    let disposed = false
+    let socket: WebSocket | null = null
+    let reconnectTimer: ReturnType<typeof setTimeout> | undefined
+
+    function connect() {
+      if (disposed) return
+
+      try {
+        socket = connectHouseAlertRealtime(
+          houseId as number,
+          (message: RealtimeMessage) => {
+            if (
+              message.type === 'alert.created' ||
+              message.type === 'alert.updated'
+            ) {
+              void refreshAlerts()
+
+              if (message.type === 'alert.created') {
+                const alertData = message.data as {
+                  id?: number
+                  type?: string
+                  level?: string
+                  message?: string
+                } | undefined
+                console.log('[Browser Notification] Alert data:', alertData)
+                console.log('[Browser Notification] Enabled:', notificationsEnabled)
+                console.log(
+                  '[Browser Notification] Permission:',
+                  'Notification' in window ? Notification.permission : 'unsupported',
+                )
+                if (
+                  alertData?.id &&
+                  (alertData.level === 'WARNING' || alertData.level === 'CRITICAL')
+                ) {
+                  showAlertNotification(
+                    alertData.type ?? 'Cảnh báo mới',
+                    alertData.message ?? 'Hệ thống vừa ghi nhận một cảnh báo mới.',
+                    alertData.id,
+                    notificationsEnabled,
+                  )
+                }
+              }
+            }
+          },
+          (status) => {
+            if (disposed) return
+            setWsStatus(status)
+
+            if (status === 'disconnected' || status === 'error') {
+              reconnectTimer = setTimeout(connect, 3000)
+            }
+          },
+        )
+      } catch {
+        setWsStatus('error')
+        reconnectTimer = setTimeout(connect, 3000)
+      }
+    }
+
+    connect()
+
+    return () => {
+      disposed = true
+      if (reconnectTimer) clearTimeout(reconnectTimer)
+      socket?.close()
+    }
+  }, [houseId, refreshAlerts,notificationsEnabled])
+
+  // Fallback: đồng bộ định kỳ khi WebSocket chưa kết nối.
+  useEffect(() => {
+    if (wsStatus === 'connected' || houseId === '') return
+
+    const timer = setInterval(() => {
+      void refreshAlerts()
+    }, 5000)
+
+    return () => clearInterval(timer)
+  }, [wsStatus, houseId, refreshAlerts])
+
+  // Tải lại chi tiết và lịch sử của cảnh báo đang mở.
+  const loadDetail = useCallback(async (id: number) => {
+    setLoadingDetail(true)
+    setDetailError('')
+
+    try {
+      const [detail, events] = await Promise.all([
+        api.getAlert(id),
+        api.getAlertHistory(id),
+      ])
+
+      setSelectedAlert(detail)
+      setHistory(events)
+    } catch (error) {
+      setDetailError(errorMessage(error))
+    } finally {
+      setLoadingDetail(false)
+    }
+  }, [])
+
+  // Tải ảnh bằng chứng riêng để không làm hỏng cửa sổ chi tiết nếu thiếu ảnh.
+  useEffect(() => {
+    let cancelled = false
+    let objectUrl: string | null = null
+
+    setSnapshotUrl(null)
+    setSnapshotError('')
+
+    if (!selectedAlert?.snapshotId) return
+
+    async function loadSnapshot(snapshotId: number) {
+      try {
+        const blob = await api.getSnapshotBlob(snapshotId)
+        if (cancelled) return
+
+        objectUrl = URL.createObjectURL(blob)
+        setSnapshotUrl(objectUrl)
+      } catch (error) {
+        if (!cancelled) {
+          setSnapshotError(errorMessage(error))
+        }
+      }
+    }
+
+    void loadSnapshot(selectedAlert.snapshotId)
+
+    return () => {
+      cancelled = true
+      if (objectUrl) URL.revokeObjectURL(objectUrl)
+    }
+  }, [selectedAlert?.snapshotId])
 
   const filteredAlerts = useMemo(() => {
+    const keyword = search.trim().toLocaleLowerCase('vi-VN')
+
     return alerts.filter((alert) => {
-      const keyword = search.toLowerCase()
-      const matchesSearch =
-        alert.title.toLowerCase().includes(keyword) ||
-        alert.description.toLowerCase().includes(keyword) ||
-        alert.zone.toLowerCase().includes(keyword)
+      const title = eventTitle(alert.type, alert.message)
+      const zoneName = zoneNames.get(alert.zoneId) ?? `Khu vực #${alert.zoneId}`
 
-      const matchesSeverity =
-        severityFilter === 'all' || alert.severity === severityFilter
-
-      const matchesStatus =
-        statusFilter === 'all' || alert.status === statusFilter
-
-      return matchesSearch && matchesSeverity && matchesStatus
+      return (
+        title.toLocaleLowerCase('vi-VN').includes(keyword) ||
+        alert.message.toLocaleLowerCase('vi-VN').includes(keyword) ||
+        zoneName.toLocaleLowerCase('vi-VN').includes(keyword) ||
+        String(alert.id).includes(keyword)
+      )
     })
-  }, [alerts, search, severityFilter, statusFilter])
+  }, [alerts, search, zoneNames])
 
   const criticalCount = alerts.filter(
-    (alert) => alert.severity === 'Nghiêm trọng' && alert.status !== 'Đã xử lý',
+    (alert) => alert.level === 'CRITICAL' && alert.status !== 'RESOLVED',
   ).length
 
-  const newCount = alerts.filter((alert) => alert.status === 'Mới').length
+  const newCount = alerts.filter((alert) => alert.status === 'NEW').length
 
   const progressCount = alerts.filter(
-    (alert) => alert.status === 'Đang xử lý',
+    (alert) => alert.status === 'IN_PROGRESS',
   ).length
 
-  function updateStatus(id: number, status: AlertStatus) {
-    setAlerts((current) =>
-      current.map((alert) => (alert.id === id ? { ...alert, status } : alert)),
-    )
+  async function updateStatus(nextStatus: AlertStatus) {
+    if (!selectedAlert || savingStatus) return
 
-    setSelectedAlert((current) =>
-      current && current.id === id ? { ...current, status } : current,
-    )
+    const currentStatus = selectedAlert.status
+    const isValidTransition =
+      (currentStatus === 'NEW' && nextStatus === 'IN_PROGRESS') ||
+      (currentStatus === 'IN_PROGRESS' && nextStatus === 'RESOLVED')
+
+    if (!isValidTransition) return
+
+    setSavingStatus(true)
+    setDetailError('')
+
+    try {
+      await api.updateAlertStatus(selectedAlert.id, nextStatus)
+      await Promise.all([
+        refreshAlerts(),
+        loadDetail(selectedAlert.id),
+      ])
+    } catch (error) {
+      setDetailError(errorMessage(error))
+    } finally {
+      setSavingStatus(false)
+    }
   }
+
+  const selectedZoneName = selectedAlert
+    ? zoneNames.get(selectedAlert.zoneId) ?? `Khu vực #${selectedAlert.zoneId}`
+    : ''
 
   return (
     <>
@@ -155,9 +442,13 @@ export default function Alerts() {
           <p>Theo dõi sự cố và cập nhật tiến độ xử lý tại nhà yến.</p>
         </div>
 
-        <div className="live-badge">
+        <div className="live-badge" title="Trạng thái kết nối cập nhật cảnh báo">
           <span className="status-dot" />
-          Dữ liệu mô phỏng
+          {wsStatus === 'connected'
+            ? 'Realtime đang kết nối'
+            : wsStatus === 'error'
+              ? 'Đang thử kết nối lại'
+              : 'Đang đồng bộ dữ liệu'}
         </div>
       </div>
 
@@ -196,9 +487,71 @@ export default function Alerts() {
             <h2>Danh sách sự kiện</h2>
             <p>{filteredAlerts.length} sự kiện phù hợp với bộ lọc</p>
           </div>
+          <button
+            type="button"
+            className="alert-detail-button"
+            onClick={() => void toggleBrowserNotifications()}
+            disabled={notificationPermission === 'unsupported'}
+          >
+            {notificationsEnabled ? (
+              <BellRing size={16} />
+            ) : (
+              <BellOff size={16} />
+            )}
+
+            {notificationsEnabled
+              ? 'Tắt thông báo'
+              : notificationPermission === 'denied'
+                ? 'Thông báo bị chặn'
+                : notificationPermission === 'unsupported'
+                  ? 'Trình duyệt không hỗ trợ'
+                  : 'Bật thông báo'}
+          </button>
+          <button
+            className="alert-detail-button"
+            onClick={() => void refreshAlerts()}
+            disabled={loadingAlerts}
+          >
+            <RefreshCw size={15} />
+            Làm mới
+          </button>
         </div>
 
         <div className="alerts-filters">
+          <select
+            value={houseId}
+            onChange={(event) =>
+              setHouseId(event.target.value ? Number(event.target.value) : '')
+            }
+            aria-label="Chọn nhà yến"
+            disabled={loadingHouses}
+          >
+            <option value="">
+              {loadingHouses ? 'Đang tải nhà yến...' : 'Chọn nhà yến'}
+            </option>
+            {houses.map((house) => (
+              <option key={house.id} value={house.id}>
+                {house.name}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={zoneId}
+            onChange={(event) =>
+              setZoneId(event.target.value ? Number(event.target.value) : '')
+            }
+            aria-label="Lọc khu vực"
+            disabled={houseId === ''}
+          >
+            <option value="">Tất cả khu vực</option>
+            {zones.map((zone) => (
+              <option key={zone.id} value={zone.id}>
+                {zone.name}
+              </option>
+            ))}
+          </select>
+
           <div className="alerts-search">
             <Search size={17} />
             <input
@@ -211,81 +564,106 @@ export default function Alerts() {
 
           <select
             value={severityFilter}
-            onChange={(event) => setSeverityFilter(event.target.value)}
+            onChange={(event) =>
+              setSeverityFilter(event.target.value as 'all' | AlertLevel)
+            }
             aria-label="Lọc mức độ"
           >
             <option value="all">Tất cả mức độ</option>
-            <option value="Nghiêm trọng">Nghiêm trọng</option>
-            <option value="Cảnh báo">Cảnh báo</option>
-            <option value="Thông tin">Thông tin</option>
+            <option value="CRITICAL">Nghiêm trọng</option>
+            <option value="WARNING">Cảnh báo</option>
           </select>
 
           <select
             value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value)}
+            onChange={(event) =>
+              setStatusFilter(event.target.value as 'all' | AlertStatus)
+            }
             aria-label="Lọc trạng thái"
           >
             <option value="all">Tất cả trạng thái</option>
-            <option value="Mới">Mới</option>
-            <option value="Đang xử lý">Đang xử lý</option>
-            <option value="Đã xử lý">Đã xử lý</option>
+            <option value="NEW">Mới</option>
+            <option value="IN_PROGRESS">Đang xử lý</option>
+            <option value="RESOLVED">Đã xử lý</option>
           </select>
         </div>
 
+        {pageError && (
+          <div className="alerts-empty" role="alert">
+            Không tải được dữ liệu: {pageError}
+          </div>
+        )}
+
         <div className="alerts-list">
-          {filteredAlerts.map((alert) => (
-            <article className="alert-item" key={alert.id}>
-              <div className={`alert-item-icon ${severityClass[alert.severity]}`}>
-                {alert.severity === 'Thông tin' ? (
-                  <Bell size={19} />
-                ) : (
+          {loadingAlerts && alerts.length === 0 && (
+            <div className="alerts-empty">Đang tải cảnh báo từ hệ thống...</div>
+          )}
+
+          {!loadingAlerts &&
+            !pageError &&
+            houseId === '' &&
+            !loadingHouses && (
+              <div className="alerts-empty">
+                Chưa có nhà yến đang hoạt động hoặc tài khoản không có quyền xem.
+              </div>
+            )}
+
+          {filteredAlerts.map((alert) => {
+            const severity = severityLabel(alert.level)
+            const status = statusLabel(alert.status)
+            const zoneName =
+              zoneNames.get(alert.zoneId) ?? `Khu vực #${alert.zoneId}`
+
+            return (
+              <article className="alert-item" key={alert.id}>
+                <div className={`alert-item-icon ${severityClass[severity]}`}>
                   <AlertTriangle size={19} />
-                )}
-              </div>
-
-              <div className="alert-item-main">
-                <div className="alert-item-title-row">
-                  <h3>{alert.title}</h3>
-                  <span className={`severity-tag ${severityClass[alert.severity]}`}>
-                    {alert.severity}
-                  </span>
                 </div>
 
-                <p>{alert.description}</p>
+                <div className="alert-item-main">
+                  <div className="alert-item-title-row">
+                    <h3>{eventTitle(alert.type, alert.message)}</h3>
+                    <span className={`severity-tag ${severityClass[severity]}`}>
+                      {severity}
+                    </span>
+                  </div>
 
-                <div className="alert-item-meta">
-                  <span>{alert.type}</span>
-                  <span>{alert.zone}</span>
-                  <span>{alert.time}</span>
+                  <p>{alert.message || alert.type}</p>
+
+                  <div className="alert-item-meta">
+                    <span>{alert.type}</span>
+                    <span>{zoneName}</span>
+                    <span>{formatDate(alert.createdAt)}</span>
+                  </div>
+
+                  <div className="alert-item-bottom">
+                    <span className={`alert-status ${statusClass[status]}`}>
+                      {status}
+                    </span>
+
+                    <button
+                      className="alert-detail-button"
+                      onClick={() => void loadDetail(alert.id)}
+                    >
+                      <Eye size={15} />
+                      Xem chi tiết
+                    </button>
+                  </div>
                 </div>
+              </article>
+            )
+          })}
 
-                <div className="alert-item-bottom">
-                  <span className={`alert-status ${statusClass[alert.status]}`}>
-                    {alert.status}
-                  </span>
-
-                  <button
-                    className="alert-detail-button"
-                    onClick={() => setSelectedAlert(alert)}
-                  >
-                    <Eye size={15} />
-                    Xem chi tiết
-                  </button>
-                </div>
-              </div>
-            </article>
-          ))}
-
-          {filteredAlerts.length === 0 && (
+          {!loadingAlerts && filteredAlerts.length === 0 && houseId !== '' && (
             <div className="alerts-empty">
-              Không tìm thấy sự kiện phù hợp. Hãy thử thay đổi từ khóa hoặc bộ lọc.
+              Không tìm thấy cảnh báo phù hợp. Hãy thử thay đổi từ khóa hoặc bộ lọc.
             </div>
           )}
         </div>
 
         <div className="devices-footnote">
           <Bell size={15} />
-          Cảnh báo mẫu chỉ phục vụ kiểm thử giao diện; chưa phải dữ liệu cảm biến hoặc AI thực tế.
+          Dữ liệu được lấy từ backend. Realtime cần WebSocket được xác thực và backend đang hoạt động.
         </div>
       </section>
 
@@ -303,8 +681,12 @@ export default function Alerts() {
           >
             <div className="alert-modal-header">
               <div>
-                <div className="eyebrow">CHI TIẾT SỰ KIỆN #{selectedAlert.id}</div>
-                <h2 id="alert-modal-title">{selectedAlert.title}</h2>
+                <div className="eyebrow">
+                  CHI TIẾT SỰ KIỆN #{selectedAlert.id}
+                </div>
+                <h2 id="alert-modal-title">
+                  {eventTitle(selectedAlert.type, selectedAlert.message)}
+                </h2>
               </div>
 
               <button
@@ -316,12 +698,28 @@ export default function Alerts() {
               </button>
             </div>
 
+            {loadingDetail && <p>Đang tải chi tiết và lịch sử...</p>}
+
+            {detailError && (
+              <div className="alerts-empty" role="alert">
+                {detailError}
+              </div>
+            )}
+
             <div className="alert-modal-badges">
-              <span className={`severity-tag ${severityClass[selectedAlert.severity]}`}>
-                {selectedAlert.severity}
+              <span
+                className={`severity-tag ${
+                  severityClass[severityLabel(selectedAlert.level)]
+                }`}
+              >
+                {severityLabel(selectedAlert.level)}
               </span>
-              <span className={`alert-status ${statusClass[selectedAlert.status]}`}>
-                {selectedAlert.status}
+              <span
+                className={`alert-status ${
+                  statusClass[statusLabel(selectedAlert.status)]
+                }`}
+              >
+                {statusLabel(selectedAlert.status)}
               </span>
             </div>
 
@@ -332,53 +730,98 @@ export default function Alerts() {
               </div>
               <div>
                 <span>Khu vực</span>
-                <strong>{selectedAlert.zone}</strong>
+                <strong>{selectedZoneName}</strong>
+              </div>
+              <div>
+                <span>Thiết bị ID</span>
+                <strong>{selectedAlert.deviceId ?? '—'}</strong>
               </div>
               <div>
                 <span>Thời gian ghi nhận</span>
-                <strong>{selectedAlert.time}</strong>
+                <strong>{formatDate(selectedAlert.createdAt)}</strong>
+              </div>
+              <div>
+                <span>Thời gian tiếp nhận</span>
+                <strong>{formatDate(selectedAlert.handledAt)}</strong>
               </div>
             </div>
 
             <div className="alert-detail-description">
-              <h3>Mô tả & hướng kiểm tra</h3>
-              <p>{selectedAlert.detail}</p>
+              <h3>Mô tả sự kiện</h3>
+              <p>{selectedAlert.message || 'Backend không cung cấp mô tả.'}</p>
+            </div>
+
+            <div className="alert-detail-description">
+              <h3>Ảnh bằng chứng</h3>
+              {snapshotUrl ? (
+                <img
+                  src={snapshotUrl}
+                  alt={`Ảnh bằng chứng của cảnh báo ${selectedAlert.id}`}
+                  style={{
+                    display: 'block',
+                    maxWidth: '100%',
+                    maxHeight: 360,
+                    objectFit: 'contain',
+                    borderRadius: 8,
+                  }}
+                />
+              ) : snapshotError ? (
+                <p>{snapshotError}</p>
+              ) : selectedAlert.snapshotId ? (
+                <p>Đang tải ảnh bằng chứng...</p>
+              ) : (
+                <p>Sự kiện này không có ảnh bằng chứng được liên kết.</p>
+              )}
+            </div>
+
+            <div className="alert-detail-description">
+              <h3>Lịch sử xử lý</h3>
+              {history.length === 0 ? (
+                <p>Chưa có bản ghi lịch sử hoặc API không trả về dữ liệu.</p>
+              ) : (
+                <ul>
+                  {history.map((item, index) => (
+                    <li key={`${item.id}-${index}`}>
+                      {formatDate(item.changedAt)} —{' '}
+                      {item.fromStatus
+                        ? statusLabel(item.fromStatus)
+                        : 'Khởi tạo'}{' '}
+                      → {statusLabel(item.toStatus)}
+                      {item.note ? ` — ${item.note}` : ''}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
 
             <div className="alert-modal-actions">
-              {selectedAlert.status !== 'Đang xử lý' && (
+              {selectedAlert.status === 'NEW' && (
                 <button
                   className="alert-action-secondary"
-                  onClick={() => updateStatus(selectedAlert.id, 'Đang xử lý')}
+                  disabled={savingStatus}
+                  onClick={() => void updateStatus('IN_PROGRESS')}
                 >
                   <Clock3 size={15} />
-                  Đang xử lý
+                  Tiếp nhận xử lý
                 </button>
               )}
 
-              {selectedAlert.status !== 'Đã xử lý' && (
+              {selectedAlert.status === 'IN_PROGRESS' && (
                 <button
                   className="alert-action-primary"
-                  onClick={() => updateStatus(selectedAlert.id, 'Đã xử lý')}
+                  disabled={savingStatus}
+                  onClick={() => void updateStatus('RESOLVED')}
                 >
                   <CheckCircle2 size={15} />
                   Đánh dấu đã xử lý
                 </button>
               )}
-
-              {selectedAlert.status !== 'Mới' && (
-                <button
-                  className="alert-action-secondary"
-                  onClick={() => updateStatus(selectedAlert.id, 'Mới')}
-                >
-                  Đặt lại trạng thái
-                </button>
-              )}
             </div>
 
             <p className="alert-modal-note">
-              Thay đổi trạng thái hiện chỉ lưu trong bộ nhớ của trang. Khi tải lại
-              trình duyệt, dữ liệu sẽ trở về mẫu ban đầu.
+              {savingStatus
+                ? 'Đang lưu trạng thái lên backend...'
+                : 'Trạng thái được cập nhật qua API và chỉ chuyển theo quy trình Mới → Đang xử lý → Đã xử lý.'}
             </p>
           </section>
         </div>
