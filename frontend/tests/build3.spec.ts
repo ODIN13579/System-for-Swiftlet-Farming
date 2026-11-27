@@ -1,12 +1,12 @@
 
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test, type Page, type WebSocketRoute } from '@playwright/test'
 
 const house = { id: 1, name: 'QA House', active: true }
 const zone = { id: 2, houseId: 1, name: 'QA Zone', active: true }
 const alert = { id: 42, houseId: 1, zoneId: 2, level: 'CRITICAL', type: 'TEMP_HIGH', status: 'NEW', message: 'QA alert 42', createdAt: '2026-11-27T00:00:00Z' }
 const list = (items: unknown[]) => ({ items, page: { totalPages: 1, totalElements: items.length } })
 
-async function setup(page: Page, permission = 'granted', enabled = true, role = 'OWNER') {
+async function setup(page: Page, permission = 'granted', enabled = true, role = 'OWNER', multipleHouses = false) {
   let alerts: typeof alert[] = []
   const sockets: ((message: unknown) => void)[] = []
   await page.addInitScript(({ permission, enabled }) => {
@@ -18,7 +18,9 @@ async function setup(page: Page, permission = 'granted', enabled = true, role = 
       close() {}
     } })
   }, { permission, enabled })
+  const houseSockets: WebSocketRoute[] = []
   await page.routeWebSocket('**/ws/houses/*', socket => {
+    houseSockets.push(socket)
     sockets.push(message => socket.send(JSON.stringify(message)))
   })
   await page.route('**/api/**', async route => {
@@ -28,7 +30,7 @@ async function setup(page: Page, permission = 'granted', enabled = true, role = 
     if (path.endsWith('/login')) return route.fulfill({ json: { accessToken: 'browser-test-token' } })
     if (path.endsWith('/logout')) return route.fulfill({ status: 204 })
     if (path.endsWith('/me')) return route.fulfill({ json: { id: 1, role, email: 'qa@example.test', active: true } })
-    if (path.endsWith('/houses')) return route.fulfill({ json: list([house]) })
+    if (path.endsWith('/houses')) return route.fulfill({ json: list(multipleHouses ? [house, { ...house, id: 3, name: 'Second House' }] : [house]) })
     if (path.endsWith('/zones')) return route.fulfill({ json: list([zone]) })
     if (path.endsWith('/alerts')) {
       const status = url.searchParams.get('status')
@@ -51,6 +53,7 @@ async function setup(page: Page, permission = 'granted', enabled = true, role = 
   await expect.poll(() => sockets.length).toBe(1)
   return {
     sockets,
+    houseSockets,
     publish(houseId = 1) {
       if (houseId === 1) alerts = [alert]
       sockets.at(-1)?.({ type: 'alert.created', data: { ...alert, houseId } })
@@ -127,4 +130,24 @@ test('401 on authenticated data routes returns the user to login', async ({ page
   await page.route('**/api/v1/houses?*', route => route.fulfill({ status: 401 }))
   await page.getByRole('button', { name: /Thống kê & Báo cáo/ }).click()
   await expect(page.locator('#login-password')).toBeVisible()
+})
+
+test('switching House closes the old alert socket and reconnects only the new scope', async ({ page }) => {
+  const qa = await setup(page, 'granted', true, 'OWNER', true)
+  const previous = qa.houseSockets[0]
+  let previousClosed = false
+  previous.onClose(() => { previousClosed = true })
+  await page.getByLabel('Nhà yến', { exact: true }).selectOption('3')
+  await expect.poll(() => previousClosed).toBe(true)
+  await expect.poll(() => qa.houseSockets.length).toBe(2)
+  const current = qa.houseSockets[1]
+  expect(current.url()).toMatch(/\/3$/)
+  current.send(JSON.stringify({ type: 'alert.created', data: alert }))
+  current.send(JSON.stringify({ type: 'alert.created', data: { ...alert, id: 45, houseId: 3 } }))
+  await expect.poll(() => noticeCount(page)).toBe(1)
+  current.close({ code: 1011 })
+  await expect.poll(() => qa.houseSockets.length).toBe(3)
+  expect(qa.houseSockets[2].url()).toMatch(/\/3$/)
+  qa.houseSockets[2].send(JSON.stringify({ type: 'alert.created', data: { ...alert, id: 46, houseId: 3 } }))
+  await expect.poll(() => noticeCount(page)).toBe(2)
 })

@@ -22,7 +22,8 @@ import com.swiftletcare.security.Access;
 @RestController
 @RequestMapping("/api/v1")
 public class ControlReadController {
-  public record ActuatorView(long id,long deviceId,String kind,String mode,boolean on,Instant manualUntil) {}
+  public record ActuatorView(long id,long deviceId,String kind,String mode,boolean on,Instant manualUntil,
+      Instant stateReceivedAt,boolean stateFresh,Boolean safetyOverride,boolean canControl) {}
   public record CommandView(long id,String commandId,long actuatorId,long requestedBy,String action,
       Boolean targetState,String targetMode,String status,Instant requestedAt,Instant sentAt,
       Instant ackAt,Instant expiresAt,String failureReason) {}
@@ -40,9 +41,14 @@ public class ControlReadController {
     DeviceController.page(page,size);
     access.requireDevice(jwt,deviceId,Access.Permission.READ);
     long total=jdbc.queryForObject("select count(*) from swiftletcare.actuators where device_id=?",Long.class,deviceId);
-    var rows=jdbc.query("select * from swiftletcare.actuators where device_id=? order by id limit ? offset ?",
+    boolean canControl=access.canDevice(jwt,deviceId,Access.Permission.WRITE);
+    var rows=jdbc.query("""
+        select *, coalesce(state_received_at > clock_timestamp()-interval '8 seconds',false) as state_fresh
+        from swiftletcare.actuators where device_id=? order by id limit ? offset ?
+        """,
         (rs,n)->new ActuatorView(rs.getLong("id"),rs.getLong("device_id"),rs.getString("kind"),
-            rs.getString("mode"),rs.getBoolean("on"),time(rs,"manual_until")),deviceId,size,(long)page*size);
+            rs.getString("mode"),rs.getBoolean("on"),time(rs,"manual_until"),time(rs,"state_received_at"),
+            rs.getBoolean("state_fresh"),(Boolean)rs.getObject("safety_override"),canControl),deviceId,size,(long)page*size);
     return new Views.ListView<>(rows,new Views.PageInfo(page,size,total,(int)((total+size-1)/size)));
   }
 

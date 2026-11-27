@@ -1,5 +1,5 @@
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   Wifi,
   Thermometer,
@@ -10,10 +10,8 @@ import {
   RefreshCw,
   Cpu,
 } from 'lucide-react'
-import { api, type Device } from '../services/api'
-
-const zoneIdValue = import.meta.env.VITE_ZONE_ID
-const zoneId = zoneIdValue ? Number(zoneIdValue) : null
+import { DeviceSelectors, useDeviceScope } from '../components/DeviceScope'
+import FanControl from '../components/FanControl'
 
 function getDeviceIcon(type: string) {
   const value = type.toLowerCase()
@@ -29,51 +27,10 @@ function getDeviceIcon(type: string) {
 }
 
 export default function Devices() {
-  const [devices, setDevices] = useState<Device[]>([])
+  const { devices, device, loading, error, reload: loadDevices } = useDeviceScope()
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [totalElements, setTotalElements] = useState(0)
-
-  async function loadDevices() {
-    console.log('[Devices] Component đang tải')
-    console.log('[Devices] API URL:', import.meta.env.VITE_API_BASE_URL)
-    console.log('[Devices] Zone ID:', zoneId)
-
-    if (zoneId === null || !Number.isSafeInteger(zoneId) || zoneId <= 0) {
-      setError('Vui lòng cấu hình VITE_ZONE_ID bằng ID khu vực hợp lệ.')
-      setDevices([])
-      setTotalElements(0)
-      return
-    }
-
-    setLoading(true)
-    setError(null)
-
-    try {
-      console.log('[Devices] Đang gọi API danh sách thiết bị...')
-      const result = await api.getDevices(zoneId)
-      console.log('[Devices] API trả về:', result)
-
-      setDevices(result.items)
-      setTotalElements(result.page.totalElements)
-    } catch (err) {
-      console.error('[Devices] Lỗi API:', err)
-
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Không thể tải danh sách thiết bị.',
-      )
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    void loadDevices()
-  }, [])
+  const totalElements = devices.length
 
   const filteredDevices = useMemo(() => {
     return devices.filter((device) => {
@@ -109,6 +66,8 @@ export default function Devices() {
         </div>
       </div>
 
+      <DeviceSelectors />
+      {device && <FanControl key={device.id} device={device} available={!error} />}
       {error && (
         <div role="alert" className="panel" style={{ padding: 16 }}>
           <p>{error}</p>
@@ -259,7 +218,7 @@ export default function Devices() {
 
         <div className="devices-footnote">
           <Wifi size={15} />
-          Trạng thái lấy từ Backend; danh sách hiện tải tối đa 20 thiết bị.
+          Trạng thái lấy từ Backend.
         </div>
       </section>
     </>

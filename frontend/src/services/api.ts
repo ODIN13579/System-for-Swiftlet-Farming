@@ -1,5 +1,5 @@
 
-const API_BASE_URL =
+export const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
 
 export type LoginResponse = {
@@ -50,6 +50,10 @@ export type Actuator = {
   mode: 'AUTO' | 'MANUAL' | string
   on: boolean
   manualUntil: string | null
+  stateReceivedAt?: string | null
+  stateFresh?: boolean
+  safetyOverride?: boolean | null
+  canControl?: boolean
 }
 
 export type CommandCreated = {
@@ -210,6 +214,17 @@ export function setAccessToken(token: string | null) {
   accessToken = token
 }
 
+export class ApiError extends Error {
+  readonly status: number
+  readonly code?: string
+
+  constructor(status: number, code: string | undefined, message: string) {
+    super(message)
+    this.status = status
+    this.code = code
+  }
+}
+
 export function endSession() {
   accessToken = null
   window.dispatchEvent(new Event('swiftletcare:session-ended'))
@@ -256,6 +271,7 @@ async function request<T>(
       endSession()
     }
     const responseText = await response.text().catch(() => '')
+    let code: string | undefined
     let message = responseText || response.statusText
 
     // Một số API trả lỗi ở dạng JSON.
@@ -265,6 +281,7 @@ async function request<T>(
 
         if (typeof body === 'object' && body !== null) {
           const data = body as Record<string, unknown>
+          code = typeof data.code === 'string' ? data.code : undefined
           const apiMessage =
             data.message ?? data.error ?? data.detail
 
@@ -277,7 +294,7 @@ async function request<T>(
       }
     }
 
-    throw new Error(`API ${response.status}: ${message}`)
+    throw new ApiError(response.status, code, `API ${response.status}: ${message}`)
   }
 
   if (blob) return (await response.blob()) as T
@@ -344,7 +361,7 @@ export const api = {
     })
   },
 
-  getZones(houseId: number, page = 0, size = 20) {
+  getZones(houseId: number, page = 0, size = 20, signal?: AbortSignal) {
     const params = new URLSearchParams({
       page: String(page),
       size: String(size),
@@ -352,6 +369,7 @@ export const api = {
 
     return request<ListResponse<Zone>>(
       `/api/v1/houses/${houseId}/zones?${params}`,
+      { signal },
     )
   },
 
@@ -376,7 +394,7 @@ export const api = {
     })
   },
 
-  getDevices(zoneId: number, page = 0, size = 20) {
+  getDevices(zoneId: number, page = 0, size = 20, signal?: AbortSignal) {
     const params = new URLSearchParams({
       page: String(page),
       size: String(size),
@@ -384,6 +402,7 @@ export const api = {
 
     return request<ListResponse<Device>>(
       `/api/v1/zones/${zoneId}/devices?${params}`,
+      { signal },
     )
   },
 
@@ -408,9 +427,9 @@ export const api = {
     })
   },
 
-  getLatestTelemetry(deviceId: number) {
+  getLatestTelemetry(deviceId: number, signal?: AbortSignal) {
     return request<Telemetry>(
-      `/api/v1/devices/${deviceId}/telemetry/latest`,
+      `/api/v1/devices/${deviceId}/telemetry/latest`, { signal },
     )
   },
 
@@ -449,7 +468,7 @@ export const api = {
     )
   },
 
-  getActuators(deviceId: number, page = 0, size = 20) {
+  getActuators(deviceId: number, page = 0, size = 20, signal?: AbortSignal) {
     const params = new URLSearchParams({
       page: String(page),
       size: String(size),
@@ -457,6 +476,7 @@ export const api = {
 
     return request<ListResponse<Actuator>>(
       `/api/v1/devices/${deviceId}/actuators?${params}`,
+      { signal },
     )
   },
 
@@ -464,21 +484,23 @@ export const api = {
     actuatorId: number,
     data:
       | { action: 'SET_MODE'; targetMode: 'AUTO' | 'MANUAL'; targetState?: never }
-      // | { action: 'SET_STATE'; targetState: 'ON' | 'OFF'; targetMode?: never },
       | { action: 'SET_STATE'; targetState: boolean; targetMode?: never },
+    signal?: AbortSignal,
   ) {
     return request<CommandCreated>(
       `/api/v1/actuators/${actuatorId}/commands`,
       {
         method: 'POST',
+        signal,
         body: JSON.stringify(data),
       },
     )
   },
 
-  getCommandStatus(commandId: string) {
+  getCommandStatus(commandId: string, signal?: AbortSignal) {
     return request<ControlCommandStatus>(
       `/api/v1/commands/${encodeURIComponent(commandId)}`,
+      { signal },
     )
   },
 
@@ -601,5 +623,3 @@ export const api = {
   },
 
 }
-
-export { request as actuatorPanelRequest }

@@ -82,7 +82,11 @@ public class Access {
   }
 
   public void requireDevice(Jwt jwt, long device, Permission permission) {
-    requireAllowed(allowed(jwt, "device", device, permission));
+    requireAllowed(canDevice(jwt, device, permission));
+  }
+
+  public boolean canDevice(Jwt jwt, long device, Permission permission) {
+    return allowed(jwt, "device", device, permission);
   }
 
   private boolean allowed(Jwt jwt, String resource, long id, Permission permission) {

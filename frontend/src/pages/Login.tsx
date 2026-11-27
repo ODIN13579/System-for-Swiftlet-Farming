@@ -4,11 +4,11 @@ import { Bird, LockKeyhole, Mail } from 'lucide-react'
 import { api } from '../services/api'
 
 type LoginProps = {
-  onLogin: (token: string) => void
+  onLogin: (token: string) => Promise<void>
 }
 
 export default function Login({ onLogin }: LoginProps) {
-  const [email, setEmail] = useState('local@example.test')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -25,7 +25,7 @@ export default function Login({ onLogin }: LoginProps) {
         throw new Error('Backend không trả về access token.')
       }
 
-      onLogin(result.accessToken)
+      await onLogin(result.accessToken)
     } catch (err) {
       setError(
         err instanceof Error

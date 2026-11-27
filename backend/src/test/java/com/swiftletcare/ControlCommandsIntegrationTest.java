@@ -74,6 +74,19 @@ class ControlCommandsIntegrationTest {
           (topic, message) -> wire.add(new String(message.getPayload(), StandardCharsets.UTF_8)));
       long fan = actuators.get("FAN");
       long mist = actuators.get("MIST");
+      var readPath = URI.create("http://localhost:" + port + "/api/v1/devices/" + device + "/actuators");
+      for (String token : new String[] {owner, viewer}) {
+        var response = http.send(HttpRequest.newBuilder(readPath)
+            .header("Authorization", "Bearer " + token).GET().build(), HttpResponse.BodyHandlers.ofString());
+        assertThat(response.statusCode()).isEqualTo(200);
+        var outputs = json.readTree(response.body()).path("items");
+        assertThat(outputs.size()).isEqualTo(4);
+        for (var output : outputs) {
+          assertThat(output.path("canControl").asBoolean()).isEqualTo(token.equals(owner));
+          assertThat(output.path("stateFresh").asBoolean()).isFalse();
+          assertThat(output.path("stateReceivedAt").isNull()).isTrue();
+        }
+      }
       assertThat(post(http, viewer, fan, Map.of("action", "SET_MODE", "targetMode", "MANUAL"))
           .statusCode()).isEqualTo(403);
       assertThat(post(http, owner, fan, Map.of("action", "SET_MODE", "targetMode", "MANUAL",

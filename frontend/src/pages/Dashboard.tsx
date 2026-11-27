@@ -1,8 +1,7 @@
-import { useAlertSession } from '../components/AlertSession'
-import type { Zone } from '../services/api'
+import { DeviceSelectors, useDeviceScope } from '../components/DeviceScope'
 import AiCounts from '../components/AiCounts'
 import DashboardAlerts from '../components/DashboardAlerts'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   Thermometer,
   ChartNoAxesCombined,
@@ -12,14 +11,11 @@ import {
 } from 'lucide-react'
 import {
   api,
-  type Device,
+  ApiError,
   type Telemetry,
 } from '../services/api'
 
 import { connectDeviceRealtime } from '../services/websocket'
-
-const zoneIdValue = import.meta.env.VITE_ZONE_ID
-const preferredZoneId = Number(zoneIdValue)
 
 type MetricValue = {
   label: string
@@ -58,176 +54,77 @@ function formatDateTime(value?: string | null) {
   }).format(date)
 }
 
-function isSensor(device: Device) {
-  const text =
-    `${device.name} ${device.type} ${device.deviceId}`.toLowerCase()
-
-  return (
-    text.includes('esp32') ||
-    text.includes('sensor') ||
-    text.includes('cảm biến')
-  )
-}
-
-function hasTelemetryValue(data: Telemetry | null) {
-  if (!data) return false
-
-  return [
-    data.temperature,
-    data.humidity,
-    data.co2,
-    data.light,
-  ].some((value) => value != null)
-}
-
 export default function Dashboard({ onNavigateToAlerts }: { onNavigateToAlerts: () => void }) {
-  const { houses, houseId, selectHouse, loadingHouses, houseError } = useAlertSession()
-  const [selection, setSelection] = useState<{ houseId: number; zones: Zone[]; zoneId: number; error?: string }>()
-  const current = selection && selection.houseId === houseId ? selection : undefined
-  useEffect(() => {
-    if (houseId === '') return
-    let cancelled = false
-    async function load(id: number) {
-      try {
-        const zones: Zone[] = []
-        for (let page = 0; !cancelled; page++) {
-          const result = await api.getZones(id, page, 100)
-          zones.push(...result.items.filter(item => item.active))
-          if (page + 1 >= result.page.totalPages) break
-        }
-        const zoneId = zones.find(zone => zone.id === preferredZoneId)?.id ?? zones[0]?.id ?? 0
-        if (!cancelled) setSelection({ houseId: id, zones, zoneId })
-      } catch (error) {
-        if (!cancelled) setSelection({ houseId: id, zones: [], zoneId: 0, error: String(error) })
-      }
-    }
-    void load(houseId)
-    return () => { cancelled = true }
-  }, [houseId])
+  const scope = useDeviceScope()
   return <>
-    <div className="alerts-filters">
-      <select aria-label="Nhà yến" value={houseId} disabled={loadingHouses} onChange={event => selectHouse(Number(event.target.value) || '')}>
-        <option value="">Chọn nhà yến</option>
-        {houses.map(house => <option key={house.id} value={house.id}>{house.name}</option>)}
-      </select>
-      <select aria-label="Khu vực" value={current?.zoneId || ''} disabled={!current?.zones.length} onChange={event => current && setSelection({ ...current, zoneId: Number(event.target.value) })}>
-        <option value="" disabled>Chọn khu vực</option>
-        {current?.zones.map(zone => <option key={zone.id} value={zone.id}>{zone.name}</option>)}
-      </select>
-    </div>
-    {(houseError || current?.error) && <p role="alert">{houseError || current?.error}</p>}
-    {(loadingHouses || (houseId !== '' && !current)) && <p role="status">Đang tải...</p>}
-    {current?.zoneId ? <DashboardZone key={current.zoneId} zoneId={current.zoneId} onNavigateToAlerts={onNavigateToAlerts} /> : null}
+    <DeviceSelectors />
+    {scope.zoneId === undefined
+      ? <p role={scope.error ? 'alert' : 'status'}>{scope.error || (scope.loading ? 'Đang tải...' : 'Chưa chọn khu vực.')}</p>
+      : <DashboardZone key={scope.zoneId + ':' + scope.device?.id} zoneId={scope.zoneId} onNavigateToAlerts={onNavigateToAlerts} />}
   </>
 }
 
 function DashboardZone({ zoneId, onNavigateToAlerts }: { zoneId: number; onNavigateToAlerts: () => void }) {
-  const [devices, setDevices] = useState<Device[]>([])
+  const { device, devices, loading, error, reload } = useDeviceScope()
   const [telemetry, setTelemetry] = useState<Telemetry | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const latestTime = useRef(-Infinity)
   const [telemetryMessage, setTelemetryMessage] = useState('')
-  const [realtimeStatus, setRealtimeStatus] =
-    useState<RealtimeStatus>('disconnected')
+  const [realtimeStatus, setRealtimeStatus] = useState<RealtimeStatus>('disconnected')
+  const [revision, setRevision] = useState(0)
+  const sensorId = device?.id
+  const loadDashboard = () => { reload(); setRevision(value => value + 1) }
 
-  const loadDashboard = useCallback(async () => {
-    setLoading(true)
-    setError('')
-    setTelemetryMessage('')
-    setTelemetry(null)
-
-    try {
-      const result = await api.getDevices(zoneId)
-      const loadedDevices = result.items ?? []
-
-      setDevices(loadedDevices)
-
-      const sensor = loadedDevices.find(isSensor)
-
-      if (!sensor) {
-        setTelemetryMessage(
-          'Chưa tìm thấy thiết bị cảm biến trong khu vực này.',
-        )
-        return
-      }
-
+  useEffect(() => {
+    if (sensorId === undefined) return
+    const controller = new AbortController()
+    let socket: WebSocket | undefined
+    let retry: number | undefined
+    let poll: number | undefined
+    let delay = 1000
+    function update(data: Telemetry) {
+      if (controller.signal.aborted) return
+      const time = Date.parse(data.timestamp ?? '')
+      if (!Number.isFinite(time) || time < latestTime.current) return
+      latestTime.current = time
+      setTelemetry(data)
+      setTelemetryMessage('')
+    }
+    async function read(id: number) {
       try {
-        const latest = await api.getLatestTelemetry(sensor.id)
-
-        setTelemetry(latest)
-
-        if (!hasTelemetryValue(latest)) {
-          setTelemetryMessage(
-            'Bản ghi mới nhất chưa có số đo môi trường.',
-          )
+        update(await api.getLatestTelemetry(id, controller.signal))
+      } catch (error) {
+        if (!controller.signal.aborted && !(error instanceof ApiError && error.status === 404)) {
+          setTelemetryMessage('Không tải được số đo mới. Đang thử lại.')
         }
-      } catch (err) {
-        setTelemetryMessage(
-          err instanceof Error
-            ? `Chưa lấy được số đo: ${err.message}`
-            : 'Chưa lấy được số đo mới nhất.',
-        )
+      } finally {
+        if (!controller.signal.aborted) poll = window.setTimeout(() => void read(id), 5000)
       }
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Không thể tải dữ liệu Dashboard.',
-      )
-    } finally {
-      setLoading(false)
     }
-  }, [zoneId])
-
-  useEffect(() => {
-    void loadDashboard()
-  }, [loadDashboard])
-
-  const sensorId = devices.find(isSensor)?.id ?? null
-
-  useEffect(() => {
-    if (sensorId === null) {
-      setRealtimeStatus('disconnected')
-      return
-    }
-
-    const socket = connectDeviceRealtime(
-      sensorId,
-      (message) => {
-        if (message.type === 'telemetry.updated') {
+    function connect(id: number) {
+      socket = connectDeviceRealtime(id, message => {
+        if (message.type === 'telemetry.updated' && message.data && typeof message.data === 'object') {
           const data = message.data as Telemetry
-
-          setTelemetry((previous) => ({
-            ...previous,
-            ...data,
-          }))
-
-          setTelemetryMessage('')
+          if (data.deviceId === id) update(data)
         }
-
-        if (message.type === 'device.status.changed') {
-          const data = message.data as Partial<Device>
-
-          if (data.id == null) return
-
-          setDevices((previous) =>
-            previous.map((device) =>
-              device.id === data.id
-                ? { ...device, ...data }
-                : device,
-            ),
-          )
-        }
-      },
-      (status) => {
-        setRealtimeStatus(status)
-      },
-    )
-
-    return () => {
-      socket.close()
+      }, state => {
+        if (controller.signal.aborted) return
+        setRealtimeStatus(state)
+        if (state === 'connected') delay = 1000
+      }, event => {
+        if (controller.signal.aborted || event.code === 1008) return
+        retry = window.setTimeout(() => connect(id), delay)
+        delay = Math.min(delay * 2, 15000)
+      })
     }
-  }, [sensorId])
+    void read(sensorId)
+    connect(sensorId)
+    return () => {
+      controller.abort()
+      window.clearTimeout(retry)
+      window.clearTimeout(poll)
+      socket?.close()
+    }
+  }, [sensorId, revision])
 
   const metrics: MetricValue[] = [
     {
@@ -305,6 +202,7 @@ function DashboardZone({ zoneId, onNavigateToAlerts }: { zoneId: number; onNavig
         </div>
       )}
 
+      <p role="status">{device ? device.name + (device.online ? ' · Online' : ' · Offline' + (telemetry ? ' · Hiển thị số đo cuối cùng' : '')) : 'Chưa có ESP32.'}</p>
       {telemetryMessage && (
         <div
           className="panel"

@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import {
   api,
+  ApiError,
   type House,
   type Zone,
   type ZoneConfig as ZoneConfigType,
@@ -427,10 +428,7 @@ export default function ZoneConfig() {
       const errorMessage =
         err instanceof Error ? err.message : ''
 
-      if (
-        errorMessage.includes('VERSION_CONFLICT') ||
-        errorMessage.includes('409')
-      ) {
+      if (err instanceof ApiError && err.status === 409) {
         setError(
           'Cấu hình đã thay đổi trên máy chủ. Hãy nhấn "Tải lại" ' +
           'để lấy phiên bản mới nhất trước khi chỉnh sửa tiếp.',

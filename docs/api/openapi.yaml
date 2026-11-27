@@ -2553,12 +2553,27 @@ components:
           type: string
           nullable: true
           format: date-time
+        stateReceivedAt:
+          type: string
+          nullable: true
+          format: date-time
+        stateFresh:
+          type: boolean
+          description: The firmware report meets the freshness window for SET_STATE.
+        safetyOverride:
+          type: boolean
+          nullable: true
+        canControl:
+          type: boolean
+          description: Current account has write permission for the ESP32.
       required:
       - id
       - deviceId
       - kind
       - mode
       - 'on'
+      - stateFresh
+      - canControl
       additionalProperties: false
     TelemetryResponse:
       type: object

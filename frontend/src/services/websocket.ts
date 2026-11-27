@@ -1,5 +1,7 @@
+import { API_BASE_URL } from './api'
+
 const WS_BASE_URL =
-  import.meta.env.VITE_WS_BASE_URL || 'ws://localhost:8080'
+  import.meta.env.VITE_WS_BASE_URL || API_BASE_URL.replace(/^http/, 'ws').replace(/\/$/, '')
 
 export type RealtimeMessage = {
   type: string
@@ -10,6 +12,7 @@ export function connectDeviceRealtime(
   deviceId: number,
   onMessage: (message: RealtimeMessage) => void,
   onStatus?: (status: 'connected' | 'disconnected' | 'error') => void,
+  onClose?: (event: CloseEvent) => void,
 ): WebSocket {
   const wsUrl = `${WS_BASE_URL}/ws/devices/${deviceId}`
 
@@ -29,8 +32,9 @@ export function connectDeviceRealtime(
     }
   }
 
-  socket.onclose = () => {
+  socket.onclose = event => {
     onStatus?.('disconnected')
+    onClose?.(event)
   }
 
   socket.onerror = () => {

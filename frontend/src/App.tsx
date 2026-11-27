@@ -13,6 +13,7 @@ import {
   UserRound,
 } from 'lucide-react'
 import './App.css'
+import { DeviceScope } from './components/DeviceScope'
 import Dashboard from './pages/Dashboard'
 import Devices from './pages/Devices'
 import Alerts from './pages/Alerts'
@@ -79,7 +80,7 @@ function App() {
       window.removeEventListener('swiftletcare:session-ended', expire)
     }
   }, [])
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(() => !window.matchMedia('(max-width: 650px)').matches)
   const currentPage = menuItems.find((item) => item.id === activePage)
   async function handleLogin(token: string) {
     setAccessToken(token)
@@ -94,14 +95,14 @@ function App() {
       setAccessToken(null)
       setCurrentUser(null)
       setAuthenticated(false)
-      console.error('Không thể tải hồ sơ người dùng:', error)
+      throw error
     }
   }
   async function handleLogout() {
     try {
       await api.logout()
-    } catch (error) {
-      console.error('Không thể gọi API đăng xuất:', error)
+    } catch {
+      // Clear the local session even when the API is unavailable.
     } finally {
       setAccessToken(null)
       setCurrentUser(null)
@@ -122,6 +123,7 @@ function App() {
   }
   return (
     <AlertSession onOpenAlert={openAlert}>
+    <DeviceScope active={activePage === 'dashboard' || activePage === 'environment'}>
     <div className="app-shell">
       <aside className={`sidebar ${sidebarOpen ? '' : 'sidebar-collapsed'}`}>
         <div className="brand">
@@ -200,6 +202,7 @@ function App() {
         <header className="topbar">
           <button
             className="icon-button"
+            aria-expanded={sidebarOpen}
             onClick={() => setSidebarOpen(!sidebarOpen)}
             aria-label="Thu gọn hoặc mở rộng thanh bên"
           >
@@ -249,6 +252,7 @@ function App() {
 
       </main>
     </div>
+    </DeviceScope>
     </AlertSession>
   )
 }
