@@ -1,17 +1,24 @@
 package com.swiftletcare.iot;
-
-import com.swiftletcare.api.*;
-import com.swiftletcare.management.*;
-import com.swiftletcare.realtime.Realtime;
-import jakarta.validation.constraints.*;
 import java.time.Instant;
-import java.util.*;
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
+
+import com.swiftletcare.alert.AlertEngine;
+import com.swiftletcare.api.ApiError;
+import com.swiftletcare.api.Views;
+import com.swiftletcare.management.Device;
+import com.swiftletcare.management.DeviceRepository;
+import com.swiftletcare.realtime.Realtime;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Service
 public class Ingestion {
@@ -40,12 +47,15 @@ public class Ingestion {
   private final DeviceRepository devices;
   private final Realtime realtime;
   private final long timeout;
+  private final AlertEngine alertEngine;
+
 
   public Ingestion(
       JdbcTemplate jdbc,
       PlatformTransactionManager tm,
       DeviceRepository devices,
       Realtime realtime,
+      AlertEngine alertEngine,
       @Value("${app.heartbeat-timeout-ms:6000}") long timeout) {
     this.jdbc = jdbc;
     this.tx = new TransactionTemplate(tm);
@@ -53,6 +63,7 @@ public class Ingestion {
     this.realtime = realtime;
     if (timeout < 1) throw new IllegalArgumentException("timeout must be positive");
     this.timeout = timeout;
+    this.alertEngine = alertEngine;
   }
 
   private Device valid(String code, long house, long zone, String type) {
@@ -97,7 +108,7 @@ public class Ingestion {
   // DO NOTHING does not abort the transaction, unlike catching a unique violation inside it.
   public Stored store(long house, long zone, Payload p) {
     validate(p);
-    return tx.execute(
+    Stored stored = tx.execute(
         s -> {
           var d = valid(p.device_id(), house, zone, "ESP32");
           int n =
@@ -141,9 +152,15 @@ values(?,?,?,now(),?,?,?,?,?) on conflict(device_id,event_id) do nothing
               || !Objects.equals(t.sensorStatus, p.sensor_status())) throw ApiError.conflict();
           return new Stored(Views.TelemetryView.of(t), n == 1);
         });
+        if (stored.inserted()) {
+          alertEngine.telemetry(zone, stored.data().deviceId());
+        }
+
+        return stored;
   }
 
   public synchronized void heartbeat(long house, long zone, Heartbeat p) {
+
     if (p.timestamp() == null || p.timestamp().isAfter(Instant.now().plusSeconds(300)))
       throw ApiError.bad("Invalid heartbeat timestamp");
     Views.DeviceView changed =
@@ -171,6 +188,7 @@ values(?,?,?,now(),?,?,?,?,?) on conflict(device_id,event_id) do nothing
                   d.id, d.deviceId, d.zoneId, d.name, d.type, d.enabled, true, seen);
             });
     if (changed != null) realtime.publish(changed.id(), "device.status.changed", changed);
+    alertEngine.heartbeat(zone);
   }
 
   @Scheduled(fixedDelayString = "${app.status-scan-ms:1000}")

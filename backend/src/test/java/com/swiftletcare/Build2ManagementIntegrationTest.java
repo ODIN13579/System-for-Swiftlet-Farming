@@ -108,7 +108,7 @@ class Build2ManagementIntegrationTest {
     jdbc.update("update swiftletcare.users set role='ADMIN' where id=?",user);
     assertThat(call("PUT","/zones/"+foreign+"/config",json.writeValueAsString(config(0,74)),token).statusCode()).isEqualTo(200);
     jdbc.update("update swiftletcare.users set active=false where id=?",user);
-    assertThat(call("GET",path,null,token).statusCode()).isEqualTo(403);
+    assertThat(call("GET",path,null,token).statusCode()).isEqualTo(401);
   }
 
   @Test void configInvalidInputNeverChangesSavedVersion() throws Exception {
@@ -221,8 +221,8 @@ class Build2ManagementIntegrationTest {
     assertThat(call("GET",path,null,token).statusCode()).isEqualTo(403);
     jdbc.update("update swiftletcare.house_memberships set active=true where user_id=?",user);
     jdbc.update("update swiftletcare.users set active=false where id=?",user);
-    assertThat(call("GET",path,null,token).statusCode()).isEqualTo(403);
-    assertThat(call("GET","/houses",null,token).statusCode()).isEqualTo(403);
+    assertThat(call("GET",path,null,token).statusCode()).isEqualTo(401);
+    assertThat(call("GET","/houses",null,token).statusCode()).isEqualTo(401);
   }
 
   @Test void onlyActiveGlobalAdminGrantsCrossHouseAccess() throws Exception {
@@ -238,8 +238,8 @@ class Build2ManagementIntegrationTest {
     assertThat(access.canHouse(jwt,house,Access.Permission.WRITE)).isTrue();
     assertThat(call("GET","/houses?size=100",null,token).body()).contains("B2 foreign");
     jdbc.update("update swiftletcare.users set active=false where id=?",user);
-    assertThat(call("GET","/houses/"+foreignHouse,null,token).statusCode()).isEqualTo(403);
-    assertThat(call("GET","/houses",null,token).statusCode()).isEqualTo(403);
+    assertThat(call("GET","/houses/"+foreignHouse,null,token).statusCode()).isEqualTo(401);
+    assertThat(call("GET","/houses",null,token).statusCode()).isEqualTo(401);
   }
 
   @Test void deviceValidationAndDisablePreservesHistory() throws Exception {
