@@ -10,9 +10,11 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
@@ -358,6 +360,43 @@ class IngestionIntegrationTest {
     } finally {
       ws.sendClose(1000, "done").get(3, TimeUnit.SECONDS);
     }
+  }
+
+  @Test
+  void concurrentTelemetryBurstDeliversExactlyOneAckForEveryEvent() throws Exception {
+    acks.clear();
+    String prefix = "ack-burst-" + UUID.randomUUID() + "-";
+    Set<String> expected = new HashSet<>();
+    try (var senders = Executors.newFixedThreadPool(8)) {
+      var start = new CountDownLatch(1);
+      List<Future<?>> sends = new ArrayList<>();
+      for (int index = 0; index < 150; index++) {
+        String id = prefix + index;
+        expected.add(id);
+        sends.add(senders.submit(() -> {
+          start.await();
+          publish("telemetry", payload(id));
+          return null;
+        }));
+      }
+      start.countDown();
+      for (var send : sends) send.get(10, TimeUnit.SECONDS);
+    }
+    Set<String> received = new HashSet<>();
+    long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(20);
+    while (received.size() < expected.size()) {
+      String body = acks.poll(Math.max(0, deadline - System.nanoTime()), TimeUnit.NANOSECONDS);
+      if (body == null) break;
+      var ack = json.readTree(body);
+      assertThat(ack.get("status").asText()).isEqualTo("STORED");
+      assertThat(ack.get("device_id").asText()).isEqualTo(code);
+      assertThat(received.add(ack.get("event_id").asText())).as("no duplicated ACK").isTrue();
+    }
+    assertThat(received).isEqualTo(expected);
+    assertThat(acks.poll(400, TimeUnit.MILLISECONDS)).isNull();
+    assertThat(jdbc.queryForList(
+        "select event_id from swiftletcare.telemetry where device_id=? and event_id like ?",
+        String.class, device, prefix + "%")).containsExactlyInAnyOrderElementsOf(expected);
   }
 
   @Test
@@ -846,6 +885,26 @@ class IngestionIntegrationTest {
         Long.class,
         newAlertId
       )).isEqualTo(1L);
+
+      // Firmware emits this after three valid DHT22 reads. The broker path must
+      // clear the live condition without resolving the workflow or cloning the alert.
+      assertThat(jdbc.queryForObject(
+          "select cleared_at is null from swiftletcare.alerts where id=?",
+          Boolean.class, newAlertId)).isTrue();
+      mqtt.publish(topic + "/events", new MqttMessage(json.writeValueAsBytes(Map.of(
+          "device_id", code, "timestamp", Instant.now().toString(),
+          "event_type", "SENSOR_RECOVERED", "sensor", "DHT22",
+          "reason", "THREE_GOOD_READINGS"))));
+      String recovery = logs.poll(5, TimeUnit.SECONDS);
+      assertThat(recovery).isNotNull();
+      assertThat(json.readTree(recovery).get("type").asText()).isEqualTo("SENSOR_RECOVERED");
+      assertThat(jdbc.queryForObject("""
+          select status='NEW' and cleared_at is not null
+          from swiftletcare.alerts where id=?
+          """, Boolean.class, newAlertId)).isTrue();
+      assertThat(jdbc.queryForObject(
+          "select count(*) from swiftletcare.alert_histories where alert_id=?",
+          Long.class, newAlertId)).isEqualTo(1L);
 
       for(var invalid:List.of(
           Map.of("device_id",code,"timestamp",Instant.now().plusSeconds(600).toString(),"event_type","SENSOR_FAULT","sensor","DHT22","reason","bad time"),

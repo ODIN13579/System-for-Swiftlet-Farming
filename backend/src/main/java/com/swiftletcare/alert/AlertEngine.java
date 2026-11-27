@@ -497,6 +497,37 @@ public class AlertEngine {
         return;
     }
 
+    createAlert(house, zone, device, type, level, message);
+  }
+
+  // Caller holds the camera row lock for the whole connection-state transition.
+  void cameraOffline(long house, long zone, long device, String code) {
+    boolean open = Boolean.TRUE.equals(db.queryForObject("""
+        select exists(
+          select 1 from swiftletcare.alerts
+          where device_id=? and type='CAMERA_OFFLINE' and cleared_at is null
+        )
+        """, Boolean.class, device));
+    if (!open) {
+      createAlert(house, zone, device, "CAMERA_OFFLINE", "CRITICAL",
+          "Camera heartbeat missing: " + code);
+    }
+  }
+
+  void cameraRecovered(long house, long device) {
+    var cleared = db.queryForList("""
+        update swiftletcare.alerts
+        set cleared_at=clock_timestamp()
+        where device_id=? and type='CAMERA_OFFLINE' and cleared_at is null
+        returning id
+        """, Long.class, device);
+    for (long id : cleared) {
+      notifyAfterCommit(house, "alert.updated", id);
+    }
+  }
+
+  private void createAlert(
+      long house, long zone, long device, String type, String level, String message) {
     long id = db.queryForObject("""
         insert into swiftletcare.alerts
             (zone_id,device_id,type,level,status,message)
@@ -511,9 +542,9 @@ public class AlertEngine {
         """, id);
 
     notifyAfterCommit(house, "alert.created", id);
-    }
+  }
 
-    private void clear(long house, long zone, String type) {
+  private void clear(long house, long zone, String type) {
     var changed = db.queryForList("""
         update swiftletcare.alerts
         set cleared_at=clock_timestamp()

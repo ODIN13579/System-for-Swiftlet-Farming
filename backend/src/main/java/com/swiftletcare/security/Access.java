@@ -69,6 +69,10 @@ public class Access {
     requireAllowed(allowed(jwt,"house",house,Permission.OWNER,false));
   }
 
+  public void requireHouseOwner(Jwt jwt, long house) {
+    requireAllowed(canHouse(jwt, house, Permission.OWNER));
+  }
+
   public boolean canHouse(Jwt jwt, long house, Permission permission) {
     return allowed(jwt, "house", house, permission);
   }

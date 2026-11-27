@@ -120,10 +120,9 @@ public class AlertController {
       throw ApiError.bad("Invalid pagination");
     }
 
-    String scope = ALERT_FROM + " where z.house_id=? and z.active";
-
-    List<Object> args = new ArrayList<>();
-    args.add(houseId);
+    String zoneFilter = " where z.house_id=? and z.active";
+    List<Object> zoneArgs = new ArrayList<>();
+    zoneArgs.add(houseId);
 
     if (zoneId != null) {
       boolean belongs = Boolean.TRUE.equals(db.queryForObject(
@@ -138,36 +137,53 @@ public class AlertController {
         );
       }
 
-      scope += " and z.id=?";
-      args.add(zoneId);
+      zoneFilter += " and z.id=?";
+      zoneArgs.add(zoneId);
     }
 
+    String alertFilter = "";
+    List<Object> alertArgs = new ArrayList<>();
     if (status != null) {
-      scope += " and a.status=?";
-      args.add(status.name());
+      alertFilter += " and a.status=?";
+      alertArgs.add(status.name());
     }
 
     if (level != null) {
-      scope += " and a.level=?";
-      args.add(level.name());
+      alertFilter += " and a.level=?";
+      alertArgs.add(level.name());
     }
 
+    List<Object> countArgs = new ArrayList<>(zoneArgs);
+    countArgs.addAll(alertArgs);
     long count = db.queryForObject(
-        "select count(*)" + scope,
+        "select count(*)" + ALERT_FROM + zoneFilter + alertFilter,
         Long.class,
-        args.toArray()
+        countArgs.toArray()
     );
 
-    args.add(size);
-    args.add((long) page * size);
+    long offset = (long) page * size;
+    List<Object> pageArgs = new ArrayList<>(alertArgs);
+    pageArgs.add(offset + size);
+    pageArgs.addAll(zoneArgs);
+    pageArgs.add(size);
+    pageArgs.add(offset);
 
-    var items = db.query(
-        "select a.*,z.house_id" + scope
-            + " order by a.created_at desc,a.id desc"
-            + " limit ? offset ?",
-        MAPPER,
-        args.toArray()
-    );
+    // The first offset + size rows in the House can only come from
+    // each Zone's first offset + size rows in the same order.
+    var items = db.query("""
+        select a.*,z.house_id
+        from swiftletcare.zones z
+        cross join lateral (
+          select a.* from swiftletcare.alerts a
+          where a.zone_id=z.id
+        """ + alertFilter + "\n" + """
+          order by a.created_at desc,a.id desc
+          limit ?
+        ) a
+        """ + zoneFilter + "\n" + """
+        order by a.created_at desc,a.id desc
+        limit ? offset ?
+        """, MAPPER, pageArgs.toArray());
 
     return new Views.ListView<>(
         items,

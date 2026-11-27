@@ -1,6 +1,8 @@
 package com.swiftletcare.iot;
 
 import java.util.Map;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -37,6 +39,10 @@ public class MqttGateway implements MqttCallbackExtended {
   private final DeviceEvents deviceEvents;
   private final DeviceConfigSync deviceConfigSync;
   private final ControlCommands control;
+  private final Counter telemetryCommitted;
+  private final Counter telemetryVerifiedReplay;
+  private final TelemetryAckPublisher telemetryAcks;
+  private volatile boolean closing;
   private volatile boolean configAckReady;
   private volatile boolean controlSubscribed;
 
@@ -48,10 +54,12 @@ public class MqttGateway implements MqttCallbackExtended {
       DeviceEvents deviceEvents,
       DeviceConfigSync deviceConfigSync,
       ControlCommands control,
+      MeterRegistry meters,
       @Value("${app.mqtt.url}") String url,
       @Value("${app.mqtt.client-id:swiftletcare-backend}") String id,
       @Value("${app.mqtt.username:}") String username,
-      @Value("${app.mqtt.password:}") String password)
+      @Value("${app.mqtt.password:}") String password,
+      @Value("${app.mqtt.telemetry-ack-capacity:512}") int ackCapacity)
       throws MqttException {
     this.ingestion = ingestion;
     this.realtime = realtime;
@@ -70,11 +78,15 @@ public class MqttGateway implements MqttCallbackExtended {
       options.setUserName(username);
       options.setPassword(password.toCharArray());
     }
+    telemetryCommitted = meters.counter("swiftletcare.mqtt.telemetry.ack", "stage", "db_committed");
+    telemetryVerifiedReplay = meters.counter("swiftletcare.mqtt.telemetry.ack", "stage", "db_verified_replay");
+    telemetryAcks = new TelemetryAckPublisher(client, ackCapacity, meters);
+    telemetryAcks.start();
   }
 
   @Scheduled(fixedDelayString = "${app.mqtt.reconnect-ms:3000}")
   public void connect() {
-    if (!client.isConnected())
+    if (!closing && !client.isConnected())
       try {
         client.connect(options);
       } catch (MqttException e) {
@@ -184,13 +196,13 @@ public class MqttGateway implements MqttCallbackExtended {
           throw new IllegalArgumentException("Invalid telemetry");
         var result =
             ingestion.store(house, zone, p); // already committed, including duplicate verification
+        (result.inserted() ? telemetryCommitted : telemetryVerifiedReplay).increment();
         try {
-          client.publish(
+          telemetryAcks.enqueue(
               topic.substring(0, topic.lastIndexOf('/')) + "/telemetry_ack",
+              p.event_id(),
               json.writeValueAsBytes(
-                  Map.of("device_id", p.device_id(), "event_id", p.event_id(), "status", "STORED")),
-              1,
-              false);
+                  Map.of("device_id", p.device_id(), "event_id", p.event_id(), "status", "STORED")));
         } finally {
           if (result.inserted())
             realtime.publish(result.data().deviceId(), "telemetry.updated", result.data());
@@ -219,7 +231,12 @@ public class MqttGateway implements MqttCallbackExtended {
 
   @PreDestroy
   public void close() throws MqttException {
-    if (client.isConnected()) client.disconnect().waitForCompletion(3000);
-    client.close();
+    closing = true;
+    telemetryAcks.close();
+    try {
+      if (client.isConnected()) client.disconnect(1000).waitForCompletion(3000);
+    } finally {
+      client.close(true);
+    }
   }
 }

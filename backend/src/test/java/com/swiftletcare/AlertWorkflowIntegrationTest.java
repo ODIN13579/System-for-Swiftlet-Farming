@@ -196,6 +196,61 @@ class AlertWorkflowIntegrationTest {
   }
 
   @Test
+  void paginatesAlertHistoryAcrossActiveZonesWithStableTies() throws Exception {
+    long secondZone = insert("""
+        insert into swiftletcare.zones(house_id,name,active)
+        values(?,'B3-17 second zone',true) returning id
+        """, house);
+    long inactiveZone = insert("""
+        insert into swiftletcare.zones(house_id,name,active)
+        values(?,'B3-17 inactive zone',false) returning id
+        """, house);
+    long foreignZone = insert("""
+        insert into swiftletcare.zones(house_id,name,active)
+        values(?,'B3-17 foreign zone',true) returning id
+        """, otherHouse);
+
+    String sql = """
+        insert into swiftletcare.alerts(zone_id,type,level,status,message,created_at)
+        values(?,'B317_FIXTURE',?,?,'Paging fixture',cast(? as timestamptz)) returning id
+        """;
+    String tiedTime = "2026-10-15T00:00:00Z";
+    long first = insert(sql, zone, "CRITICAL", "NEW", tiedTime);
+    long second = insert(sql, secondZone, "CRITICAL", "NEW", tiedTime);
+    long third = insert(sql, zone, "CRITICAL", "NEW", "2026-10-14T23:59:00Z");
+    long fourth = insert(sql, secondZone, "CRITICAL", "NEW", "2026-10-14T23:58:00Z");
+    insert(sql, zone, "WARNING", "NEW", tiedTime);
+    insert(sql, secondZone, "CRITICAL", "RESOLVED", tiedTime);
+    insert(sql, inactiveZone, "CRITICAL", "NEW", tiedTime);
+    insert(sql, foreignZone, "CRITICAL", "NEW", tiedTime);
+
+    String path = "/alerts?houseId=" + house + "&status=NEW&level=CRITICAL&size=2";
+    var firstPage = call("GET", path, null, viewerToken);
+    assertThat(firstPage.statusCode()).as(firstPage.body()).isEqualTo(200);
+    var firstBody = json.readTree(firstPage.body());
+    assertThat(firstBody.get("page").get("totalElements").asLong()).isEqualTo(4);
+    assertThat(firstBody.get("items").get(0).get("id").asLong()).isEqualTo(second);
+    assertThat(firstBody.get("items").get(1).get("id").asLong()).isEqualTo(first);
+
+    var nextPage = call("GET", path + "&page=1", null, viewerToken);
+    assertThat(nextPage.statusCode()).as(nextPage.body()).isEqualTo(200);
+    var nextBody = json.readTree(nextPage.body());
+    assertThat(nextBody.get("items").get(0).get("id").asLong()).isEqualTo(third);
+    assertThat(nextBody.get("items").get(1).get("id").asLong()).isEqualTo(fourth);
+    assertThat(json.readTree(call("GET", path + "&page=2", null, viewerToken).body())
+        .get("items").size()).isZero();
+
+    var zonePage = call("GET", path + "&zoneId=" + zone, null, viewerToken);
+    assertThat(zonePage.statusCode()).as(zonePage.body()).isEqualTo(200);
+    var zoneBody = json.readTree(zonePage.body());
+    assertThat(zoneBody.get("page").get("totalElements").asLong()).isEqualTo(2);
+    assertThat(zoneBody.get("items").get(0).get("id").asLong()).isEqualTo(first);
+    assertThat(zoneBody.get("items").get(1).get("id").asLong()).isEqualTo(third);
+    assertThat(call("GET", path + "&zoneId=" + foreignZone, null, viewerToken).statusCode())
+        .isEqualTo(403);
+  }
+
+  @Test
   void workflowAuditAndInvalidTransitions() throws Exception {
     String path = "/alerts/" + alertId + "/status";
 
@@ -211,11 +266,15 @@ class AlertWorkflowIntegrationTest {
         "PATCH", path, "{\"status\":\"IN_PROGRESS\"}", foreignToken
     ).statusCode()).isEqualTo(403);
 
-    assertThat(call(
+    Instant auditStart = db.queryForObject("select clock_timestamp()", java.sql.Timestamp.class)
+        .toInstant();
+    var accepted = call(
         "PATCH", path,
         "{\"status\":\"IN_PROGRESS\",\"note\":\"Investigating\"}",
         ownerToken
-    ).statusCode()).isEqualTo(200);
+    );
+    assertThat(accepted.statusCode()).isEqualTo(200);
+    assertThat(json.readTree(accepted.body()).get("handledAt").isNull()).isTrue();
 
     // Idempotent same-state request.
     assertThat(call(
@@ -254,7 +313,32 @@ class AlertWorkflowIntegrationTest {
     );
 
     assertThat(history.statusCode()).isEqualTo(200);
-    assertThat(json.readTree(history.body()).size()).isEqualTo(2);
+    var entries = json.readTree(history.body());
+    assertThat(entries.size()).isEqualTo(2);
+    var inProgress = entries.get(0);
+    var completed = entries.get(1);
+    assertThat(inProgress.get("fromStatus").asText()).isEqualTo("NEW");
+    assertThat(inProgress.get("toStatus").asText()).isEqualTo("IN_PROGRESS");
+    assertThat(inProgress.get("note").asText()).isEqualTo("Investigating");
+    assertThat(completed.get("fromStatus").asText()).isEqualTo("IN_PROGRESS");
+    assertThat(completed.get("toStatus").asText()).isEqualTo("RESOLVED");
+    assertThat(completed.get("note").asText()).isEqualTo("Fixed");
+    assertThat(inProgress.get("changedBy").asLong()).isEqualTo(ownerId);
+    assertThat(completed.get("changedBy").asLong()).isEqualTo(ownerId);
+    Instant auditEnd = db.queryForObject("select clock_timestamp()", java.sql.Timestamp.class)
+        .toInstant();
+    Instant startedAt = Instant.parse(inProgress.get("changedAt").asText());
+    Instant resolvedAt = Instant.parse(completed.get("changedAt").asText());
+    assertThat(startedAt).isBetween(auditStart, auditEnd);
+    assertThat(resolvedAt).isBetween(startedAt, auditEnd);
+    assertThat(Instant.parse(json.readTree(resolved.body()).get("handledAt").asText()))
+        .isEqualTo(resolvedAt);
+
+    String historyPath = "/alerts/" + alertId + "/history";
+    var viewerHistory = call("GET", historyPath, null, viewerToken);
+    assertThat(viewerHistory.statusCode()).isEqualTo(200);
+    assertThat(json.readTree(viewerHistory.body())).isEqualTo(entries);
+    assertThat(call("GET", historyPath, null, foreignToken).statusCode()).isEqualTo(403);
 
     assertThat(db.queryForObject(
         "select changed_by from swiftletcare.alert_histories"
@@ -340,6 +424,79 @@ class AlertWorkflowIntegrationTest {
     } finally {
       socket.abort();
     }
+  }
+
+  @Test
+  void liveWorkflowUpdateReachesOnlyTheAlertsHouse() throws Exception {
+    var local = new LinkedBlockingQueue<String>();
+    var foreign = new LinkedBlockingQueue<String>();
+    var localSocket = observeHouse(house, viewerToken, local);
+    try {
+      var foreignSocket = observeHouse(otherHouse, foreignToken, foreign);
+      try {
+        awaitHouseSubscription(house, local);
+        awaitHouseSubscription(otherHouse, foreign);
+
+        var response = call("PATCH", "/alerts/" + alertId + "/status",
+            "{\"status\":\"IN_PROGRESS\"}", ownerToken);
+        assertThat(response.statusCode()).as(response.body()).isEqualTo(200);
+        String message = local.poll(5, TimeUnit.SECONDS);
+        assertThat(message).isNotNull();
+        var update = json.readTree(message);
+        assertThat(update.get("type").asText()).isEqualTo("alert.updated");
+        assertThat(update.get("data").get("id").asLong()).isEqualTo(alertId);
+        assertThat(update.get("data").get("houseId").asLong()).isEqualTo(house);
+        assertThat(update.get("data").get("status").asText()).isEqualTo("IN_PROGRESS");
+        assertThat(foreign.poll(300, TimeUnit.MILLISECONDS)).isNull();
+
+        // Confirm silence on the foreign socket came from scoping, not a closed connection.
+        awaitHouseSubscription(otherHouse, foreign);
+      } finally {
+        foreignSocket.abort();
+      }
+    } finally {
+      localSocket.abort();
+    }
+  }
+
+  private WebSocket observeHouse(long id, String token, BlockingQueue<String> messages)
+      throws Exception {
+    return http.newWebSocketBuilder()
+        .header("Authorization", "Bearer " + token)
+        .header("Origin", "http://localhost:5173")
+        .buildAsync(URI.create("ws://localhost:" + port + "/ws/houses/" + id),
+            new WebSocket.Listener() {
+              private final StringBuilder fragments = new StringBuilder();
+
+              @Override
+              public void onOpen(WebSocket socket) {
+                socket.request(1);
+              }
+
+              @Override
+              public CompletionStage<?> onText(WebSocket socket, CharSequence text, boolean last) {
+                fragments.append(text);
+                if (last) {
+                  messages.add(fragments.toString());
+                  fragments.setLength(0);
+                }
+                socket.request(1);
+                return null;
+              }
+            }).get(5, TimeUnit.SECONDS);
+  }
+
+  private void awaitHouseSubscription(long id, BlockingQueue<String> messages)
+      throws InterruptedException {
+    for (int attempt = 0; attempt < 20; attempt++) {
+      realtime.publish(id, "alert.probe", Map.of("houseId", id));
+      String message = messages.poll(150, TimeUnit.MILLISECONDS);
+      if (message != null) {
+        assertThat(json.readTree(message).get("type").asText()).isEqualTo("alert.probe");
+        return;
+      }
+    }
+    throw new AssertionError("House WebSocket was not registered: " + id);
   }
 
   @Test

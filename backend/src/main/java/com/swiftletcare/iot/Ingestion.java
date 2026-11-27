@@ -198,7 +198,9 @@ values(?,?,?,now(),?,?,?,?,?) on conflict(device_id,event_id) do nothing
             s ->
                 jdbc.query(
                     """
-update swiftletcare.devices set online=false where online and (last_seen_at is null or last_seen_at < clock_timestamp() - (? * interval '1 millisecond')) returning *
+update swiftletcare.devices set online=false where type='ESP32' and online
+  and (last_seen_at is null or last_seen_at < clock_timestamp() - (? * interval '1 millisecond'))
+returning *
 """,
                     (rs, row) -> {
                       var d = new Device();

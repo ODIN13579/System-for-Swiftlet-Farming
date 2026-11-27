@@ -70,16 +70,17 @@ public class Realtime extends TextWebSocketHandler {
 
     for (var s : sessions.values())
       try {
-        if (!allowed(s)) {
-          s.close(CloseStatus.POLICY_VIOLATION);
-          sessions.remove(s.getId());
-          continue;
-        }
-        if (device(s) == device)
-          synchronized (s) {
+        synchronized (s) {
+          if (!allowed(s)) {
+            s.close(CloseStatus.POLICY_VIOLATION);
+            sessions.remove(s.getId());
+            continue;
+          }
+          if (device(s) == device) {
             s.sendMessage(
                 new TextMessage(json.writeValueAsString(Map.of("type", type, "data", data))));
           }
+        }
       } catch (Exception e) {
         sessions.remove(s.getId());
         try {

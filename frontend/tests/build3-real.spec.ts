@@ -6,6 +6,8 @@ const backend = process.env.BUILD3_E2E_BACKEND
 test.skip(!backend, 'Requires an isolated backend with the local QA seed')
 
 test('Backend predator Alert reaches React DOM and authenticated snapshot', async ({ page, request }) => {
+  // Allow QA fixture setup and image checks without diluting the 5s alert measurement.
+  test.setTimeout(60000)
   const password = process.env.BUILD3_E2E_PASSWORD!
   const key = process.env.BUILD3_E2E_AI_KEY!
   const email = process.env.BUILD3_E2E_EMAIL || 'local@example.test'

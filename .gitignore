@@ -13,3 +13,4 @@ ai/logs/
 ai/outputs/
 ai/annotated.mp4
 ai/test_counting.py.bak
+/backend/.build/

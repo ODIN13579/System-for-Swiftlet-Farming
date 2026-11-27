@@ -167,36 +167,31 @@ void rememberCommand(
 const char *WIFI_SSID = "Wokwi-GUEST";
 const char *WIFI_PASSWORD = "";
 
-// MQTT CONFIGURATION
-const char *MQTT_HOST = "host.wokwi.internal"; // Địa chỉ MQTT Broker
-const int MQTT_PORT = 1883;                    // Cổng MQTT Broker
-// const int MQTT_PORT = 51884;
+// MQTT configuration for the selected PlatformIO environment.
+#ifdef SWIFTLETCARE_DEMO
+#include "../.pio/swiftletcare-demo.h"
+#else
+#define SC_MQTT_PORT 1883
+#define SC_HOUSE_ID "1"
+#define SC_ZONE_ID "1"
+#define SC_DEVICE_ID "ESP32-HOUSE01-ZONE01"
+#endif
 
-// Phải lấy đúng giá trị từ Backend hoặc database của nhóm.
-const char *HOUSE_ID = "1";
-const char *ZONE_ID = "1";
-const char *DEVICE_ID = "ESP32-HOUSE01-ZONE01";
+#define SC_TOPIC(suffix) "swiftletcare/" SC_HOUSE_ID "/" SC_ZONE_ID "/" SC_DEVICE_ID "/" suffix
+const char *MQTT_HOST = "host.wokwi.internal";
+const int MQTT_PORT = SC_MQTT_PORT;
+const char *HOUSE_ID = SC_HOUSE_ID;
+const char *ZONE_ID = SC_ZONE_ID;
+const char *DEVICE_ID = SC_DEVICE_ID;
 
-// Tạm dùng ID ví dụ ở trên.
-// Khi tích hợp, thay bằng ID thật do nhóm Backend cung cấp.
-
-const char *HEARTBEAT_TOPIC =
-    "swiftletcare/1/1/ESP32-HOUSE01-ZONE01/heartbeat";
-const char *TELEMETRY_TOPIC =
-    "swiftletcare/1/1/ESP32-HOUSE01-ZONE01/telemetry";
-const char *COMMAND_TOPIC =
-    "swiftletcare/1/1/ESP32-HOUSE01-ZONE01/command";
-
-const char *COMMAND_ACK_TOPIC =
-    "swiftletcare/1/1/ESP32-HOUSE01-ZONE01/command_ack";
-const char *STATE_TOPIC =
-    "swiftletcare/1/1/ESP32-HOUSE01-ZONE01/state";
-const char *CFG_TOPIC =
-    "swiftletcare/1/1/ESP32-HOUSE01-ZONE01/cfg";
-const char *CFG_ACK_TOPIC =
-    "swiftletcare/1/1/ESP32-HOUSE01-ZONE01/cfg_ack";
-const char *EVENTS_TOPIC =
-    "swiftletcare/1/1/ESP32-HOUSE01-ZONE01/events";
+const char *HEARTBEAT_TOPIC = SC_TOPIC("heartbeat");
+const char *TELEMETRY_TOPIC = SC_TOPIC("telemetry");
+const char *COMMAND_TOPIC = SC_TOPIC("command");
+const char *COMMAND_ACK_TOPIC = SC_TOPIC("command_ack");
+const char *STATE_TOPIC = SC_TOPIC("state");
+const char *CFG_TOPIC = SC_TOPIC("cfg");
+const char *CFG_ACK_TOPIC = SC_TOPIC("cfg_ack");
+const char *EVENTS_TOPIC = SC_TOPIC("events");
 
 Preferences preferences;
 struct ZoneConfig
@@ -216,7 +211,7 @@ bool dhtFaultActive = false;
 uint32_t droppedTelemetryCount = 0;
 unsigned long bootStartedMs = 0;
 const char *TELEMETRY_ACK_TOPIC =
-    "swiftletcare/1/1/ESP32-HOUSE01-ZONE01/telemetry_ack";
+    SC_TOPIC("telemetry_ack");
 // MQTT CLIENT
 WiFiClient espClient;               // Tạo kết nối TCP/IP
 PubSubClient mqttClient(espClient); // Tạo MQTT Client
@@ -1277,16 +1272,6 @@ void publishSensorEvent(const char *type, const char *sensor, const char *reason
 {
   if (!type || !sensor || !reason)
     return;
-
-  // The currently deployed Backend accepts SENSOR_FAULT and MANUAL_LIMIT,
-  // but not SENSOR_RECOVERED. Keep recovery visible locally until both sides
-  // agree on the event contract; do not send an event known to be rejected.
-  if (strcmp(type, "SENSOR_RECOVERED") == 0)
-  {
-    Serial.printf("[EVENT] %s sensor=%s (local only; Backend contract not updated)\n",
-                  type, sensor);
-    return;
-  }
 
   if (sensorEventCount >= 16)
   {

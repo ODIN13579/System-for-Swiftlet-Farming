@@ -22,6 +22,7 @@ from ultralytics import YOLO
 
 from src.counting import EntryExitCounter
 from src.api_client import send_count_log
+from src.predator import PredatorMonitor
 
 
 torch.set_num_threads(2)
@@ -133,17 +134,20 @@ def main():
     parser.add_argument(
         "--no-send",
         action="store_true",
-        help="Chạy AI nhưng không gửi CountLog",
+        help="Chạy AI và lưu bằng chứng cục bộ, không gửi HTTP",
     )
 
     parser.add_argument(
         "--imgsz",
         type=int,
-        default=320,
-        help="Kích thước ảnh đầu vào YOLO",
+        help="Kích thước ảnh đầu vào YOLO, ghi đè cấu hình",
     )
+    parser.add_argument("--model", help="Đường dẫn weights, ghi đè model_path")
+    parser.add_argument("--max-frames", type=int, help="Giới hạn frame cho smoke test")
 
     args = parser.parse_args()
+    if args.max_frames is not None and args.max_frames < 1:
+        parser.error("--max-frames phải lớn hơn 0")
 
     # Đọc cấu hình.
     config_path = Path(args.config)
@@ -172,7 +176,7 @@ def main():
         )
 
     # Kiểm tra mô hình YOLO.
-    model_path = Path(cfg["model_path"])
+    model_path = Path(args.model or cfg["model_path"])
 
     if not model_path.is_absolute():
         model_path = ROOT / model_path
@@ -184,10 +188,33 @@ def main():
 
     log.info("Đang tải mô hình YOLOv8...")
     model = YOLO(str(model_path))
+    service_key = os.getenv("AI_SERVICE_KEY", "")
+    monitor = None
+    class_ids = cfg.get("class_ids")
+    confidence_threshold = cfg.get("confidence", 0.25)
+    if cfg.get("predator_thresholds"):
+        classes = {int(i): str(label).lower() for i, label in model.names.items()}
+        needed = {"swiftlet", *cfg["predator_thresholds"]}
+        if not needed.issubset(classes.values()):
+            raise ValueError(f"Model thiếu các lớp BUILD 3: {sorted(needed - set(classes.values()))}")
+        class_ids = [i for i, label in classes.items() if label in needed]
+        bird_threshold = float(cfg.get("bird_detection_confidence", 0.25))
+        confidence_threshold = min(confidence_threshold, bird_threshold, *cfg["predator_thresholds"].values())
+        camera_id = int(cfg["device_id"])
+        if camera_id < 1:
+            raise ValueError("device_id phải là ID số của camera trong Backend")
+        monitor = PredatorMonitor(cfg, ROOT, camera_id, "" if args.no_send else service_key)
+        if not service_key and not args.no_send:
+            log.warning("Thiếu AI_SERVICE_KEY, bằng chứng predator được giữ lại trong outbox")
+
 
     cap = cv2.VideoCapture(str(video_path))
 
     if not cap.isOpened():
+        cap.release()
+        if monitor is not None:
+            monitor.start()
+            monitor.close()
         raise RuntimeError(
             f"Không mở được video: {video_path}"
         )
@@ -222,14 +249,21 @@ def main():
 
     if not writer.isOpened():
         cap.release()
+        if monitor is not None:
+            monitor.close()
 
         raise RuntimeError(
             f"Không tạo được video đầu ra: {output_path}"
         )
 
-    # Khởi tạo bộ đếm.
+    # Giữ bộ đếm BUILD 2, cho phép line chuẩn hóa với clip khác độ phân giải.
+    line = cfg.get("counting_line")
+    if "counting_line_normalized" in cfg:
+        line = [value * dimension for value, dimension in zip(
+            cfg["counting_line_normalized"], (width, height, width, height),
+        )]
     counter = EntryExitCounter(
-        line=cfg["counting_line"],
+        line=line,
         inside_direction=cfg.get(
             "inside_direction",
             1,
@@ -253,30 +287,37 @@ def main():
     log.info("Video: %s", video_path)
     log.info("Độ phân giải: %sx%s", width, height)
     log.info("FPS gốc của video: %.2f", fps)
-    log.info("Kích thước YOLO: %s", args.imgsz)
+    imgsz = args.imgsz or cfg.get("imgsz", 320)
+    log.info("Kích thước YOLO: %s", imgsz)
     log.info("Thiết bị xử lý: CPU")
 
+    expected_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    stopped_early = False
     try:
+        if monitor is not None:
+            monitor.start()
         while True:
+            if args.max_frames is not None and frame_index >= args.max_frames:
+                stopped_early = True
+                break
             ok, frame = cap.read()
 
             if not ok:
                 break
 
             frame_index += 1
+            if monitor is not None:
+                monitor.source_frame()
 
             # Phát hiện và theo dõi đối tượng.
             with torch.inference_mode():
                 result = model.track(
                     frame,
                     persist=True,
-                    tracker="bytetrack.yaml",
-                    conf=cfg.get(
-                        "confidence",
-                        0.25,
-                    ),
-                    classes=cfg.get("class_ids"),
-                    imgsz=args.imgsz,
+                    tracker=cfg.get("tracker_config", "bytetrack.yaml"),
+                    conf=confidence_threshold,
+                    classes=class_ids,
+                    imgsz=imgsz,
                     device="cpu",
                     verbose=False,
                 )[0]
@@ -289,15 +330,24 @@ def main():
                 ids = result.boxes.id.cpu().tolist()
                 confs = result.boxes.conf.cpu().tolist()
 
-                for box, raw_track_id, confidence in zip(
-                    boxes,
-                    ids,
-                    confs,
+                class_numbers = result.boxes.cls.cpu().tolist()
+                for box, raw_track_id, confidence, class_number in zip(
+                    boxes, ids, confs, class_numbers,
                 ):
                     x1, y1, x2, y2 = map(int, box)
 
                     track_id = int(raw_track_id)
 
+                    if monitor is not None:
+                        label = classes[int(class_number)]
+                        if label != "swiftlet":
+                            monitor.accept(frame, frame_index, track_id, label, confidence, box)
+                            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 60, 255), 2)
+                            cv2.putText(frame, f"{label} {confidence:.2f}", (x1, max(20, y1 - 8)),
+                                        cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 60, 255), 2)
+                            continue
+                        if confidence < bird_threshold:
+                            continue
                     unique_track_ids.add(track_id)
 
                     # Tâm bounding box.
@@ -362,8 +412,10 @@ def main():
                             ),
                         )
 
+            if monitor is not None:
+                monitor.gate.prune(frame_index)
+
             # Vẽ đường đếm lên video.
-            line = cfg["counting_line"]
 
             p1 = (
                 int(line[0]),
@@ -439,7 +491,13 @@ def main():
     finally:
         cap.release()
         writer.release()
+        if monitor is not None:
+            monitor.close()
         gc.collect()
+
+    if stopped_early or frame_index == 0 or (expected_frames > 0 and frame_index < expected_frames):
+        log.warning("Không gửi CountLog cho clip thiếu frame: %d/%d", frame_index, expected_frames)
+        return
 
     # Tổng hợp số liệu.
     counts = counter.get_counts()
@@ -518,12 +576,9 @@ def main():
         )
         return
 
-    # Lấy khóa từ biến môi trường.
-    service_key = os.getenv(
-        "AI_SERVICE_KEY",
-        "",
-    )
-
+    if not service_key and monitor is not None:
+        log.warning("CountLog được lưu cục bộ vì thiếu AI_SERVICE_KEY")
+        return
     if not service_key:
         raise RuntimeError(
             "Thiếu biến môi trường AI_SERVICE_KEY."
