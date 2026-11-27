@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   LayoutDashboard,
   Thermometer,
@@ -9,6 +9,8 @@ import {
   LogOut,
   ChevronRight,
   Wifi,
+  Users,
+  UserRound,
 } from 'lucide-react'
 import './App.css'
 import Dashboard from './pages/Dashboard'
@@ -19,8 +21,10 @@ import Login from './pages/Login'
 import Houses from './pages/Houses'
 import Zones from './pages/Zones'
 import ZoneConfig from './pages/ZoneConfig'
-import { setAccessToken } from './services/api'
-
+import AdminUsers from './pages/AdminUsers'
+import Profile from './pages/Profile'
+import { AlertSession, useAlertSession } from './components/AlertSession'
+import { api, setAccessToken, type Account } from './services/api'
 type Page =
   | 'dashboard'
   | 'environment'
@@ -29,6 +33,8 @@ type Page =
   | 'houses'
   | 'zones'
   | 'zone-config'
+  | 'admin-users'
+  | 'profile'
 
 const menuItems = [
   { id: 'dashboard' as const, label: 'Tổng quan', icon: LayoutDashboard },
@@ -40,26 +46,82 @@ const menuItems = [
   { id: 'reports' as const, label: 'Thống kê & Báo cáo', icon: ChartNoAxesCombined },
 ]
 
+function readAlertId() {
+  const value = Number(new URLSearchParams(location.search).get('alertId'))
+  return Number.isSafeInteger(value) && value > 0 ? value : undefined
+}
+
 function App() {
-  const [activePage, setActivePage] = useState<Page>('dashboard')
+  const [activePage, setActivePage] = useState<Page>(() => readAlertId() ? 'alerts' : 'dashboard')
+  const [authenticated, setAuthenticated] = useState(false)
+  const [currentUser, setCurrentUser] = useState<Account | null>(null)
+  const [alertId, setAlertId] = useState(readAlertId)
+  function openAlert(id: number) {
+    history.pushState(null, '', `?alertId=${id}`)
+    setAlertId(id)
+    setActivePage('alerts')
+  }
+  useEffect(() => {
+    const onPop = () => {
+      const id = readAlertId()
+      setAlertId(id)
+      setActivePage(id ? 'alerts' : 'dashboard')
+    }
+    const expire = () => {
+      setAccessToken(null)
+      setAuthenticated(false)
+      setCurrentUser(null)
+    }
+    window.addEventListener('popstate', onPop)
+    window.addEventListener('swiftletcare:session-ended', expire)
+    return () => {
+      window.removeEventListener('popstate', onPop)
+      window.removeEventListener('swiftletcare:session-ended', expire)
+    }
+  }, [])
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const currentPage = menuItems.find((item) => item.id === activePage)
-  const [authenticated, setAuthenticated] = useState(false)
-  function handleLogin(token: string) {
+  async function handleLogin(token: string) {
     setAccessToken(token)
-    setAuthenticated(true)
-  }
 
-  function handleLogout() {
-    setAccessToken(null)
-    setAuthenticated(false)
-    setActivePage('dashboard')
+    try {
+      const user = await api.getMe()
+      setCurrentUser(user)
+      setAuthenticated(true)
+      const id = readAlertId()
+      if (id !== undefined) { setAlertId(id); setActivePage('alerts') }
+    } catch (error) {
+      setAccessToken(null)
+      setCurrentUser(null)
+      setAuthenticated(false)
+      console.error('Không thể tải hồ sơ người dùng:', error)
+    }
+  }
+  async function handleLogout() {
+    try {
+      await api.logout()
+    } catch (error) {
+      console.error('Không thể gọi API đăng xuất:', error)
+    } finally {
+      setAccessToken(null)
+      setCurrentUser(null)
+      setAuthenticated(false)
+      setActivePage('dashboard')
+      setAlertId(undefined)
+      history.replaceState(null, '', location.pathname)
+    }
   }
   
   if (!authenticated) {
     return <Login onLogin={handleLogin} />
   }
+  function navigate(page: Page) {
+    if (readAlertId() !== undefined) history.replaceState(null, '', location.pathname)
+    setAlertId(undefined)
+    setActivePage(page)
+  }
   return (
+    <AlertSession onOpenAlert={openAlert}>
     <div className="app-shell">
       <aside className={`sidebar ${sidebarOpen ? '' : 'sidebar-collapsed'}`}>
         <div className="brand">
@@ -80,16 +142,44 @@ function App() {
               <button
                 key={item.id}
                 className={`nav-item ${activePage === item.id ? 'active' : ''}`}
-                onClick={() => setActivePage(item.id)}
+                onClick={() => navigate(item.id)}
                 title={item.label}
               >
                 <Icon size={20} />
                 {sidebarOpen && <span>{item.label}</span>}
+                {item.id === 'alerts' && <AlertBadge />}
                 {sidebarOpen && activePage === item.id && <ChevronRight size={16} />}
               </button>
             )
           })}
-        </nav>
+          {/* Hồ sơ cá nhân */}
+          <button
+            type="button"
+            className={`nav-item ${activePage === 'profile' ? 'active' : ''}`}
+            onClick={() => navigate('profile')}
+            title="Hồ sơ cá nhân"
+          >
+            <UserRound size={20} />
+            {sidebarOpen && <span>Hồ sơ cá nhân</span>}
+            {sidebarOpen && activePage === 'profile' && <ChevronRight size={16} />}
+          </button>
+
+          {/* Chỉ ADMIN mới nhìn thấy mục quản lý tài khoản */}
+          {currentUser?.role === 'ADMIN' && (
+            <button
+              type="button"
+              className={`nav-item ${activePage === 'admin-users' ? 'active' : ''}`}
+              onClick={() => navigate('admin-users')}
+              title="Quản lý tài khoản"
+            >
+              <Users size={20} />
+              {sidebarOpen && <span>Quản lý tài khoản</span>}
+              {sidebarOpen && activePage === 'admin-users' && (
+                <ChevronRight size={16} />
+              )}
+            </button>
+          )}
+                  </nav>
 
         <div className="sidebar-bottom">
           <div className="connection-status">
@@ -123,28 +213,64 @@ function App() {
           </div>
 
           <div className="topbar-right">
-            <span className="online-label"><Wifi size={16} /> Chế độ Demo</span>
-            <div className="avatar">A</div>
+            <span className="online-label"><Wifi size={16} /> SwiftletCare</span>
+            <div className="avatar">
+              {(currentUser?.fullName || currentUser?.email || 'U')
+                .charAt(0)
+                .toUpperCase()}
+            </div>
             <div className="user-label">
-              <strong>Quản trị viên</strong>
-              <span>Nhà yến thông minh</span>
+              <strong>{currentUser?.fullName || currentUser?.email || 'Người dùng'}</strong>
+              <span>{currentUser?.role || 'Chưa xác định vai trò'}</span>
             </div>
           </div>
         </header>
 
         
         <section className="page-content">
-          {activePage === 'dashboard' && <Dashboard />}
+          {activePage === 'dashboard' && (
+            <Dashboard onNavigateToAlerts={() => navigate('alerts')} />
+          )}
           {activePage === 'environment' && <Devices />}
           {activePage === 'houses' && <Houses />}
           {activePage === 'zones' && <Zones />}
           {activePage === 'zone-config' && <ZoneConfig />}
-          {activePage === 'alerts' && <Alerts />}
+          {activePage === 'alerts' && <Alerts alertId={alertId} />}
           {activePage === 'reports' && <Reports />}
+
+          {/* Hồ sơ cá nhân */}
+          {activePage === 'profile' && <Profile />}
+
+          {/* Bảo vệ trang quản trị theo vai trò */}
+          {activePage === 'admin-users' && currentUser?.role === 'ADMIN' && (
+            <AdminUsers />
+          )}
         </section>
 
       </main>
     </div>
+    </AlertSession>
   )
 }
 export default App
+
+function AlertBadge() {
+  const { houseId, revision } = useAlertSession()
+  const [badge, setBadge] = useState<{ houseId: number; count: number }>()
+  useEffect(() => {
+    if (houseId === '') return
+    const controller = new AbortController()
+    void Promise.all((['NEW', 'IN_PROGRESS'] as const).map(status =>
+      api.getAlerts(houseId, { status, size: 1 }, controller.signal),
+    )).then(results => {
+      if (!controller.signal.aborted) {
+        setBadge({ houseId, count: results.reduce((sum, result) => sum + result.page.totalElements, 0) })
+      }
+    }).catch(() => {
+      if (!controller.signal.aborted) setBadge(undefined)
+    })
+    return () => controller.abort()
+  }, [houseId, revision])
+  if (!badge || badge.houseId !== houseId || badge.count === 0) return null
+  return <span className="alert-nav-count" aria-label="Canh bao chua xu ly">{badge.count}</span>
+}

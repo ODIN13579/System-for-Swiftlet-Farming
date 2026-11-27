@@ -1,15 +1,15 @@
+import { useAlertSession } from '../components/AlertSession'
+import type { Zone } from '../services/api'
 import AiCounts from '../components/AiCounts'
+import DashboardAlerts from '../components/DashboardAlerts'
 import { useCallback, useEffect, useState } from 'react'
 import {
   Thermometer,
-  Bell,
   ChartNoAxesCombined,
   Bird,
   Wifi,
   RefreshCw,
-  Cpu,
 } from 'lucide-react'
-import FanControl from '../components/FanControl'
 import {
   api,
   type Device,
@@ -19,7 +19,7 @@ import {
 import { connectDeviceRealtime } from '../services/websocket'
 
 const zoneIdValue = import.meta.env.VITE_ZONE_ID
-const zoneId = zoneIdValue ? Number(zoneIdValue) : null
+const preferredZoneId = Number(zoneIdValue)
 
 type MetricValue = {
   label: string
@@ -80,7 +80,48 @@ function hasTelemetryValue(data: Telemetry | null) {
   ].some((value) => value != null)
 }
 
-export default function Dashboard() {
+export default function Dashboard({ onNavigateToAlerts }: { onNavigateToAlerts: () => void }) {
+  const { houses, houseId, selectHouse, loadingHouses, houseError } = useAlertSession()
+  const [selection, setSelection] = useState<{ houseId: number; zones: Zone[]; zoneId: number; error?: string }>()
+  const current = selection && selection.houseId === houseId ? selection : undefined
+  useEffect(() => {
+    if (houseId === '') return
+    let cancelled = false
+    async function load(id: number) {
+      try {
+        const zones: Zone[] = []
+        for (let page = 0; !cancelled; page++) {
+          const result = await api.getZones(id, page, 100)
+          zones.push(...result.items.filter(item => item.active))
+          if (page + 1 >= result.page.totalPages) break
+        }
+        const zoneId = zones.find(zone => zone.id === preferredZoneId)?.id ?? zones[0]?.id ?? 0
+        if (!cancelled) setSelection({ houseId: id, zones, zoneId })
+      } catch (error) {
+        if (!cancelled) setSelection({ houseId: id, zones: [], zoneId: 0, error: String(error) })
+      }
+    }
+    void load(houseId)
+    return () => { cancelled = true }
+  }, [houseId])
+  return <>
+    <div className="alerts-filters">
+      <select aria-label="Nhà yến" value={houseId} disabled={loadingHouses} onChange={event => selectHouse(Number(event.target.value) || '')}>
+        <option value="">Chọn nhà yến</option>
+        {houses.map(house => <option key={house.id} value={house.id}>{house.name}</option>)}
+      </select>
+      <select aria-label="Khu vực" value={current?.zoneId || ''} disabled={!current?.zones.length} onChange={event => current && setSelection({ ...current, zoneId: Number(event.target.value) })}>
+        <option value="" disabled>Chọn khu vực</option>
+        {current?.zones.map(zone => <option key={zone.id} value={zone.id}>{zone.name}</option>)}
+      </select>
+    </div>
+    {(houseError || current?.error) && <p role="alert">{houseError || current?.error}</p>}
+    {(loadingHouses || (houseId !== '' && !current)) && <p role="status">Đang tải...</p>}
+    {current?.zoneId ? <DashboardZone key={current.zoneId} zoneId={current.zoneId} onNavigateToAlerts={onNavigateToAlerts} /> : null}
+  </>
+}
+
+function DashboardZone({ zoneId, onNavigateToAlerts }: { zoneId: number; onNavigateToAlerts: () => void }) {
   const [devices, setDevices] = useState<Device[]>([])
   const [telemetry, setTelemetry] = useState<Telemetry | null>(null)
   const [loading, setLoading] = useState(true)
@@ -96,16 +137,6 @@ export default function Dashboard() {
     setTelemetry(null)
 
     try {
-      if (
-        zoneId === null ||
-        !Number.isSafeInteger(zoneId) ||
-        zoneId <= 0
-      ) {
-        throw new Error(
-          'Vui lòng kiểm tra VITE_ZONE_ID trong file .env.',
-        )
-      }
-
       const result = await api.getDevices(zoneId)
       const loadedDevices = result.items ?? []
 
@@ -146,7 +177,7 @@ export default function Dashboard() {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [zoneId])
 
   useEffect(() => {
     void loadDashboard()
@@ -315,108 +346,11 @@ export default function Dashboard() {
       </div>
 
       <div className="dashboard-grid">
-        <article className="panel">
-          <div className="panel-heading">
-            <div>
-              <h2>Trạng thái thiết bị</h2>
-              <p>Tình trạng kết nối thiết bị trong nhà yến</p>
-            </div>
+        <DashboardAlerts
+          zoneId={zoneId}
+          onOpenAlerts={onNavigateToAlerts}
+        />
 
-            <span className="subtle-badge">
-              {loading ? 'Đang tải...' : `${devices.length} thiết bị`}
-            </span>
-          </div>
-          {sensorId !== null && (
-            <FanControl deviceId={sensorId} />
-          )}
-          <div className="device-list">
-            {devices.map((device) => (
-              <div className="device-row" key={device.id}>
-                <div
-                  className={`device-symbol ${
-                    device.online
-                      ? 'device-online'
-                      : 'device-offline'
-                  }`}
-                >
-                  <Cpu size={19} />
-                </div>
-
-                
-                <div className="device-info">
-                  <strong>{device.name}</strong>
-                  <span>
-                    {device.type} · {device.deviceId}
-                  </span>
-                  <span className="device-last-seen">
-                    Cập nhật lần cuối: {formatDateTime(device.lastSeenAt)}
-                  </span>
-                </div>
-
-
-                <span
-                  className={`device-state ${
-                    device.online
-                      ? 'state-online'
-                      : 'state-offline'
-                  }`}
-                >
-                  <span className="note-dot" />
-                  {device.online ? 'Online' : 'Offline'}
-                </span>
-              </div>
-            ))}
-
-            {loading && devices.length === 0 && (
-              <p style={{ padding: 16 }} role="status">
-                Đang tải danh sách thiết bị...
-              </p>
-            )}
-
-            {!loading && devices.length === 0 && (
-              <p style={{ padding: 16 }}>
-                {error
-                  ? 'Không tải được danh sách thiết bị.'
-                  : 'Khu vực chưa có thiết bị.'}
-              </p>
-            )}
-          </div>
-
-          <div className="panel-footer">
-            Trạng thái và thời điểm cập nhật lấy từ dữ liệu Backend.
-          </div>
-        </article>
-
-        <article className="panel">
-          <div className="panel-heading">
-            <div>
-              <h2>Cảnh báo gần đây</h2>
-              <p>Các sự kiện cần chú ý</p>
-            </div>
-
-            <span className="subtle-badge">Chưa tích hợp API</span>
-          </div>
-
-          <div className="alert-list">
-            <div className="alert-row">
-              <div className="alert-symbol warning">
-                <Bell size={18} />
-              </div>
-
-              <div className="alert-info">
-                <strong>Chưa có dữ liệu cảnh báo</strong>
-                <span>
-                  Cần tích hợp API cảnh báo từ Backend để hiển thị sự kiện
-                  thực.
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="panel-footer">
-            Không sử dụng dữ liệu demo thay cho cảnh báo thực.
-          </div>
-        </article>
       </div>
 
       <AiCounts cameras={devices.filter((device) => device.type === 'CAMERA')} />
