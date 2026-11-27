@@ -1,0 +1,60 @@
+spring:
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+  application:
+    name: swiftletcare-backend
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/swiftletcare}
+    username: ${DB_USERNAME:swiftletcare}
+    password: ${DB_PASSWORD}
+    hikari:
+      connection-timeout: 3000
+      validation-timeout: 2000
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: swiftletcare
+        jdbc.time_zone: UTC
+  flyway:
+    enabled: true
+    default-schema: public
+    locations: classpath:db/migration
+    clean-disabled: true
+    baseline-on-migrate: false
+server:
+  port: ${SERVER_PORT:8080}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+      probes:
+        enabled: true
+      group:
+        readiness:
+          include: readinessState,db
+app:
+  jwt-secret: ${JWT_SECRET}
+  ai-service-key: ${AI_SERVICE_KEY}
+  origins: ${FRONTEND_ORIGINS:http://localhost:5173}
+  secure-cookie: ${SECURE_COOKIE:false}
+  heartbeat-timeout-ms: ${HEARTBEAT_TIMEOUT_MS:6000}
+  status-scan-ms: ${STATUS_SCAN_MS:1000}
+  mqtt:
+    enabled: ${MQTT_ENABLED:true}
+    url: ${MQTT_URL:tcp://localhost:1883}
+    client-id: ${MQTT_CLIENT_ID:swiftletcare-backend}
+    username: ${MQTT_USERNAME:}
+    password: ${MQTT_PASSWORD:}
+
+# Keep HTTP body logging off: login responses contain credentials even in debug mode.
+logging:
+  level:
+    org.springframework.web: INFO

@@ -1,0 +1,26 @@
+ .../com/swiftletcare/ai/AiPredatorController.java  |   3 [32m+[m[31m-[m
+ .../com/swiftletcare/ai/AiPredatorService.java     |   2 [32m+[m[31m-[m
+ .../com/swiftletcare/alert/AlertController.java    |   2 [32m+[m[31m-[m
+ .../java/com/swiftletcare/alert/AlertEngine.java   |   2 [32m+[m[31m-[m
+ .../main/java/com/swiftletcare/api/ApiError.java   |   3 [32m+[m[31m-[m
+ .../java/com/swiftletcare/iot/DeviceEvents.java    |   2 [32m+[m[31m-[m
+ .../main/java/com/swiftletcare/iot/Ingestion.java  |   2 [32m+[m[31m-[m
+ .../java/com/swiftletcare/management/User.java     |   2 [32m+[m[31m-[m
+ .../swiftletcare/realtime/HouseAlertRealtime.java  | 156 [32m+++++++++++++++++++++[m
+ .../com/swiftletcare/realtime/WebSocketConfig.java |  25 [32m+++[m[31m-[m
+ .../java/com/swiftletcare/security/Access.java     |   2 [32m+[m[31m-[m
+ .../swiftletcare/security/AccountController.java   |   2 [32m+[m[31m-[m
+ .../com/swiftletcare/security/AuthController.java  |   2 [32m+[m[31m-[m
+ .../com/swiftletcare/security/SecurityConfig.java  |   2 [32m+[m[31m-[m
+ .../src/main/resources/application.yml             |   2 [32m+[m[31m-[m
+ .../db/migration/V6__build3_alert_engine.sql       |   2 [32m+[m[31m-[m
+ .../db/migration/V7__ai_predator_snapshots.sql     |   2 [32m+[m[31m-[m
+ .../migration/V8__snapshot_upload_idempotency.sql  |   2 [32m+[m[31m-[m
+ .../AccountManagementIntegrationTest.java          |   2 [32m+[m[31m-[m
+ .../swiftletcare/AiPredatorIntegrationTest.java    |   2 [32m+[m[31m-[m
+ .../swiftletcare/AlertEngineIntegrationTest.java   |   2 [32m+[m[31m-[m
+ .../swiftletcare/AlertWorkflowIntegrationTest.java |   2 [32m+[m[31m-[m
+ .../com/swiftletcare/BackendIntegrationTest.java   |   2 [32m+[m[31m-[m
+ .../ControlCommandsIntegrationTest.java            |   2 [32m+[m[31m-[m
+ .../com/swiftletcare/IngestionIntegrationTest.java |   2 [32m+[m[31m-[m
+ 25 files changed, 201 insertions(+), 28 deletions(-)

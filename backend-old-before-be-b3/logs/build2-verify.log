@@ -1,0 +1,443 @@
+WARNING: A restricted method in java.lang.foreign.MemorySegment has been called
+WARNING: java.lang.foreign.MemorySegment::reinterpret has been called by org.jline.terminal.impl.ffm.FfmTerminalProvider in an unnamed module (file:/C:/Users/ACER/AppData/Roaming/Code/User/globalStorage/pleiades.java-extension-pack-jdk/maven/latest/lib/jline-terminal-ffm-3.30.17.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+[INFO] Scanning for projects...
+[INFO] Loaded 24554 auto-discovered prefixes for remote repository central (prefixes-central.txt)
+[INFO] 
+[INFO] ---------------< com.swiftletcare:swiftletcare-backend >----------------
+[INFO] Building SwiftletCare Backend 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] Loaded 64 auto-discovered prefixes for remote repository apache.snapshots (prefixes-apache.snapshots.txt)
+[INFO] Loaded 24554 auto-discovered prefixes for remote repository maven-central (prefixes-maven-central.txt)
+[WARNING] Could not transfer metadata /.meta/prefixes.txt from/to flyway-community-db-support (https://maven.pkg.github.com/flyway/flyway-community-db-support): HTTP Status: 401
+[INFO] 
+[INFO] --- clean:3.5.0:clean (default-clean) @ swiftletcare-backend ---
+[INFO] Deleting D:\New_folder\System-for-Swiftlet-Farming\backend\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ swiftletcare-backend ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 8 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ swiftletcare-backend ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 38 source files with javac [debug parameters release 21] to target\classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ swiftletcare-backend ---
+[INFO] skip non existing resourceDirectory D:\New_folder\System-for-Swiftlet-Farming\backend\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ swiftletcare-backend ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 6 source files with javac [debug parameters release 21] to target\test-classes
+[INFO] /D:/New_folder/System-for-Swiftlet-Farming/backend/src/test/java/com/swiftletcare/Build2ManagementIntegrationTest.java: Some input files use or override a deprecated API.
+[INFO] /D:/New_folder/System-for-Swiftlet-Farming/backend/src/test/java/com/swiftletcare/Build2ManagementIntegrationTest.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- surefire:3.5.6:test (default-test) @ swiftletcare-backend ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.swiftletcare.BackendIntegrationTest
+12:35:21.828 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.swiftletcare.BackendIntegrationTest]: BackendIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+12:35:22.121 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.swiftletcare.SwiftletCareApplication for test class com.swiftletcare.BackendIntegrationTest
+12:35:22.235 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.swiftletcare.BackendIntegrationTest]: BackendIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+12:35:22.237 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.swiftletcare.SwiftletCareApplication for test class com.swiftletcare.BackendIntegrationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.8)
+
+2026-11-20T12:35:22.716Z  INFO 21196 --- [swiftletcare-backend] [           main] c.swiftletcare.BackendIntegrationTest    : Starting BackendIntegrationTest using Java 25.0.5 with PID 21196 (started by ACER in D:\New_folder\System-for-Swiftlet-Farming\backend)
+2026-11-20T12:35:22.719Z  INFO 21196 --- [swiftletcare-backend] [           main] c.swiftletcare.BackendIntegrationTest    : No active profile set, falling back to 1 default profile: "default"
+2026-11-20T12:35:23.918Z  INFO 21196 --- [swiftletcare-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-11-20T12:35:24.081Z  INFO 21196 --- [swiftletcare-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 151 ms. Found 6 JPA repository interfaces.
+2026-11-20T12:35:25.904Z  INFO 21196 --- [swiftletcare-backend] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 0 (http)
+2026-11-20T12:35:25.936Z  INFO 21196 --- [swiftletcare-backend] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-11-20T12:35:25.937Z  INFO 21196 --- [swiftletcare-backend] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-11-20T12:35:26.040Z  INFO 21196 --- [swiftletcare-backend] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 3285 ms
+2026-11-20T12:35:26.944Z  INFO 21196 --- [swiftletcare-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-11-20T12:35:27.255Z  INFO 21196 --- [swiftletcare-backend] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@6843fdc4
+2026-11-20T12:35:27.257Z  INFO 21196 --- [swiftletcare-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-11-20T12:35:27.303Z  INFO 21196 --- [swiftletcare-backend] [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://localhost:55433/build2_test (PostgreSQL 17.11)
+2026-11-20T12:35:27.462Z  INFO 21196 --- [swiftletcare-backend] [           main] o.f.core.internal.command.DbValidate     : Successfully validated 5 migrations (execution time 00:00.105s)
+2026-11-20T12:35:27.527Z  INFO 21196 --- [swiftletcare-backend] [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": 5
+2026-11-20T12:35:27.608Z  INFO 21196 --- [swiftletcare-backend] [           main] o.f.core.internal.command.DbMigrate      : Schema "public" is up to date. No migration necessary.
+2026-11-20T12:35:28.014Z  INFO 21196 --- [swiftletcare-backend] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-11-20T12:35:28.147Z  INFO 21196 --- [swiftletcare-backend] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.24.Final
+2026-11-20T12:35:28.884Z  INFO 21196 --- [swiftletcare-backend] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-11-20T12:35:29.013Z  INFO 21196 --- [swiftletcare-backend] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:55433/build2_test]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 17.11
+	Default catalog/schema: build2_test/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-11-20T12:35:30.273Z  INFO 21196 --- [swiftletcare-backend] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-11-20T12:35:30.354Z  INFO 21196 --- [swiftletcare-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-11-20T12:35:30.456Z  INFO 21196 --- [swiftletcare-backend] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-11-20T12:35:31.842Z  INFO 21196 --- [swiftletcare-backend] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-11-20T12:35:31.945Z  INFO 21196 --- [swiftletcare-backend] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 6761 (http) with context path '/'
+2026-11-20T12:35:31.958Z  INFO 21196 --- [swiftletcare-backend] [           main] c.swiftletcare.BackendIntegrationTest    : Started BackendIntegrationTest in 9.64 seconds (process running for 11.26)
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+WARNING: A Java agent has been loaded dynamically (C:\Users\ACER\.m2\repository\net\bytebuddy\byte-buddy-agent\1.17.8\byte-buddy-agent-1.17.8.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+2026-11-20T12:35:32.982Z  INFO 21196 --- [swiftletcare-backend] [o-auto-1-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-11-20T12:35:32.982Z  INFO 21196 --- [swiftletcare-backend] [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-11-20T12:35:32.984Z  INFO 21196 --- [swiftletcare-backend] [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2026-11-20T12:35:33.421Z  INFO 21196 --- [swiftletcare-backend] [           main] o.f.core.internal.command.DbValidate     : Successfully validated 5 migrations (execution time 00:00.010s)
+2026-11-20T12:35:33.437Z  INFO 21196 --- [swiftletcare-backend] [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": 5
+2026-11-20T12:35:33.438Z  INFO 21196 --- [swiftletcare-backend] [           main] o.f.core.internal.command.DbMigrate      : Schema "public" is up to date. No migration necessary.
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 11.98 s -- in com.swiftletcare.BackendIntegrationTest
+[INFO] Running com.swiftletcare.Build2ManagementIntegrationTest
+12:35:34.600 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.swiftletcare.Build2ManagementIntegrationTest]: Build2ManagementIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+12:35:34.795 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.swiftletcare.SwiftletCareApplication for test class com.swiftletcare.Build2ManagementIntegrationTest
+12:35:34.908 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.swiftletcare.Build2ManagementIntegrationTest]: Build2ManagementIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+12:35:34.910 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.swiftletcare.SwiftletCareApplication for test class com.swiftletcare.Build2ManagementIntegrationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.8)
+
+2026-11-20T12:35:35.696Z  INFO 15620 --- [swiftletcare-backend] [           main] c.s.Build2ManagementIntegrationTest      : Starting Build2ManagementIntegrationTest using Java 25.0.5 with PID 15620 (started by ACER in D:\New_folder\System-for-Swiftlet-Farming\backend)
+2026-11-20T12:35:35.698Z  INFO 15620 --- [swiftletcare-backend] [           main] c.s.Build2ManagementIntegrationTest      : No active profile set, falling back to 1 default profile: "default"
+2026-11-20T12:35:37.004Z  INFO 15620 --- [swiftletcare-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-11-20T12:35:37.129Z  INFO 15620 --- [swiftletcare-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 107 ms. Found 6 JPA repository interfaces.
+2026-11-20T12:35:38.220Z  INFO 15620 --- [swiftletcare-backend] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 0 (http)
+2026-11-20T12:35:38.244Z  INFO 15620 --- [swiftletcare-backend] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-11-20T12:35:38.245Z  INFO 15620 --- [swiftletcare-backend] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-11-20T12:35:38.336Z  INFO 15620 --- [swiftletcare-backend] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 2600 ms
+2026-11-20T12:35:38.941Z  INFO 15620 --- [swiftletcare-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-11-20T12:35:39.110Z  INFO 15620 --- [swiftletcare-backend] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@3f40568e
+2026-11-20T12:35:39.111Z  INFO 15620 --- [swiftletcare-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-11-20T12:35:39.145Z  INFO 15620 --- [swiftletcare-backend] [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://localhost:55433/build2_test (PostgreSQL 17.11)
+2026-11-20T12:35:39.217Z  INFO 15620 --- [swiftletcare-backend] [           main] o.f.core.internal.command.DbValidate     : Successfully validated 5 migrations (execution time 00:00.034s)
+2026-11-20T12:35:39.248Z  INFO 15620 --- [swiftletcare-backend] [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": 5
+2026-11-20T12:35:39.254Z  INFO 15620 --- [swiftletcare-backend] [           main] o.f.core.internal.command.DbMigrate      : Schema "public" is up to date. No migration necessary.
+2026-11-20T12:35:39.397Z  INFO 15620 --- [swiftletcare-backend] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-11-20T12:35:39.547Z  INFO 15620 --- [swiftletcare-backend] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.24.Final
+2026-11-20T12:35:40.082Z  INFO 15620 --- [swiftletcare-backend] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-11-20T12:35:40.221Z  INFO 15620 --- [swiftletcare-backend] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:55433/build2_test]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 17.11
+	Default catalog/schema: build2_test/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-11-20T12:35:41.011Z  INFO 15620 --- [swiftletcare-backend] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-11-20T12:35:41.073Z  INFO 15620 --- [swiftletcare-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-11-20T12:35:41.164Z  INFO 15620 --- [swiftletcare-backend] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-11-20T12:35:42.408Z  INFO 15620 --- [swiftletcare-backend] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-11-20T12:35:42.476Z  INFO 15620 --- [swiftletcare-backend] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 6776 (http) with context path '/'
+2026-11-20T12:35:42.488Z  INFO 15620 --- [swiftletcare-backend] [           main] c.s.Build2ManagementIntegrationTest      : Started Build2ManagementIntegrationTest in 7.144 seconds (process running for 8.78)
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+WARNING: A Java agent has been loaded dynamically (C:\Users\ACER\.m2\repository\net\bytebuddy\byte-buddy-agent\1.17.8\byte-buddy-agent-1.17.8.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+2026-11-20T12:35:43.247Z  INFO 15620 --- [swiftletcare-backend] [o-auto-1-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-11-20T12:35:43.247Z  INFO 15620 --- [swiftletcare-backend] [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-11-20T12:35:43.248Z  INFO 15620 --- [swiftletcare-backend] [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+WS publish: device=71, type=test.allowed, sessions=0
+WS connected: id=ee7eda03-ba8e-4a74-bd95-d1aa4100d7a1, uri=ws://localhost:6776/ws/devices/71, principal=JwtAuthenticationToken [Principal=org.springframework.security.oauth2.jwt.Jwt@7bbe01b9, Credentials=[PROTECTED], Authenticated=true, Details=WebAuthenticationDetails [RemoteIpAddress=127.0.0.1, SessionId=null], Granted Authorities=[FactorGrantedAuthority [authority=FACTOR_BEARER, issuedAt=2026-11-20T12:35:43.879407800Z]]]
+WS session registered: ee7eda03-ba8e-4a74-bd95-d1aa4100d7a1
+WS publish: device=71, type=test.allowed, sessions=1
+WS publish: device=71, type=test.forbidden, sessions=1
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.23 s -- in com.swiftletcare.Build2ManagementIntegrationTest
+[INFO] Running com.swiftletcare.ConfigAckIntegrationTest
+12:35:48.218 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.swiftletcare.ConfigAckIntegrationTest]: ConfigAckIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+12:35:48.379 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.swiftletcare.SwiftletCareApplication for test class com.swiftletcare.ConfigAckIntegrationTest
+12:35:48.475 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.swiftletcare.ConfigAckIntegrationTest]: ConfigAckIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+12:35:48.476 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.swiftletcare.SwiftletCareApplication for test class com.swiftletcare.ConfigAckIntegrationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.8)
+
+2026-11-20T12:35:48.921Z  INFO 34412 --- [swiftletcare-backend] [           main] c.swiftletcare.ConfigAckIntegrationTest  : Starting ConfigAckIntegrationTest using Java 25.0.5 with PID 34412 (started by ACER in D:\New_folder\System-for-Swiftlet-Farming\backend)
+2026-11-20T12:35:48.923Z  INFO 34412 --- [swiftletcare-backend] [           main] c.swiftletcare.ConfigAckIntegrationTest  : No active profile set, falling back to 1 default profile: "default"
+2026-11-20T12:35:50.079Z  INFO 34412 --- [swiftletcare-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-11-20T12:35:50.222Z  INFO 34412 --- [swiftletcare-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 117 ms. Found 6 JPA repository interfaces.
+2026-11-20T12:35:51.645Z  INFO 34412 --- [swiftletcare-backend] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 0 (http)
+2026-11-20T12:35:51.668Z  INFO 34412 --- [swiftletcare-backend] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-11-20T12:35:51.669Z  INFO 34412 --- [swiftletcare-backend] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-11-20T12:35:51.808Z  INFO 34412 --- [swiftletcare-backend] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 2830 ms
+2026-11-20T12:35:52.639Z  INFO 34412 --- [swiftletcare-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-11-20T12:35:52.890Z  INFO 34412 --- [swiftletcare-backend] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@7a34505a
+2026-11-20T12:35:52.893Z  INFO 34412 --- [swiftletcare-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-11-20T12:35:52.933Z  INFO 34412 --- [swiftletcare-backend] [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://localhost:55433/build2_test (PostgreSQL 17.11)
+2026-11-20T12:35:53.010Z  INFO 34412 --- [swiftletcare-backend] [           main] o.f.core.internal.command.DbValidate     : Successfully validated 5 migrations (execution time 00:00.036s)
+2026-11-20T12:35:53.048Z  INFO 34412 --- [swiftletcare-backend] [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": 5
+2026-11-20T12:35:53.055Z  INFO 34412 --- [swiftletcare-backend] [           main] o.f.core.internal.command.DbMigrate      : Schema "public" is up to date. No migration necessary.
+2026-11-20T12:35:53.239Z  INFO 34412 --- [swiftletcare-backend] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-11-20T12:35:53.334Z  INFO 34412 --- [swiftletcare-backend] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.24.Final
+2026-11-20T12:35:54.156Z  INFO 34412 --- [swiftletcare-backend] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-11-20T12:35:54.257Z  INFO 34412 --- [swiftletcare-backend] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:55433/build2_test]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 17.11
+	Default catalog/schema: build2_test/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-11-20T12:35:55.512Z  INFO 34412 --- [swiftletcare-backend] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-11-20T12:35:55.571Z  INFO 34412 --- [swiftletcare-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-11-20T12:35:55.685Z  INFO 34412 --- [swiftletcare-backend] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-11-20T12:35:57.333Z  INFO 34412 --- [swiftletcare-backend] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-11-20T12:35:57.461Z  INFO 34412 --- [swiftletcare-backend] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 1926 (http) with context path '/'
+2026-11-20T12:35:57.474Z  INFO 34412 --- [swiftletcare-backend] [           main] c.swiftletcare.ConfigAckIntegrationTest  : Started ConfigAckIntegrationTest in 8.895 seconds (process running for 10.263)
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+WARNING: A Java agent has been loaded dynamically (C:\Users\ACER\.m2\repository\net\bytebuddy\byte-buddy-agent\1.17.8\byte-buddy-agent-1.17.8.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.79 s -- in com.swiftletcare.ConfigAckIntegrationTest
+[INFO] Running com.swiftletcare.ControlCommandsIntegrationTest
+12:35:59.987 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.swiftletcare.ControlCommandsIntegrationTest]: ControlCommandsIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+12:36:00.206 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.swiftletcare.SwiftletCareApplication for test class com.swiftletcare.ControlCommandsIntegrationTest
+12:36:00.334 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.swiftletcare.ControlCommandsIntegrationTest]: ControlCommandsIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+12:36:00.336 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.swiftletcare.SwiftletCareApplication for test class com.swiftletcare.ControlCommandsIntegrationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.8)
+
+2026-11-20T12:36:00.764Z  INFO 41736 --- [swiftletcare-backend] [           main] c.s.ControlCommandsIntegrationTest       : Starting ControlCommandsIntegrationTest using Java 25.0.5 with PID 41736 (started by ACER in D:\New_folder\System-for-Swiftlet-Farming\backend)
+2026-11-20T12:36:00.766Z  INFO 41736 --- [swiftletcare-backend] [           main] c.s.ControlCommandsIntegrationTest       : No active profile set, falling back to 1 default profile: "default"
+2026-11-20T12:36:02.020Z  INFO 41736 --- [swiftletcare-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-11-20T12:36:02.132Z  INFO 41736 --- [swiftletcare-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 93 ms. Found 6 JPA repository interfaces.
+2026-11-20T12:36:03.691Z  INFO 41736 --- [swiftletcare-backend] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 0 (http)
+2026-11-20T12:36:03.711Z  INFO 41736 --- [swiftletcare-backend] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-11-20T12:36:03.711Z  INFO 41736 --- [swiftletcare-backend] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-11-20T12:36:03.800Z  INFO 41736 --- [swiftletcare-backend] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 2986 ms
+2026-11-20T12:36:04.632Z  INFO 41736 --- [swiftletcare-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-11-20T12:36:04.862Z  INFO 41736 --- [swiftletcare-backend] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@3700994c
+2026-11-20T12:36:04.864Z  INFO 41736 --- [swiftletcare-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-11-20T12:36:04.901Z  INFO 41736 --- [swiftletcare-backend] [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://localhost:55433/build2_test (PostgreSQL 17.11)
+2026-11-20T12:36:04.998Z  INFO 41736 --- [swiftletcare-backend] [           main] o.f.core.internal.command.DbValidate     : Successfully validated 5 migrations (execution time 00:00.051s)
+2026-11-20T12:36:05.055Z  INFO 41736 --- [swiftletcare-backend] [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": 5
+2026-11-20T12:36:05.067Z  INFO 41736 --- [swiftletcare-backend] [           main] o.f.core.internal.command.DbMigrate      : Schema "public" is up to date. No migration necessary.
+2026-11-20T12:36:05.431Z  INFO 41736 --- [swiftletcare-backend] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-11-20T12:36:05.600Z  INFO 41736 --- [swiftletcare-backend] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.24.Final
+2026-11-20T12:36:06.080Z  INFO 41736 --- [swiftletcare-backend] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-11-20T12:36:06.152Z  INFO 41736 --- [swiftletcare-backend] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:55433/build2_test]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 17.11
+	Default catalog/schema: build2_test/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-11-20T12:36:06.918Z  INFO 41736 --- [swiftletcare-backend] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-11-20T12:36:06.968Z  INFO 41736 --- [swiftletcare-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-11-20T12:36:07.096Z  INFO 41736 --- [swiftletcare-backend] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-11-20T12:36:08.644Z  INFO 41736 --- [swiftletcare-backend] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-11-20T12:36:08.710Z  INFO 41736 --- [swiftletcare-backend] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 1948 (http) with context path '/'
+2026-11-20T12:36:08.723Z  INFO 41736 --- [swiftletcare-backend] [           main] c.s.ControlCommandsIntegrationTest       : Started ControlCommandsIntegrationTest in 8.287 seconds (process running for 9.708)
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+WARNING: A Java agent has been loaded dynamically (C:\Users\ACER\.m2\repository\net\bytebuddy\byte-buddy-agent\1.17.8\byte-buddy-agent-1.17.8.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+2026-11-20T12:36:09.971Z  INFO 41736 --- [swiftletcare-backend] [o-auto-1-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-11-20T12:36:09.972Z  INFO 41736 --- [swiftletcare-backend] [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-11-20T12:36:09.974Z  INFO 41736 --- [swiftletcare-backend] [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+WS publish: device=76, type=device.status.changed, sessions=0
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.09 s -- in com.swiftletcare.ControlCommandsIntegrationTest
+[INFO] Running com.swiftletcare.IngestionIntegrationTest
+12:36:13.463 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.swiftletcare.IngestionIntegrationTest]: IngestionIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+12:36:13.583 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.swiftletcare.SwiftletCareApplication for test class com.swiftletcare.IngestionIntegrationTest
+12:36:13.661 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.swiftletcare.IngestionIntegrationTest]: IngestionIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+12:36:13.663 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.swiftletcare.SwiftletCareApplication for test class com.swiftletcare.IngestionIntegrationTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.8)
+
+2026-11-20T12:36:14.059Z  INFO 18652 --- [swiftletcare-backend] [           main] c.swiftletcare.IngestionIntegrationTest  : Starting IngestionIntegrationTest using Java 25.0.5 with PID 18652 (started by ACER in D:\New_folder\System-for-Swiftlet-Farming\backend)
+2026-11-20T12:36:14.061Z  INFO 18652 --- [swiftletcare-backend] [           main] c.swiftletcare.IngestionIntegrationTest  : No active profile set, falling back to 1 default profile: "default"
+2026-11-20T12:36:15.392Z  INFO 18652 --- [swiftletcare-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-11-20T12:36:15.529Z  INFO 18652 --- [swiftletcare-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 110 ms. Found 6 JPA repository interfaces.
+2026-11-20T12:36:16.609Z  INFO 18652 --- [swiftletcare-backend] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 0 (http)
+2026-11-20T12:36:16.633Z  INFO 18652 --- [swiftletcare-backend] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-11-20T12:36:16.634Z  INFO 18652 --- [swiftletcare-backend] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-11-20T12:36:16.750Z  INFO 18652 --- [swiftletcare-backend] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 2657 ms
+2026-11-20T12:36:17.498Z  INFO 18652 --- [swiftletcare-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-11-20T12:36:17.672Z  INFO 18652 --- [swiftletcare-backend] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@433b546f
+2026-11-20T12:36:17.674Z  INFO 18652 --- [swiftletcare-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-11-20T12:36:17.711Z  INFO 18652 --- [swiftletcare-backend] [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://localhost:55433/build2_test (PostgreSQL 17.11)
+2026-11-20T12:36:17.800Z  INFO 18652 --- [swiftletcare-backend] [           main] o.f.core.internal.command.DbValidate     : Successfully validated 5 migrations (execution time 00:00.050s)
+2026-11-20T12:36:17.838Z  INFO 18652 --- [swiftletcare-backend] [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": 5
+2026-11-20T12:36:17.844Z  INFO 18652 --- [swiftletcare-backend] [           main] o.f.core.internal.command.DbMigrate      : Schema "public" is up to date. No migration necessary.
+2026-11-20T12:36:18.011Z  INFO 18652 --- [swiftletcare-backend] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-11-20T12:36:18.105Z  INFO 18652 --- [swiftletcare-backend] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.24.Final
+2026-11-20T12:36:18.617Z  INFO 18652 --- [swiftletcare-backend] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-11-20T12:36:18.707Z  INFO 18652 --- [swiftletcare-backend] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:55433/build2_test]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 17.11
+	Default catalog/schema: build2_test/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-11-20T12:36:19.476Z  INFO 18652 --- [swiftletcare-backend] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-11-20T12:36:19.553Z  INFO 18652 --- [swiftletcare-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-11-20T12:36:19.689Z  INFO 18652 --- [swiftletcare-backend] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-11-20T12:36:21.743Z  INFO 18652 --- [swiftletcare-backend] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-11-20T12:36:21.838Z  INFO 18652 --- [swiftletcare-backend] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 1966 (http) with context path '/'
+2026-11-20T12:36:21.855Z  INFO 18652 --- [swiftletcare-backend] [           main] c.swiftletcare.IngestionIntegrationTest  : Started IngestionIntegrationTest in 8.149 seconds (process running for 9.735)
+WS publish: device=76, type=device.status.changed, sessions=0
+2026-11-20T12:36:22.207Z  INFO 18652 --- [swiftletcare-backend] [o-auto-1-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-11-20T12:36:22.207Z  INFO 18652 --- [swiftletcare-backend] [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-11-20T12:36:22.208Z  INFO 18652 --- [swiftletcare-backend] [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+WS publish: device=77, type=device.status.changed, sessions=0
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+WARNING: A Java agent has been loaded dynamically (C:\Users\ACER\.m2\repository\net\bytebuddy\byte-buddy-agent\1.17.8\byte-buddy-agent-1.17.8.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+2026-11-20T12:36:23.737Z  INFO 18652 --- [swiftletcare-backend] [-ingestion-test] com.swiftletcare.iot.DeviceEvents        : {"reason":"simulated\nreason","sensor":"DHT22","zoneId":159,"type":"SENSOR_FAULT","deviceId":77,"receivedAt":"2026-11-20T12:36:23.736087600Z","deviceCode":"ESP-74723e67-a99f-4bdb-986e-fe2ce6d242a5","category":"device.event","houseId":240,"occurredAt":"2026-11-20T12:36:23.723755Z"}
+2026-11-20T12:36:23.744Z  INFO 18652 --- [swiftletcare-backend] [-ingestion-test] com.swiftletcare.iot.DeviceEvents        : {"reason":"simulated\nreason","sensor":"DHT22","zoneId":159,"type":"MANUAL_LIMIT","deviceId":77,"receivedAt":"2026-11-20T12:36:23.744182800Z","deviceCode":"ESP-74723e67-a99f-4bdb-986e-fe2ce6d242a5","category":"device.event","houseId":240,"occurredAt":"2026-11-20T12:36:23.740031500Z"}
+2026-11-20T12:36:23.745Z  WARN 18652 --- [swiftletcare-backend] [           main] com.swiftletcare.iot.MqttGateway         : MQTT input rejected or processing failed (Failure)
+2026-11-20T12:36:23.860Z  WARN 18652 --- [swiftletcare-backend] [           main] com.swiftletcare.iot.MqttGateway         : MQTT input rejected or processing failed (Failure)
+2026-11-20T12:36:23.963Z  WARN 18652 --- [swiftletcare-backend] [           main] com.swiftletcare.iot.MqttGateway         : MQTT input rejected or processing failed (IllegalArgumentException)
+2026-11-20T12:36:24.064Z  WARN 18652 --- [swiftletcare-backend] [           main] com.swiftletcare.iot.MqttGateway         : MQTT input rejected or processing failed (IllegalArgumentException)
+WS connected: id=d3d7b505-491c-4af3-ba5e-3c723073fbf9, uri=ws://localhost:1966/ws/devices/77, principal=JwtAuthenticationToken [Principal=org.springframework.security.oauth2.jwt.Jwt@11787c5c, Credentials=[PROTECTED], Authenticated=true, Details=WebAuthenticationDetails [RemoteIpAddress=127.0.0.1, SessionId=null], Granted Authorities=[FactorGrantedAuthority [authority=FACTOR_BEARER, issuedAt=2026-11-20T12:36:24.239445800Z]]]
+WS session registered: d3d7b505-491c-4af3-ba5e-3c723073fbf9
+WS publish: device=77, type=telemetry.updated, sessions=1
+2026-11-20T12:36:24.442Z  WARN 18652 --- [swiftletcare-backend] [-ingestion-test] com.swiftletcare.iot.MqttGateway         : MQTT input rejected or processing failed (Failure)
+WS publish: device=77, type=device.status.changed, sessions=1
+2026-11-20T12:36:25.093Z  WARN 18652 --- [swiftletcare-backend] [-ingestion-test] com.swiftletcare.iot.MqttGateway         : MQTT input rejected or processing failed (Failure)
+2026-11-20T12:36:25.095Z  WARN 18652 --- [swiftletcare-backend] [-ingestion-test] com.swiftletcare.iot.MqttGateway         : MQTT input rejected or processing failed (StreamReadException)
+2026-11-20T12:36:25.096Z  WARN 18652 --- [swiftletcare-backend] [-ingestion-test] com.swiftletcare.iot.MqttGateway         : MQTT input rejected or processing failed (IllegalArgumentException)
+WS connected: id=a3ea0737-a9d6-482b-b3e2-8a1e7e9e405a, uri=ws://localhost:1966/ws/devices/77, principal=JwtAuthenticationToken [Principal=org.springframework.security.oauth2.jwt.Jwt@11787c5c, Credentials=[PROTECTED], Authenticated=true, Details=WebAuthenticationDetails [RemoteIpAddress=127.0.0.1, SessionId=null], Granted Authorities=[FactorGrantedAuthority [authority=FACTOR_BEARER, issuedAt=2026-11-20T12:36:27.316148Z]]]
+WS session registered: a3ea0737-a9d6-482b-b3e2-8a1e7e9e405a
+WS publish: device=77, type=device.status.changed, sessions=1
+WS publish: device=77, type=device.status.changed, sessions=1
+WS publish: device=77, type=device.status.changed, sessions=1
+WS publish: device=77, type=telemetry.updated, sessions=0
+WS publish: device=77, type=telemetry.updated, sessions=0
+WS publish: device=77, type=telemetry.updated, sessions=0
+WS connected: id=1b74ec9f-af79-49e0-a239-c61d310df304, uri=ws://localhost:1966/ws/devices/78, principal=JwtAuthenticationToken [Principal=org.springframework.security.oauth2.jwt.Jwt@11787c5c, Credentials=[PROTECTED], Authenticated=true, Details=WebAuthenticationDetails [RemoteIpAddress=127.0.0.1, SessionId=null], Granted Authorities=[FactorGrantedAuthority [authority=FACTOR_BEARER, issuedAt=2026-11-20T12:36:28.831484300Z]]]
+WS session registered: 1b74ec9f-af79-49e0-a239-c61d310df304
+WS connected: id=a4a61f48-9356-42ee-8492-667f838df058, uri=ws://localhost:1966/ws/devices/79, principal=JwtAuthenticationToken [Principal=org.springframework.security.oauth2.jwt.Jwt@355a57ae, Credentials=[PROTECTED], Authenticated=true, Details=WebAuthenticationDetails [RemoteIpAddress=127.0.0.1, SessionId=null], Granted Authorities=[FactorGrantedAuthority [authority=FACTOR_BEARER, issuedAt=2026-11-20T12:36:28.838172500Z]]]
+WS session registered: a4a61f48-9356-42ee-8492-667f838df058
+WS connected: id=b568a0c7-fd14-43e8-a39d-94ea47361cfc, uri=ws://localhost:1966/ws/devices/78, principal=JwtAuthenticationToken [Principal=org.springframework.security.oauth2.jwt.Jwt@355a57ae, Credentials=[PROTECTED], Authenticated=true, Details=WebAuthenticationDetails [RemoteIpAddress=127.0.0.1, SessionId=null], Granted Authorities=[FactorGrantedAuthority [authority=FACTOR_BEARER, issuedAt=2026-11-20T12:36:28.845692700Z]]]
+WS rejected: not allowed
+WS publish: device=78, type=test.ready, sessions=2
+WS publish: device=79, type=test.ready, sessions=2
+WS publish: device=78, type=ai.count.updated, sessions=2
+WS publish: device=78, type=ai.count.updated, sessions=2
+WS publish: device=77, type=device.status.changed, sessions=2
+WS connected: id=fbaa35b0-48b1-49f8-a5f5-993d96019288, uri=ws://localhost:1966/ws/devices/77, principal=JwtAuthenticationToken [Principal=org.springframework.security.oauth2.jwt.Jwt@11787c5c, Credentials=[PROTECTED], Authenticated=true, Details=WebAuthenticationDetails [RemoteIpAddress=127.0.0.1, SessionId=null], Granted Authorities=[FactorGrantedAuthority [authority=FACTOR_BEARER, issuedAt=2026-11-20T12:36:30.307800600Z]]]
+WS session registered: fbaa35b0-48b1-49f8-a5f5-993d96019288
+WS connected: id=9f6f48bb-034f-4f71-95ea-875d7cd5fffe, uri=ws://localhost:1966/ws/devices/77, principal=JwtAuthenticationToken [Principal=org.springframework.security.oauth2.jwt.Jwt@11787c5c, Credentials=[PROTECTED], Authenticated=true, Details=WebAuthenticationDetails [RemoteIpAddress=127.0.0.1, SessionId=null], Granted Authorities=[FactorGrantedAuthority [authority=FACTOR_BEARER, issuedAt=2026-11-20T12:36:30.339859600Z]]]
+WS session registered: 9f6f48bb-034f-4f71-95ea-875d7cd5fffe
+2026-11-20T12:36:30.367Z  WARN 18652 --- [swiftletcare-backend] [-ingestion-test] com.swiftletcare.iot.MqttGateway         : MQTT input rejected or processing failed (JpaSystemException)
+WS publish: device=77, type=telemetry.updated, sessions=0
+WS publish: device=77, type=telemetry.updated, sessions=0
+2026-11-20T12:36:32.189Z  WARN 18652 --- [swiftletcare-backend] [-ingestion-test] com.swiftletcare.iot.MqttGateway         : MQTT input rejected or processing failed (Failure)
+2026-11-20T12:36:32.654Z  WARN 18652 --- [swiftletcare-backend] [-ingestion-test] com.swiftletcare.iot.MqttGateway         : MQTT input rejected or processing failed (UnrecognizedPropertyException)
+2026-11-20T12:36:33.167Z  WARN 18652 --- [swiftletcare-backend] [-ingestion-test] com.swiftletcare.iot.MqttGateway         : MQTT input rejected or processing failed (Failure)
+2026-11-20T12:36:33.660Z  WARN 18652 --- [swiftletcare-backend] [           main] com.swiftletcare.iot.MqttGateway         : MQTT input rejected or processing failed (IllegalArgumentException)
+WS publish: device=78, type=ai.count.updated, sessions=0
+WS publish: device=78, type=ai.count.updated, sessions=0
+2026-11-20T12:36:34.379Z  WARN 18652 --- [swiftletcare-backend] [-ingestion-test] com.swiftletcare.iot.MqttGateway         : MQTT input rejected or processing failed (Failure)
+WS publish: device=77, type=telemetry.updated, sessions=0
+2026-11-20T12:36:34.590Z  WARN 18652 --- [swiftletcare-backend] [-ingestion-test] com.swiftletcare.iot.MqttGateway         : MQTT input rejected or processing failed (Failure)
+WS publish: device=77, type=telemetry.updated, sessions=0
+2026-11-20T12:36:34.808Z  WARN 18652 --- [swiftletcare-backend] [-ingestion-test] com.swiftletcare.iot.MqttGateway         : MQTT input rejected or processing failed (Failure)
+WS publish: device=77, type=telemetry.updated, sessions=0
+2026-11-20T12:36:35.026Z  WARN 18652 --- [swiftletcare-backend] [-ingestion-test] com.swiftletcare.iot.MqttGateway         : MQTT input rejected or processing failed (Failure)
+WS publish: device=77, type=telemetry.updated, sessions=0
+2026-11-20T12:36:35.247Z  WARN 18652 --- [swiftletcare-backend] [-ingestion-test] com.swiftletcare.iot.MqttGateway         : MQTT input rejected or processing failed (Failure)
+WS publish: device=77, type=telemetry.updated, sessions=0
+2026-11-20T12:36:35.468Z  WARN 18652 --- [swiftletcare-backend] [-ingestion-test] com.swiftletcare.iot.MqttGateway         : MQTT input rejected or processing failed (Failure)
+WS publish: device=77, type=telemetry.updated, sessions=0
+2026-11-20T12:36:35.699Z  WARN 18652 --- [swiftletcare-backend] [-ingestion-test] com.swiftletcare.iot.MqttGateway         : MQTT input rejected or processing failed (Failure)
+WS publish: device=77, type=telemetry.updated, sessions=0
+2026-11-20T12:36:35.922Z  WARN 18652 --- [swiftletcare-backend] [-ingestion-test] com.swiftletcare.iot.MqttGateway         : MQTT input rejected or processing failed (Failure)
+WS publish: device=77, type=telemetry.updated, sessions=0
+2026-11-20T12:36:36.159Z  INFO 18652 --- [swiftletcare-backend] [           main] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-11-20T12:36:36.189Z  INFO 18652 --- [swiftletcare-backend] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-11-20T12:36:36.201Z  INFO 18652 --- [swiftletcare-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-11-20T12:36:36.205Z  INFO 18652 --- [swiftletcare-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-11-20T12:36:36.212Z  INFO 18652 --- [swiftletcare-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 23.19 s -- in com.swiftletcare.IngestionIntegrationTest
+[INFO] Running com.swiftletcare.management.ZoneConfigValidationTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.116 s -- in com.swiftletcare.management.ZoneConfigValidationTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 29, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.2:jar (default-jar) @ swiftletcare-backend ---
+[INFO] Building jar: D:\New_folder\System-for-Swiftlet-Farming\backend\target\swiftletcare-backend-0.0.1-SNAPSHOT.jar
+[INFO] 
+[INFO] --- spring-boot:4.0.8:repackage (repackage) @ swiftletcare-backend ---
+[INFO] Loaded 50 auto-discovered prefixes for remote repository ow2-snapshot (prefixes-ow2-snapshot.txt)
+[INFO] Replacing main artifact D:\New_folder\System-for-Swiftlet-Farming\backend\target\swiftletcare-backend-0.0.1-SNAPSHOT.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+[INFO] The original artifact has been renamed to D:\New_folder\System-for-Swiftlet-Farming\backend\target\swiftletcare-backend-0.0.1-SNAPSHOT.jar.original
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:57 min
+[INFO] Finished at: 2026-11-20T19:36:40+07:00
+[INFO] ------------------------------------------------------------------------

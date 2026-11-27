@@ -1,13 +1,14 @@
-#include <Arduino.h>
+#include <Arduino.h> //Các chức năng cơ bản của Arduino như pinMode(), digitalWrite(), millis(), Serial
 #include <ArduinoJson.h>
 #include <math.h>
 #include <atomic>
 #include <esp_sntp.h>
 #include <esp_system.h>
-#include <freertos/FreeRTOS.h>
+#include <freertos/FreeRTOS.h> // Các chức năng cơ bản của FreeRTOS như xTaskCreate(), vTaskDelay(), xQueueCreate(), xQueueSend(), xQueueReceive()
 #include <freertos/queue.h>
 #include <freertos/task.h>
 #include <Preferences.h>
+
 #include <time.h>
 #include <WiFi.h>         // ESP32 kết nối WiFi để giao tiếp với MQTT Broker
 #include <PubSubClient.h> // Thư viện MQTT cho ESP32
@@ -23,52 +24,55 @@
 #define HEATER_PIN 17            // HEATER - GPIO17
 #define AMPLIFIER_PIN 18   // AMPLIFIER - GPIO18
 
-struct ZoneConfig; // Forward declaration for Arduino sketch preprocessing.
-DHT dht(DHTPIN, DHTTYPE);
-bool getTimestamp(char *output, size_t outputSize);
-bool isClockTrusted();
-void publishState();
-void applyControlLogic();
-void setFanState(bool turnOn);
-bool setActuatorState(const String &actuator, bool turnOn);
-bool getActuatorState(const String &actuator);
-int getActuatorPin(const String &actuator);
+struct ZoneConfig; // khai báo trước để sử dụng trong các hàm
+DHT dht(DHTPIN, DHTTYPE); // Khởi tạo đối tượng DHT với chân và loại cảm biến
+
+bool getTimestamp(char *output, size_t outputSize); // Lấy timestamp hiện tại theo chuẩn ISO 8601, trả về false nếu đồng hồ chưa được đồng bộ
+bool isClockTrusted(); // Kiểm tra xem đồng hồ đã được đồng bộ với NTP hay chưa
+void publishState(); // Publish trạng thái hiện tại lên MQTT
+void applyControlLogic(); // Áp dụng logic điều khiển
+void setFanState(bool turnOn); // Đặt trạng thái quạt
+bool setActuatorState(const String &actuator, bool turnOn); // Đặt trạng thái bộ phận điều khiển
+bool getActuatorState(const String &actuator); // Lấy trạng thái bộ phận điều khiển
+int getActuatorPin(const String &actuator); // Lấy chân của bộ phận điều khiển
 
 // Initial AUTO thresholds agreed for the SwiftletCare prototype.
 // CO2 values are currently derived from the Wokwi analog input; calibrate
 // the conversion and thresholds for the real CO2 sensor before deployment.
+#define FAN_ON_TEMP 31.0f // nhiet do tren 31 C thi bat quat
+#define FAN_OFF_TEMP 30.0f // nhiet do duoi 30 C va CO2 hop le thi tat quat
+
 #define FAN_ON_CO2_PPM 1000
 #define FAN_OFF_CO2_PPM 800
-#define FAN_OFF_TEMP 29.0f
 #define AUDIO_START_HOUR 6
 #define AUDIO_END_HOUR 18
-#define VIETNAM_UTC_OFFSET_SECONDS (7 * 60 * 60)
+#define VIETNAM_UTC_OFFSET_SECONDS (7 * 60 * 60) // UTC+7
 
 bool fanState = false; // false = quạt tắt, true = quạt bật
-bool humidifierState = false;
-bool heaterState = false;
-bool audioAmplifierState = false;
-bool safetyOverride = true;
+bool humidifierState = false; // false = máy phun sương tắt, true = máy phun sương bật
+bool heaterState = false; // false = máy sưởi tắt, true = máy sưởi bật
+bool audioAmplifierState = false; // false = ampli tắt, true = ampli bật
+bool safetyOverride = true; // true = an toàn, false = không an toàn (cảm biến lỗi hoặc dữ liệu cũ)
 
-bool latestDhtValid = false;
-bool haveValidTemperature = false;
+bool latestDhtValid = false; // true = dữ liệu DHT22 hợp lệ, false = dữ liệu DHT22 lỗi
+bool haveValidTemperature = false; // true = đã có dữ liệu nhiệt độ hợp lệ, false = chưa có dữ liệu nhiệt độ hợp lệ
 
-float latestTemperature = NAN;
-float latestHumidity = NAN;
-int latestCo2 = 0;
-int latestLight = 0;
-bool latestCo2Valid = false;
-bool latestLightValid = false;
+float latestTemperature = NAN; // Nhiệt độ gần nhất
+float latestHumidity = NAN; // Độ ẩm gần nhất
+int latestCo2 = 0; // Mức CO2 gần nhất
+int latestLight = 0; // Mức ánh sáng gần nhất
+bool latestCo2Valid = false; // true = dữ liệu CO2 hợp lệ, false = dữ liệu CO2 lỗi
+bool latestLightValid = false; // true = dữ liệu ánh sáng hợp lệ, false = dữ liệu ánh sáng lỗi
 
-unsigned long lastValidTemperatureMs = 0;
-unsigned long lastSensorSampleMs = 0;
-unsigned long lastState = 0;
+unsigned long lastValidTemperatureMs = 0; // Thời điểm nhận được dữ liệu nhiệt độ hợp lệ gần nhất
+unsigned long lastSensorSampleMs = 0; // Thời điểm lấy mẫu cảm biến gần nhất
+unsigned long lastState = 0; // Thời điểm cập nhật trạng thái gần nhất
 
-const unsigned long SENSOR_INTERVAL = 2000;
-const unsigned long SENSOR_STALE_MS = 15000;
+const unsigned long SENSOR_INTERVAL = 2000; // Khoảng thời gian giữa các lần lấy mẫu cảm biến (2 giây)
+const unsigned long SENSOR_STALE_MS = 15000; // Dữ liệu cảm biến được coi là lỗi nếu không có dữ liệu hợp lệ trong 15 giây
 const unsigned long STATE_INTERVAL = 5000;
 
-String bootId;
+String bootId; // ID khởi động
 enum ControlMode
 {
   MODE_AUTO,
@@ -79,7 +83,7 @@ ControlMode controlMode = MODE_AUTO;
 // Cache command_id đã xử lý, chỉ lưu trong RAM.
 const int COMMAND_CACHE_SIZE = 64;
 
-struct CachedCommand
+struct CachedCommand // Lưu trữ thông tin về các lệnh đã nhận và xử lý
 {
   bool used = false;
   String commandId;
@@ -88,21 +92,21 @@ struct CachedCommand
   String originalReason;
 };
 
-CachedCommand commandCache[COMMAND_CACHE_SIZE];
-int commandCacheNext = 0;
+CachedCommand commandCache[COMMAND_CACHE_SIZE]; // Mảng lưu trữ các lệnh đã nhận và xử lý
+int commandCacheNext = 0; // Vị trí tiếp theo trong cache để lưu lệnh mới
 
-int findCachedCommand(const String &commandId)
+int findCachedCommand(const String &commandId) // Tìm kiếm lệnh đã nhận trong cache, trả về chỉ số nếu tìm thấy, -1 nếu không tìm thấy
 {
   for (int i = 0; i < COMMAND_CACHE_SIZE; i++)
   {
     if (commandCache[i].used &&
         commandCache[i].commandId == commandId)
     {
-      return i;
+      return i; // Trả về chỉ số của lệnh đã nhận trong cache
     }
   }
 
-  return -1;
+  return -1; // Không tìm thấy vì chỉ số mảng bắt đầu từ 0, nên trả về -1 để báo lỗi
 }
 
 bool isValidUuid(const char *s)
@@ -139,7 +143,7 @@ bool isValidUuid(const char *s)
   return true;
 }
 
-void rememberCommand(
+void rememberCommand( // Lưu trữ thông tin về lệnh đã nhận và xử lý vào cache
     const String &commandId,
     const String &normalizedContent,
     const char *status,
@@ -150,16 +154,14 @@ void rememberCommand(
     return;
   }
 
-  CachedCommand &entry = commandCache[commandCacheNext];
-
+  CachedCommand &entry = commandCache[commandCacheNext]; // Lấy tham chiếu đến vị trí tiếp theo trong cache để lưu lệnh mới
   entry.used = true;
   entry.commandId = commandId;
   entry.normalizedContent = normalizedContent;
   entry.originalStatus = status;
   entry.originalReason = reason;
 
-  commandCacheNext =
-      (commandCacheNext + 1) % COMMAND_CACHE_SIZE;
+  commandCacheNext = (commandCacheNext + 1) % COMMAND_CACHE_SIZE; // Cập nhật vị trí tiếp theo trong cache, nếu vượt quá kích thước cache thì quay lại đầu mảng
 }
 // WIFI CONFIGURATION
 const char *WIFI_SSID = "Wokwi-GUEST";
@@ -170,13 +172,9 @@ const char *MQTT_HOST = "host.wokwi.internal"; // Địa chỉ MQTT Broker
 const int MQTT_PORT = 1883;                    // Cổng MQTT Broker
 // const int MQTT_PORT = 51884;
 
-// Phải lấy đúng giá trị từ Backend hoặc database của nhóm.
 const char *HOUSE_ID = "1";
 const char *ZONE_ID = "1";
 const char *DEVICE_ID = "ESP32-HOUSE01-ZONE01";
-
-// Tạm dùng ID ví dụ ở trên.
-// Khi tích hợp, thay bằng ID thật do nhóm Backend cung cấp.
 
 const char *HEARTBEAT_TOPIC =
     "swiftletcare/1/1/ESP32-HOUSE01-ZONE01/heartbeat";
@@ -184,7 +182,6 @@ const char *TELEMETRY_TOPIC =
     "swiftletcare/1/1/ESP32-HOUSE01-ZONE01/telemetry";
 const char *COMMAND_TOPIC =
     "swiftletcare/1/1/ESP32-HOUSE01-ZONE01/command";
-
 const char *COMMAND_ACK_TOPIC =
     "swiftletcare/1/1/ESP32-HOUSE01-ZONE01/command_ack";
 const char *STATE_TOPIC =
@@ -195,7 +192,8 @@ const char *CFG_ACK_TOPIC =
     "swiftletcare/1/1/ESP32-HOUSE01-ZONE01/cfg_ack";
 const char *EVENTS_TOPIC =
     "swiftletcare/1/1/ESP32-HOUSE01-ZONE01/events";
-
+const char *TELEMETRY_ACK_TOPIC =
+    "swiftletcare/1/1/ESP32-HOUSE01-ZONE01/telemetry_ack";
 Preferences preferences;
 struct ZoneConfig
 {
@@ -207,14 +205,13 @@ struct ZoneConfig
   uint32_t telemetryIntervalMs = 5000;
 };
 ZoneConfig zoneConfig;
-unsigned long manualModeStartedMs = 0;
-const unsigned long MANUAL_TIMEOUT_MS = 10UL * 60UL * 1000UL;
-uint8_t dhtGoodStreak = 0;
+unsigned long manualModeStartedMs = 0; // Thời điểm bắt đầu chế độ MANUAL, dùng để tự động chuyển về AUTO sau 10 phút
+const unsigned long MANUAL_TIMEOUT_MS = 10UL * 60UL * 1000UL; // 10 phút
+uint8_t dhtGoodStreak = 0; // Số lần đọc DHT liên tiếp hợp lệ, dùng để xác định trạng thái cảm biến DHT
 bool dhtFaultActive = false;
 uint32_t droppedTelemetryCount = 0;
 unsigned long bootStartedMs = 0;
-const char *TELEMETRY_ACK_TOPIC =
-    "swiftletcare/1/1/ESP32-HOUSE01-ZONE01/telemetry_ack";
+
 // MQTT CLIENT
 WiFiClient espClient;               // Tạo kết nối TCP/IP
 PubSubClient mqttClient(espClient); // Tạo MQTT Client
@@ -223,10 +220,10 @@ PubSubClient mqttClient(espClient); // Tạo MQTT Client
 unsigned long lastTelemetry = 0;
 unsigned long lastHeartbeat = 0;
 
-unsigned long TELEMETRY_INTERVAL = 5000;       // Configurable 1..60s
+unsigned long TELEMETRY_INTERVAL = 5000;       // Gửi telemetry mỗi 5 giây
 const unsigned long HEARTBEAT_INTERVAL = 2000; // Gửi heartbeat mỗi 2 giây
-
 unsigned long messageCounter = 0; // Đếm số message đã tạo
+
 bool ntpConfigured = false;
 std::atomic<bool> mqttOnline{false};
 std::atomic<bool> networkEnabled{true};
@@ -240,22 +237,20 @@ uint32_t bufferPeak = 0;
 uint32_t loopMaxMs = 0;
 bool simulateDhtFault = false, simulateCo2Fault = false;
 bool simulateLightFault = false;
-
-// PubSubClient and WiFi belong exclusively to networkTask after setup.
-// Main loop owns control state, command handling, NVS and telemetry buffer.
-struct MqttPacket
+//Hàng đợi MQTT – Queue
+struct MqttPacket // Cấu trúc lưu trữ thông tin về một gói MQTT
 {
   char topic[160];
   uint8_t payload[768];
   uint16_t length;
   bool retained;
 };
-QueueHandle_t mqttTxQueue = nullptr, mqttRxQueue = nullptr;
-TaskHandle_t networkTaskHandle = nullptr;
+QueueHandle_t mqttTxQueue = nullptr, mqttRxQueue = nullptr; // Hàng đợi gửi và nhận MQTT
+TaskHandle_t networkTaskHandle = nullptr; // là một con trỏ đến một đối tượng TaskHandle_t, được sử dụng để quản lý và điều khiển một tác vụ (task) trong hệ thống FreeRTOS. Nó được sử dụng để lưu trữ thông tin về tác vụ mạng (network task) trong chương trình, cho phép các phần khác của chương trình có thể tương tác với tác vụ này, ví dụ như dừng hoặc kiểm tra trạng thái của nó.
 bool queuePublish(const char *topic, const uint8_t *payload,
-                  unsigned int length, bool retained = false);
+                  unsigned int length, bool retained = false); // Hàm này được sử dụng để đưa một gói MQTT vào hàng đợi gửi (mqttTxQueue). Nó nhận các tham số: topic (chủ đề của gói), payload (dữ liệu của gói), length (độ dài của payload) và retained (cờ xác định xem gói có được giữ lại trên broker hay không). Hàm trả về true nếu gói được đưa vào hàng đợi thành công, ngược lại trả về false nếu hàng đợi đầy hoặc gặp lỗi.
 bool queuePublish(const char *topic, const char *payload,
-                  bool retained = false);
+                  bool retained = false); // Hàm này được sử dụng để đưa một gói MQTT vào hàng đợi gửi (mqttTxQueue). Nó nhận các tham số: topic (chủ đề của gói), payload (dữ liệu của gói dưới dạng chuỗi ký tự) và retained (cờ xác định xem gói có được giữ lại trên broker hay không). Hàm trả về true nếu gói được đưa vào hàng đợi thành công, ngược lại trả về false nếu hàng đợi đầy hoặc gặp lỗi.
 void processMqttMessages();
 void networkTask(void *);
 void onNetworkMessage(char *, byte *, unsigned int);
@@ -270,7 +265,6 @@ void onTimeSync(struct timeval *)
   ntpSynced.store(true);
   Serial.println("[CLOCK] SNTP sync OK");
 }
-
 // WIFI CONNECT
 void connectWiFi()
 {
@@ -282,7 +276,7 @@ void connectWiFi()
 unsigned long lastWiFiAttempt = 0;
 const unsigned long WIFI_RETRY_INTERVAL = 5000;
 
-void maintainWiFi()
+void maintainWiFi() // Kiểm tra trạng thái WiFi và kết nối lại nếu bị mất kết nối
 {
   if (WiFi.status() == WL_CONNECTED)
   {
@@ -340,18 +334,15 @@ bool addToBuffer(const char *topic, const char *payload)
 
 void removeBufferedTelemetryByEventId(const String &eventId)
 {
-  for (int i = 0; i < bufferCount; i++)
+  for (int i = 0; i < bufferCount; i++) // Duyệt qua tất cả các message trong buffer
   {
-    JsonDocument doc;
-
-    DeserializationError error =
-        deserializeJson(doc, messageBuffer[i].payload);
+    JsonDocument doc; // Khởi tạo một đối tượng JsonDocument để lưu trữ dữ liệu JSON được giải mã từ payload của message trong buffer
+    DeserializationError error = deserializeJson(doc, messageBuffer[i].payload); // Giải mã payload của message trong buffer thành đối tượng JSON và lưu trữ vào doc. Nếu giải mã thành công, error sẽ có giá trị Ok, ngược lại sẽ có giá trị khác Ok.
 
     if (error || !doc["event_id"].is<const char *>())
     {
       continue;
     }
-
     if (doc["event_id"].as<String>() != eventId)
     {
       continue;
@@ -362,7 +353,6 @@ void removeBufferedTelemetryByEventId(const String &eventId)
     {
       messageBuffer[j] = messageBuffer[j + 1];
     }
-
     bufferCount--;
 
     // Giải phóng dữ liệu còn giữ ở ô cuối.
@@ -376,22 +366,18 @@ void removeBufferedTelemetryByEventId(const String &eventId)
         bufferCount);
     return;
   }
-
-  // ACK lặp hoặc ACK cho bản tin không còn trong buffer.
-  // Không xoá bản tin khác.
+  //Bỏ qua nếu không tìm thấy eventId
   Serial.printf(
       "[BUFFER] ACK ignored; event_id not found: %s\n",
       eventId.c_str());
 }
-
+// Xử lý ACK từ backend khi nhận được telemetry đã được lưu trữ thành công
 void handleTelemetryAck(byte *payload, unsigned int length)
 {
   JsonDocument doc;
+  DeserializationError error = deserializeJson(doc, payload, length);
 
-  DeserializationError error =
-      deserializeJson(doc, payload, length);
-
-  if (error || !doc.is<JsonObject>())
+  if (error || !doc.is<JsonObject>())// Nếu giải mã thất bại hoặc dữ liệu không phải là một đối tượng JSON
   {
     Serial.println("[TELEMETRY_ACK] Invalid JSON");
     return;
@@ -405,7 +391,7 @@ void handleTelemetryAck(byte *payload, unsigned int length)
     return;
   }
 
-  String ackDeviceId = doc["device_id"].as<String>();
+  String ackDeviceId = doc["device_id"].as<String>();// Lấy giá trị device_id từ ACK
   if (ackDeviceId != DEVICE_ID)
   {
     Serial.println("[TELEMETRY_ACK] Ignored ACK for another device");
@@ -414,7 +400,6 @@ void handleTelemetryAck(byte *payload, unsigned int length)
 
   String eventId = doc["event_id"].as<String>();
   String status = doc["status"].as<String>();
-
   if (eventId.isEmpty() || status != "STORED")
   {
     Serial.println("[TELEMETRY_ACK] ACK not accepted");
@@ -428,19 +413,19 @@ void resendBufferedMessages()
 {
   if (!mqttOnline.load() || bufferCount == 0)
     return;
-  // At most two attempts per pass. Never flush 120 messages in a tight loop.
-  unsigned long now = millis();
-  static unsigned long lastPass = 0;
-  static int cursor = 0;
-  if (now - lastPass < 50)
+  // Lấy thời gian hiện tại tính bằng mili giây kể từ khi ESP32 khởi động
+  unsigned long now = millis(); // Lấy thời gian hiện tại tính bằng mili giây kể từ khi ESP32 khởi động
+  static unsigned long lastPass = 0; // Lưu thời điểm lần cuối cùng thực hiện việc gửi lại các message trong buffer
+  static int cursor = 0; // Con trỏ để duyệt qua các message trong buffer, bắt đầu từ vị trí 0
+  if (now - lastPass < 50) // Nếu thời gian kể từ lần gửi cuối cùng chưa đủ 50 mili giây, thì không thực hiện gửi lại
     return;
-  lastPass = now;
-  int scanned = 0, sent = 0;
-  while (scanned < bufferCount && sent < 2)
+  lastPass = now; // Cập nhật thời điểm lần cuối cùng thực hiện việc gửi lại các message trong buffer
+  int scanned = 0, sent = 0; // Biến đếm số message đã quét và số message đã gửi thành công
+  while (scanned < bufferCount && sent < 2) // Quét tối đa 2 message trong buffer để gửi lại, hoặc quét hết tất cả các message trong buffer
   {
-    if (cursor >= bufferCount)
+    if (cursor >= bufferCount) // Nếu con trỏ đã vượt quá số lượng message trong buffer, thì quay lại vị trí đầu tiên
       cursor = 0;
-    BufferedMessage &item = messageBuffer[cursor++];
+    BufferedMessage &item = messageBuffer[cursor++]; //
     scanned++;
     if (item.lastSentMs && now - item.lastSentMs < TELEMETRY_RETRY_INTERVAL)
       continue;
@@ -451,33 +436,30 @@ void resendBufferedMessages()
   }
 }
 // MQTT CONNECT
-unsigned long lastMQTTAttempt = 0;
+unsigned long lastMQTTAttempt = 0; // Thời điểm lần cuối cùng thử kết nối MQTT
 const unsigned long MQTT_RETRY_INTERVAL = 3000; // Thử reconnect mỗi 3 giây
 
 // Kiểm tra và kết nối lại MQTT khi bị mất kết nối
-// Kiểm tra và kết nối lại MQTT khi bị mất kết nối
 void tryConnectMQTT()
 {
-  // Called only by networkTask. Exponential retry 1, 2, 4 ... 30 seconds.
-  static uint32_t retryMs = 1000;
-  if (mqttClient.connected())
+  static uint32_t retryMs = 1000; // Thời gian chờ giữa các lần thử kết nối MQTT, bắt đầu từ 1 giây
+  if (mqttClient.connected()) 
     return;
   if (millis() - lastMQTTAttempt < retryMs)
     return;
-  lastMQTTAttempt = millis();
-  connectAttempts.fetch_add(1);
-  Serial.printf("[MQTT] connect attempt=%lu\n",
-                (unsigned long)connectAttempts.load());
+
+  lastMQTTAttempt = millis(); // Cập nhật thời điểm lần cuối cùng thử kết nối MQTT
+  connectAttempts.fetch_add(1); // Tăng số lần thử kết nối MQTT lên 1
+  Serial.printf("[MQTT] connect attempt=%lu\n", (unsigned long)connectAttempts.load());
   if (!mqttClient.connect(DEVICE_ID))
   {
-    retryMs = retryMs < 15000 ? retryMs * 2 : 30000;
-    Serial.printf("[MQTT] failed rc=%d retry_ms=%lu\n",
-                  mqttClient.state(), (unsigned long)retryMs);
+    retryMs = retryMs < 15000 ? retryMs * 2 : 30000; // Tăng thời gian chờ giữa các lần thử kết nối MQTT lên gấp đôi, tối đa là 30 giây
+    Serial.printf("[MQTT] failed rc=%d retry_ms=%lu\n",mqttClient.state(), (unsigned long)retryMs);
     return;
   }
-  bool subscribed = mqttClient.subscribe(CFG_TOPIC, 1);
-  subscribed = mqttClient.subscribe(COMMAND_TOPIC, 1) && subscribed;
-  subscribed = mqttClient.subscribe(TELEMETRY_ACK_TOPIC, 1) && subscribed;
+  bool subscribed = mqttClient.subscribe(CFG_TOPIC, 1); // Đăng ký nhận các message từ topic CFG_TOPIC với QoS 1
+  subscribed = mqttClient.subscribe(COMMAND_TOPIC, 1) && subscribed; // Đăng ký nhận các message từ topic COMMAND_TOPIC với QoS 1, nếu đăng ký thành công cả hai topic thì subscribed sẽ là true
+  subscribed = mqttClient.subscribe(TELEMETRY_ACK_TOPIC, 1) && subscribed; // Đăng ký nhận các message từ topic TELEMETRY_ACK_TOPIC với QoS 1, nếu đăng ký thành công cả ba topic thì subscribed sẽ là true
   if (!subscribed)
   {
     Serial.println("[MQTT] subscription send failed; reconnecting");
@@ -486,14 +468,10 @@ void tryConnectMQTT()
   }
   retryMs = 1000;
   reconnectCount.fetch_add(1);
-  mqttOnline.store(true);
-  mqttJustConnected.store(true);
+  mqttOnline.store(true); // Cập nhật trạng thái MQTT là online
+  mqttJustConnected.store(true); // Cập nhật trạng thái MQTT là vừa kết nối
   Serial.println("[MQTT] CONNECTED; subscribed cfg + command + telemetry_ack");
 }
-// TELEMETRY
-// Tạo và gửi dữ liệu nhiệt độ, độ ẩm, CO2 và ánh sáng
-// TELEMETRY
-// Đồng bộ schema telemetry theo code nhóm trưởng.
 
 void publishTelemetry(
     float temperature,
@@ -849,13 +827,13 @@ bool isAudioScheduleActive()
 
   // Prototype schedule: daily 06:00 inclusive to 18:00 exclusive.
   return localTime.tm_hour >= AUDIO_START_HOUR &&
-         localTime.tm_hour < AUDIO_END_HOUR;
+        localTime.tm_hour < AUDIO_END_HOUR;
 }
 
 void applyControlLogic()
 {
   bool fresh = latestDhtValid && haveValidTemperature &&
-               millis() - lastValidTemperatureMs <= SENSOR_STALE_MS;
+              millis() - lastValidTemperatureMs <= SENSOR_STALE_MS;
   bool safe = !fresh || dhtFaultActive || dhtGoodStreak < 3;
   bool overrideChanged = safetyOverride != safe;
   safetyOverride = safe;
@@ -883,14 +861,15 @@ void applyControlLogic()
     else if (humidifierState && latestHumidity >= zoneConfig.humidityOff)
       setActuatorState("MIST", false);
 
-    // FAN hysteresis: ON above 31 C OR above 1000 ppm CO2.
-    // OFF only when temperature is below 29 C AND CO2 is below 800 ppm.
-    bool highTemperature = latestTemperature > zoneConfig.tempMax;
-    bool highCo2 = latestCo2Valid && latestCo2 > FAN_ON_CO2_PPM;
-    bool fanShouldTurnOn = highTemperature || highCo2;
-    bool fanCanTurnOff = latestTemperature < FAN_OFF_TEMP &&
-                         latestCo2Valid && latestCo2 < FAN_OFF_CO2_PPM;
-
+// FAN hysteresis:
+// ON when temperature >= 31 C OR CO2 > 1000 ppm.
+// OFF only when temperature <= 30 C AND valid CO2 < 800 ppm.
+bool highTemperature = latestTemperature >= FAN_ON_TEMP;
+bool highCo2 = latestCo2Valid && latestCo2 > FAN_ON_CO2_PPM;
+bool fanShouldTurnOn = highTemperature || highCo2;
+bool fanCanTurnOff = latestTemperature <= FAN_OFF_TEMP &&
+                    latestCo2Valid &&
+                    latestCo2 < FAN_OFF_CO2_PPM;
     if (!fanState && fanShouldTurnOn)
       setFanState(true);
     else if (fanState && fanCanTurnOff)
@@ -1924,7 +1903,7 @@ bool queuePublish(const char *topic, const uint8_t *payload,
 bool queuePublish(const char *topic, const char *payload, bool retained)
 {
   return payload && queuePublish(topic, (const uint8_t *)payload,
-                                 strlen(payload), retained);
+                                strlen(payload), retained);
 }
 void onNetworkMessage(char *topic, byte *payload, unsigned int length)
 {
@@ -1986,7 +1965,7 @@ void networkTask(void *)
       if (hasPending)
       {
         if (mqttClient.publish(pending.topic, pending.payload, pending.length,
-                               pending.retained))
+                              pending.retained))
           hasPending = false;
         else
         {

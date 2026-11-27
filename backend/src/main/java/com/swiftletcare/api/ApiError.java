@@ -1,11 +1,14 @@
 package com.swiftletcare.api;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.util.Map;
+
 import org.springframework.dao.DataAccessException;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestControllerAdvice
 public class ApiError {
@@ -82,4 +85,19 @@ public class ApiError {
     return ResponseEntity.status(500)
         .body(body("INTERNAL_ERROR", "Request could not be completed", r.getRequestURI()));
   }
+  @ExceptionHandler(
+    org.springframework.web.multipart.MaxUploadSizeExceededException.class
+  )
+  ResponseEntity<?> uploadTooLarge(
+      Exception e, HttpServletRequest request
+  ) {
+      return ResponseEntity.status(413).body(
+          body(
+              "IMAGE_TOO_LARGE",
+              "Multipart upload exceeds the server limit",
+              request.getRequestURI()
+          )
+      );
+  }
 }
+
