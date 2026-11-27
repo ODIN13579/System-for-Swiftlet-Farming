@@ -1,18 +1,34 @@
 package com.swiftletcare.security;
 
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+
 import javax.crypto.spec.SecretKeySpec;
+
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.*;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.*;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 public class SecurityConfig {
@@ -28,12 +44,59 @@ public class SecurityConfig {
     return new NimbusJwtEncoder(new com.nimbusds.jose.jwk.source.ImmutableSecret<>(key));
   }
 
+
   @Bean
-  JwtDecoder decoder(SecretKeySpec key) {
-    var d = NimbusJwtDecoder.withSecretKey(key).macAlgorithm(MacAlgorithm.HS256).build();
-    d.setJwtValidator(JwtValidators.createDefaultWithIssuer("swiftletcare"));
-    return d;
+  JwtDecoder decoder(SecretKeySpec key, JdbcTemplate jdbc) {
+      var decoder = NimbusJwtDecoder.withSecretKey(key)
+          .macAlgorithm(MacAlgorithm.HS256)
+          .build();
+
+      OAuth2TokenValidator<Jwt> accountValidator = jwt -> {
+          try {
+              long accountId = Long.parseLong(jwt.getSubject());
+              Object claim = jwt.getClaims().get("token_version");
+
+              // Legacy test tokens issued before B3-13 use version 0.
+              long tokenVersion = claim == null
+                  ? 0L
+                  : claim instanceof Number n
+                      ? n.longValue() : -1L;
+
+              if (accountId > 0 && tokenVersion >= 0) {
+                  var versions = jdbc.queryForList("""
+                      select token_version
+                      from swiftletcare.users
+                      where id=? and active
+                      """, Long.class, accountId);
+
+                  if (versions.size() == 1
+                          && versions.getFirst() == tokenVersion) {
+                      return OAuth2TokenValidatorResult.success();
+                  }
+              }
+          } catch (RuntimeException ignored) {
+              // Fail closed on malformed, revoked or unverifiable tokens.
+          }
+
+          return OAuth2TokenValidatorResult.failure(
+              new OAuth2Error(
+                  "invalid_token",
+                  "Account inactive or JWT revoked",
+                  null
+              )
+          );
+      };
+
+      decoder.setJwtValidator(
+          new DelegatingOAuth2TokenValidator<>(
+              JwtValidators.createDefaultWithIssuer("swiftletcare"),
+              accountValidator
+          )
+      );
+
+      return decoder;
   }
+
 
   @Bean
   BCryptPasswordEncoder passwords() {
@@ -59,15 +122,21 @@ public class SecurityConfig {
     h.csrf(c -> c.disable())
         .cors(c -> c.configurationSource(corsConfigurationSource))
         .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(
-            a ->
-                a.requestMatchers(
-                        "/actuator/health/**",
-                        "/api/v1/auth/login",
-                        "/api/v1/internal/ai/count-logs")
-                    .permitAll()
-                    .anyRequest()
-                    .authenticated())
+        .authorizeHttpRequests(a -> a
+          .requestMatchers(
+              "/actuator/health/**",
+              "/api/v1/auth/login",
+              "/api/v1/internal/ai/count-logs"
+          ).permitAll()
+          // Service key is validated by AiPredatorController.
+          .requestMatchers(
+              HttpMethod.POST,
+              "/api/ai/snapshots",
+              "/api/ai/events"
+          ).permitAll()
+          // Snapshot GET is intentionally NOT public.
+          .anyRequest().authenticated()
+        )
         .oauth2ResourceServer(
             o ->
                 o.bearerTokenResolver(

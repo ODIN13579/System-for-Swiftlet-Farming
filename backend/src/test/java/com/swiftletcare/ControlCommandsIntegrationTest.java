@@ -1,7 +1,5 @@
 package com.swiftletcare;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -14,6 +12,8 @@ import java.util.UUID;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.junit.jupiter.api.Test;
@@ -22,14 +22,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+
 import tools.jackson.databind.json.JsonMapper;
 
 @EnabledIfEnvironmentVariable(named = "DB_TEST_ENABLED", matches = "true")
+// Close the wildcard MQTT subscriptions before the next suite uses the broker.
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
     "app.jwt-secret=build104-test-secret-at-least-32-bytes",
     "app.ai-service-key=build104-test-service-key-at-least-24",
@@ -85,9 +89,42 @@ class ControlCommandsIntegrationTest {
           select d.online and a.state_received_at is not null from swiftletcare.devices d
           join swiftletcare.actuators a on a.device_id=d.id where a.id=?
           """, Boolean.class, fan)));
-      var blocked = post(http, owner, mist, Map.of("action", "SET_STATE", "targetState", true));
-      assertThat(blocked.statusCode()).isEqualTo(409);
-      assertThat(blocked.body()).contains("ACTUATOR_NOT_IN_MANUAL_MODE");
+
+      HttpResponse<String> blocked;
+
+      // Wait for the Backend MQTT control subscriptions.
+      // HTTP 503 is transient during startup.
+      long readyDeadline =
+          System.nanoTime() + TimeUnit.SECONDS.toNanos(15);
+
+      do {
+          blocked = post(
+              http,
+              owner,
+              mist,
+              Map.of(
+                  "action", "SET_STATE",
+                  "targetState", true
+              )
+          );
+
+          if (blocked.statusCode() != 503) {
+              break;
+          }
+
+          Thread.sleep(100);
+
+      } while (System.nanoTime() < readyDeadline);
+
+      // Once the broker is ready, this request
+      // must fail because the actuator is still AUTO.
+      assertThat(blocked.statusCode())
+          .as("HTTP response: " + blocked.body())
+          .isEqualTo(409);
+
+      assertThat(blocked.body())
+          .contains("ACTUATOR_NOT_IN_MANUAL_MODE");
+
 
       String modeId = accepted(post(http, owner, fan, Map.of("action", "SET_MODE", "targetMode", "MANUAL")));
       assertWire(wire, modeId, "SET_MODE", "FAN", "targetMode", "MANUAL");

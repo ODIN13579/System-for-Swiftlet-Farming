@@ -450,7 +450,7 @@ paths:
       tags:
       - Memberships
       operationId: updateHouseMember
-      summary: Cập nhật quyền thành viên
+      summary: Đổi vai trò thành viên trong House
       parameters:
       - name: houseId
         in: path
@@ -493,9 +493,10 @@ paths:
       - bearerAuth: []
       x-build-priority: Extended
       x-requirement-group: FR-RBAC
-      x-api-spec-status: PROPOSED_NEEDS_REVIEW
-      description: Design endpoint for BUILD, subject to validation, authorization and cross-review as documented in
-        DSN-09.
+      x-api-spec-status: IMPLEMENTED_B3_16
+      description: Active House OWNER or Global ADMIN. Changes only the role of a membership in the named active House.
+        An actual self-role change or removal of the last active OWNER is rejected with 409.
+        The current JWT remains valid and subsequent requests use the updated membership.
   /api/v1/houses/{houseId}/zones:
     get:
       x-build104-implemented: false
@@ -1727,7 +1728,7 @@ paths:
       - Statistics & Reports
       operationId: getEnvironmentStats
       summary: Báo cáo thống kê môi trường
-      parameters:
+      parameters: &build3EnvironmentParameters
       - &id005
         name: zoneId
         in: query
@@ -1746,6 +1747,16 @@ paths:
           - HOURLY
           - DAILY
           default: DAILY
+      - name: houseId
+        in: query
+        schema:
+          type: integer
+          format: int64
+      - name: sensor
+        in: query
+        schema:
+          type: string
+          enum: [TEMPERATURE, HUMIDITY, CO2, LIGHT]
       responses:
         '200':
           description: Successful response
@@ -1767,9 +1778,8 @@ paths:
       - bearerAuth: []
       x-build-priority: MVP
       x-requirement-group: FR-REP
-      x-api-spec-status: PROPOSED_NEEDS_REVIEW
-      description: Design endpoint for BUILD, subject to validation, authorization and cross-review as documented in
-        DSN-09.
+      x-api-spec-status: BUILD3_IMPLEMENTED
+      description: House READ required. Half-open range and UTC+07 buckets. See reports-build3.md.
   /api/v1/reports/bird-count:
     get:
       x-build104-implemented: false
@@ -1777,10 +1787,21 @@ paths:
       - Statistics & Reports
       operationId: getBirdCountStats
       summary: Báo cáo IN/OUT theo Zone
-      parameters:
+      parameters: &build3CountParameters
       - *id005
       - *id003
       - *id004
+      - name: houseId
+        in: query
+        schema:
+          type: integer
+          format: int64
+      - name: granularity
+        in: query
+        schema:
+          type: string
+          enum: [HOURLY, DAILY, WEEKLY]
+          default: DAILY
       responses:
         '200':
           description: Successful response
@@ -1802,9 +1823,56 @@ paths:
       - bearerAuth: []
       x-build-priority: MVP
       x-requirement-group: FR-REP
-      x-api-spec-status: PROPOSED_NEEDS_REVIEW
-      description: Design endpoint for BUILD, subject to validation, authorization and cross-review as documented in
-        DSN-09.
+      x-api-spec-status: BUILD3_IMPLEMENTED
+      description: House READ required. Half-open range and UTC+07 buckets. See reports-build3.md.
+  /api/v1/reports/environment.csv:
+    get:
+      tags: [Statistics & Reports]
+      operationId: exportEnvironmentStatsCsv
+      parameters: *build3EnvironmentParameters
+      description: CSV with units in the header and UTC+07 times, using the same query as the JSON report.
+      responses:
+        '200':
+          description: CSV attachment
+          content:
+            text/csv:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      security:
+      - bearerAuth: []
+      x-build-priority: MVP
+      x-requirement-group: FR-REP
+      x-api-spec-status: BUILD3_IMPLEMENTED
+  /api/v1/reports/bird-count.csv:
+    get:
+      tags: [Statistics & Reports]
+      operationId: exportBirdCountStatsCsv
+      parameters: *build3CountParameters
+      description: CSV with units in the header and UTC+07 times, using the same query as the JSON report.
+      responses:
+        '200':
+          description: CSV attachment
+          content:
+            text/csv:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      security:
+      - bearerAuth: []
+      x-build-priority: MVP
+      x-requirement-group: FR-REP
+      x-api-spec-status: BUILD3_IMPLEMENTED
   /api/v1/reports/productivity-correlation:
     get:
       x-build104-implemented: false
@@ -2400,11 +2468,11 @@ components:
       additionalProperties: false
     MembershipUpdateRequest:
       type: object
+      required:
+      - role
       properties:
         role:
           $ref: '#/components/schemas/HouseRole'
-        active:
-          type: boolean
       additionalProperties: false
     DeviceResponse:
       type: object
@@ -3131,9 +3199,41 @@ components:
           type: number
           format: double
           nullable: true
+        minTemperature:
+          type: number
+          format: double
+          nullable: true
+        maxTemperature:
+          type: number
+          format: double
+          nullable: true
+        minHumidity:
+          type: number
+          format: double
+          nullable: true
+        maxHumidity:
+          type: number
+          format: double
+          nullable: true
+        minCo2:
+          type: number
+          format: double
+          nullable: true
+        maxCo2:
+          type: number
+          format: double
+          nullable: true
+        minLight:
+          type: number
+          format: double
+          nullable: true
+        maxLight:
+          type: number
+          format: double
+          nullable: true
         sampleCount:
           type: integer
-          format: int32
+          format: int64
           minimum: 0
       required:
       - timestamp
@@ -3181,16 +3281,29 @@ components:
           format: date-time
         entryCount:
           type: integer
-          format: int32
+          format: int64
           minimum: 0
         exitCount:
           type: integer
-          format: int32
+          format: int64
           minimum: 0
         detectCount:
           type: integer
-          format: int32
+          format: int64
           minimum: 0
+        granularity:
+          type: string
+          enum: [HOURLY, DAILY, WEEKLY]
+        points:
+          type: array
+          items:
+            type: object
+            required: [timestamp, entryCount, exitCount, detectCount]
+            properties:
+              timestamp: {type: string, format: date-time}
+              entryCount: {type: integer, format: int64}
+              exitCount: {type: integer, format: int64}
+              detectCount: {type: integer, format: int64}
       required:
       - zoneId
       - from
@@ -3198,6 +3311,8 @@ components:
       - entryCount
       - exitCount
       - detectCount
+      - granularity
+      - points
       additionalProperties: false
     CorrelationResponse:
       type: object

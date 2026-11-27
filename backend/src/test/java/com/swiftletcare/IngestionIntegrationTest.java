@@ -68,7 +68,6 @@ class IngestionIntegrationTest {
   HttpClient http = HttpClient.newHttpClient();
   MqttClient mqtt;
   BlockingQueue<String> acks = new LinkedBlockingQueue<>();
-  BlockingQueue<String> events = new LinkedBlockingQueue<>();
   long house, zone, device, camera, user;
   String code, topic, token, email;
 
@@ -196,8 +195,21 @@ class IngestionIntegrationTest {
     throw new AssertionError("No ACK for " + id);
   }
 
-  WebSocket socket(long id) throws Exception {
-    return socket(id, token, events, new CompletableFuture<>());
+  WebSocket socket(long id, BlockingQueue<String> messages) throws Exception {
+    return socket(id, token, messages, new CompletableFuture<>());
+  }
+
+  private String pollTelemetry(BlockingQueue<String> messages, long timeout, TimeUnit unit)
+      throws InterruptedException {
+    long deadline = System.nanoTime() + unit.toNanos(timeout);
+    long remaining;
+    while ((remaining = deadline - System.nanoTime()) > 0) {
+      String message = messages.poll(remaining, TimeUnit.NANOSECONDS);
+      if (message == null || "telemetry.updated".equals(json.readTree(message).get("type").asText())) {
+        return message;
+      }
+    }
+    return null;
   }
 
   WebSocket socket(long id, String auth, BlockingQueue<String> messages,
@@ -305,8 +317,8 @@ class IngestionIntegrationTest {
   @Test
   void mqttCommitAckDuplicateConflictInvalidAndWebsocket() throws Exception {
     acks.clear();
-    events.clear();
-    var ws = socket(device);
+    var messages = new LinkedBlockingQueue<String>();
+    var ws = socket(device, messages);
     String id = "mqtt-" + UUID.randomUUID();
     try {
       publish("telemetry", payload(id));
@@ -319,7 +331,7 @@ class IngestionIntegrationTest {
                   device,
                   id))
           .isEqualTo(1);
-      assertThat(events.poll(5, TimeUnit.SECONDS))
+      assertThat(pollTelemetry(messages, 5, TimeUnit.SECONDS))
           .contains("telemetry.updated", id, "PARTIAL_ERROR");
       publish("telemetry", payload(id));
       assertThat(ack(id)).contains("STORED");
@@ -380,8 +392,8 @@ class IngestionIntegrationTest {
   void databaseFailureDoesNotAckOrBroadcastAndRetryWorks() throws Exception {
     String id = "db-fail-" + UUID.randomUUID();
     acks.clear();
-    events.clear();
-    var ws = socket(device);
+    var messages = new LinkedBlockingQueue<String>();
+    var ws = socket(device, messages);
     // Fail only this test event at the DB layer; do not stop or alter the user's database.
     jdbc.execute(
         "create or replace function swiftletcare.test_reject_ingest() returns trigger language"
@@ -395,8 +407,7 @@ class IngestionIntegrationTest {
     try {
       publish("telemetry", payload(id));
       assertThat(acks.poll(1200, TimeUnit.MILLISECONDS)).isNull();
-      var notification = events.poll(200, TimeUnit.MILLISECONDS);
-      if (notification != null) assertThat(notification).doesNotContain("telemetry.updated");
+      assertThat(pollTelemetry(messages, 200, TimeUnit.MILLISECONDS)).isNull();
       assertThat(
               jdbc.queryForObject(
                   "select count(*) from swiftletcare.telemetry where event_id=?",
@@ -415,14 +426,14 @@ class IngestionIntegrationTest {
   @Test
   void heartbeatOnlineTimeoutOfflineRecovery() throws Exception {
     Thread.sleep(1500);
-    events.clear();
-    var ws = socket(device);
+    var messages = new LinkedBlockingQueue<String>();
+    var ws = socket(device, messages);
     try {
       long began = System.nanoTime();
       publish(
           "heartbeat",
           json.writeValueAsString(Map.of("device_id", code, "timestamp", "2020-01-01T00:00:00Z")));
-      String online = events.poll(5, TimeUnit.SECONDS);
+      String online = messages.poll(5, TimeUnit.SECONDS);
       assertThat(online).contains("device.status.changed", "\"online\":true");
       var seen =
           jdbc.queryForObject(
@@ -431,14 +442,14 @@ class IngestionIntegrationTest {
                   device)
               .toInstant();
       assertThat(seen).isAfter(Instant.now().minusSeconds(5));
-      String offline = events.poll(5, TimeUnit.SECONDS);
+      String offline = messages.poll(5, TimeUnit.SECONDS);
       assertThat(offline).contains("\"online\":false");
       assertThat(Duration.ofNanos(System.nanoTime() - began)).isLessThan(Duration.ofSeconds(5));
       publish(
           "heartbeat",
           json.writeValueAsString(
               Map.of("device_id", code, "timestamp", Instant.now().toString())));
-      assertThat(events.poll(5, TimeUnit.SECONDS)).contains("\"online\":true");
+      assertThat(messages.poll(5, TimeUnit.SECONDS)).contains("\"online\":true");
     } finally {
       ws.sendClose(1000, "done").get(3, TimeUnit.SECONDS);
     }
@@ -587,7 +598,7 @@ class IngestionIntegrationTest {
     jdbc.update("update swiftletcare.users set active=false where id=?", user);
     try {
       assertThat(request("GET", "/api/v1/devices/" + device, null, token).statusCode())
-          .isEqualTo(403);
+          .isEqualTo(401);
     } finally {
       jdbc.update("update swiftletcare.users set active=true where id=?", user);
     }
@@ -758,15 +769,31 @@ class IngestionIntegrationTest {
   @Autowired com.swiftletcare.iot.MqttGateway gateway;
 
   @Test
-  void deviceEventsValidateSourceAndWriteStructuredLogsOnly() throws Exception {
+  void deviceEventsValidateSourceLogAndCreateSensorFaultAlert() throws Exception {
     var logger=(ch.qos.logback.classic.Logger)org.slf4j.LoggerFactory.getLogger(com.swiftletcare.iot.DeviceEvents.class);
     var logs=new LinkedBlockingQueue<String>();
     var appender=new ch.qos.logback.core.AppenderBase<ch.qos.logback.classic.spi.ILoggingEvent>() {
       protected void append(ch.qos.logback.classic.spi.ILoggingEvent e) { logs.add(e.getFormattedMessage()); }
     };
     appender.setContext(logger.getLoggerContext()); appender.start(); logger.addAppender(appender);
-    long anomalies=jdbc.queryForObject("select count(*) from swiftletcare.anomaly_events",Long.class);
-    long alerts=jdbc.queryForObject("select count(*) from swiftletcare.alerts",Long.class);
+
+    long anomalies = jdbc.queryForObject(
+      "select count(*) from swiftletcare.anomaly_events",
+      Long.class
+    );
+
+    String faultCountSql =
+      "select count(*) from swiftletcare.alerts"
+      + " where zone_id=? and device_id=?"
+      + " and type='SENSOR_FAULT'";
+
+    long faultAlertsBefore = jdbc.queryForObject(
+      faultCountSql,
+      Long.class,
+      zone,
+      device
+    );
+
     try {
       for(String type:List.of("SENSOR_FAULT","MANUAL_LIMIT")) {
         String payload=json.writeValueAsString(Map.of("device_id",code,"timestamp",Instant.now().toString(),
@@ -780,6 +807,46 @@ class IngestionIntegrationTest {
         assertThat(data.get("deviceId").asLong()).isEqualTo(device);
         assertThat(data.get("type").asText()).isEqualTo(type);
       }
+
+      // SENSOR_FAULT must create exactly one new alert.
+      long faultAlertsAfterValid = jdbc.queryForObject(
+        faultCountSql,
+        Long.class,
+        zone,
+        device
+      );
+
+      assertThat(faultAlertsAfterValid)
+        .isEqualTo(faultAlertsBefore + 1);
+
+      // Verify the generated alert.
+      long newAlertId = jdbc.queryForObject(
+        "select id from swiftletcare.alerts"
+        + " where zone_id=? and device_id=?"
+        + " and type='SENSOR_FAULT'"
+        + " order by id desc limit 1",
+        Long.class,
+        zone,
+        device
+      );
+
+      assertThat(jdbc.queryForObject(
+        "select status from swiftletcare.alerts where id=?",
+        String.class,
+        newAlertId
+      )).isEqualTo("NEW");
+
+      // Automatically generated alerts have no human author.
+      assertThat(jdbc.queryForObject(
+        "select count(*) from swiftletcare.alert_histories"
+        + " where alert_id=?"
+        + " and changed_by is null"
+        + " and from_status is null"
+        + " and to_status='NEW'",
+        Long.class,
+        newAlertId
+      )).isEqualTo(1L);
+
       for(var invalid:List.of(
           Map.of("device_id",code,"timestamp",Instant.now().plusSeconds(600).toString(),"event_type","SENSOR_FAULT","sensor","DHT22","reason","bad time"),
           Map.of("device_id",code,"timestamp",Instant.now().toString(),"event_type","UNKNOWN","sensor","DHT22","reason","bad type"),
@@ -792,7 +859,12 @@ class IngestionIntegrationTest {
       retained.setRetained(true); gateway.messageArrived(topic+"/events",retained);
       assertThat(logs.poll(100,TimeUnit.MILLISECONDS)).isNull();
       assertThat(jdbc.queryForObject("select count(*) from swiftletcare.anomaly_events",Long.class)).isEqualTo(anomalies);
-      assertThat(jdbc.queryForObject("select count(*) from swiftletcare.alerts",Long.class)).isEqualTo(alerts);
+      assertThat(jdbc.queryForObject(
+          faultCountSql,
+          Long.class,
+          zone,
+          device
+      )).isEqualTo(faultAlertsAfterValid);
     } finally { logger.detachAppender(appender); appender.stop(); }
   }
 }
