@@ -1,5 +1,0 @@
-# Created at 2026-11-14T14:11:51.056
-Boot Manifest-JAR contains absolute paths in classpath 'D:\New_folder\System-for-Swiftlet-Farming\backend\logs\isolated-build\20261114-141112-654\target\test-classes'
-Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
-'other' has different root
-
