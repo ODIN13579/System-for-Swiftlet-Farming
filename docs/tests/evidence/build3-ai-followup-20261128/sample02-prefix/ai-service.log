@@ -1,0 +1,9 @@
+2026-11-28 07:20:29,748 INFO Đang tải mô hình YOLOv8...
+2026-11-28 07:20:30,107 INFO Bắt đầu xử lý video...
+2026-11-28 07:20:30,107 INFO Video: D:\New_folder\System-for-Swiftlet-Farming\ai\samples\sample-02.mp4
+2026-11-28 07:20:30,107 INFO Độ phân giải: 568x320
+2026-11-28 07:20:30,107 INFO FPS gốc của video: 29.97
+2026-11-28 07:20:30,108 INFO Counting line (pixels): (284.0, 40.0, 284.0, 280.0)
+2026-11-28 07:20:30,108 INFO Kích thước YOLO: 320
+2026-11-28 07:20:30,108 INFO Thiết bị xử lý: CPU
+2026-11-28 07:20:47,000 WARNING Không gửi CountLog cho clip thiếu frame: 80/914

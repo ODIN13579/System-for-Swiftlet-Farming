@@ -1,0 +1,20 @@
+{
+  "cameraId": 2,
+  "periodStart": "2026-11-27T16:00:00.000000Z",
+  "values": {
+    "entryCount": 0,
+    "exitCount": 0,
+    "detectCount": 15
+  },
+  "api": {
+    "id": 1,
+    "deviceId": 2,
+    "periodStart": "2026-11-27T16:00:00Z",
+    "periodEnd": "2026-11-27T17:00:00Z",
+    "entryCount": 0,
+    "exitCount": 0,
+    "detectCount": 15,
+    "aggregationType": "HOURLY",
+    "processedAt": "2026-11-27T17:06:27.168037Z"
+  }
+}

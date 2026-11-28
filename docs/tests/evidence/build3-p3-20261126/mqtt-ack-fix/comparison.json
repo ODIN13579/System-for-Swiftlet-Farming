@@ -1,0 +1,27 @@
+{
+  "publish_ids": 150,
+  "broker_observed_ids": 150,
+  "db_rows": 150,
+  "db_distinct_ids": 150,
+  "ack_messages": 150,
+  "ack_distinct_ids": 150,
+  "db_missing": [],
+  "db_unexpected": [],
+  "ack_missing": [],
+  "ack_without_commit": [],
+  "ack_duplicates": 0,
+  "metric_delta": {
+    "db_committed": 150.0,
+    "db_verified_replay": 0.0,
+    "queued": 150.0,
+    "published": 150.0,
+    "confirmed": 150.0,
+    "coalesced": 0.0,
+    "retry": 0.0,
+    "dropped": 0.0,
+    "slow_confirmation": 0.0
+  },
+  "load_exit": 0,
+  "git_base": "7e0006433400c22df1eda3445a2008f9205ba97e",
+  "jar_sha256": "68d1fe53560123bb2cb317d45ed20f5299c99533d6ad89217fd504809a3927b7"
+}

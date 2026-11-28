@@ -3040,3 +3040,6 @@ button {
 .actuator-output { border-top: 1px solid var(--border, #dce7df); padding-block: 0.65rem; }
 .actuator-controls button { min-height: 44px; }
 .actuator-controls button:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.actuator-feedback { font-weight: 700; }
+.actuator-feedback-success { color: #166534; }
+.actuator-feedback-error { color: #b91c1c; }

@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 import requests
 
-from src.api_client import PredatorClient
+from src.api_client import PredatorClient, RejectedPredatorError, RetryablePredatorError
 from src.predator import DetectionGate, PredatorMonitor, PredatorOutbox, encode_snapshot
 
 
@@ -56,6 +56,18 @@ class Session:
         if isinstance(result, Exception):
             raise result
         return result
+
+
+@pytest.mark.parametrize(("status", "error"), [
+    (400, RejectedPredatorError), (401, RejectedPredatorError),
+    (403, RejectedPredatorError), (409, RejectedPredatorError),
+    (429, RetryablePredatorError), (500, RetryablePredatorError),
+    (503, RetryablePredatorError),
+])
+def test_predator_http_error_classification(status, error):
+    client = PredatorClient("http://example.test", "x" * 24, session=Session(Reply(status)))
+    with pytest.raises(error, match=f"HTTP {status}"):
+        client.upload_snapshot(12, b"jpeg")
 
 
 def test_client_matches_backend_routes_and_payloads():
@@ -130,3 +142,13 @@ def test_heartbeat_reports_a_stale_source_without_waiting_for_inference(tmp_path
         monitor.stop.set()
         monitor.updated.set()
         worker.join(1)
+
+
+def test_offline_monitor_respects_cooldown_in_media_seconds(tmp_path, monkeypatch):
+    monkeypatch.setattr("src.predator.encode_snapshot", lambda *args: b"jpeg")
+    monitor = PredatorMonitor({"predator_thresholds": {"owl": 0.3}}, tmp_path, 12, "")
+    for frame in range(1, 8):
+        monitor.accept(None, frame, 1 if frame < 4 else 2, "owl", 0.9, (),
+                       media_time=0 if frame < 4 else 59 if frame < 7 else 60)
+    with closing(connect(monitor.outbox.path)) as db:
+        assert db.execute("select count(*) from pending").fetchone()[0] == 2

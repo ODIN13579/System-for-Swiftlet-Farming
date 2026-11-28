@@ -1,0 +1,865 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.swiftletcare.HouseRoleReassignmentIntegrationTest" time="0.731" tests="7" errors="0" skipped="0" failures="0" flakes="0">
+  <properties>
+    <property name="java.specification.version" value="21"/>
+    <property name="sun.cpu.isalist" value="amd64"/>
+    <property name="sun.jnu.encoding" value="Cp1252"/>
+    <property name="java.class.path" value="D:\New_folder\System-for-Swiftlet-Farming\.build\zoneconfig-qa\test-classes;D:\New_folder\System-for-Swiftlet-Farming\.build\zoneconfig-qa\classes;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-validation\4.0.8\spring-boot-starter-validation-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter\4.0.8\spring-boot-starter-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-logging\4.0.8\spring-boot-starter-logging-4.0.8.jar;C:\Users\ACER\.m2\repository\ch\qos\logback\logback-classic\1.5.38\logback-classic-1.5.38.jar;C:\Users\ACER\.m2\repository\ch\qos\logback\logback-core\1.5.38\logback-core-1.5.38.jar;C:\Users\ACER\.m2\repository\org\apache\logging\log4j\log4j-to-slf4j\2.25.5\log4j-to-slf4j-2.25.5.jar;C:\Users\ACER\.m2\repository\org\apache\logging\log4j\log4j-api\2.25.5\log4j-api-2.25.5.jar;C:\Users\ACER\.m2\repository\org\slf4j\jul-to-slf4j\2.0.18\jul-to-slf4j-2.0.18.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-autoconfigure\4.0.8\spring-boot-autoconfigure-4.0.8.jar;C:\Users\ACER\.m2\repository\jakarta\annotation\jakarta.annotation-api\3.0.0\jakarta.annotation-api-3.0.0.jar;C:\Users\ACER\.m2\repository\org\yaml\snakeyaml\2.5\snakeyaml-2.5.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-validation\4.0.8\spring-boot-validation-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot\4.0.8\spring-boot-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-context\7.0.9\spring-context-7.0.9.jar;C:\Users\ACER\.m2\repository\org\apache\tomcat\embed\tomcat-embed-el\11.0.24\tomcat-embed-el-11.0.24.jar;C:\Users\ACER\.m2\repository\org\hibernate\validator\hibernate-validator\9.0.1.Final\hibernate-validator-9.0.1.Final.jar;C:\Users\ACER\.m2\repository\jakarta\validation\jakarta.validation-api\3.1.1\jakarta.validation-api-3.1.1.jar;C:\Users\ACER\.m2\repository\org\jboss\logging\jboss-logging\3.6.3.Final\jboss-logging-3.6.3.Final.jar;C:\Users\ACER\.m2\repository\com\fasterxml\classmate\1.7.3\classmate-1.7.3.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-websocket\4.0.8\spring-boot-starter-websocket-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-websocket\4.0.8\spring-boot-websocket-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-messaging\7.0.9\spring-messaging-7.0.9.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-beans\7.0.9\spring-beans-7.0.9.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-websocket\7.0.9\spring-websocket-7.0.9.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-security-oauth2-resource-server\4.0.8\spring-boot-starter-security-oauth2-resource-server-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-security\4.0.8\spring-boot-starter-security-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-security\4.0.8\spring-boot-security-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\security\spring-security-config\7.0.7\spring-security-config-7.0.7.jar;C:\Users\ACER\.m2\repository\org\springframework\security\spring-security-web\7.0.7\spring-security-web-7.0.7.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-aop\7.0.9\spring-aop-7.0.9.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-security-oauth2-resource-server\4.0.8\spring-boot-security-oauth2-resource-server-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\security\spring-security-oauth2-jose\7.0.7\spring-security-oauth2-jose-7.0.7.jar;C:\Users\ACER\.m2\repository\org\springframework\security\spring-security-core\7.0.7\spring-security-core-7.0.7.jar;C:\Users\ACER\.m2\repository\org\springframework\security\spring-security-crypto\7.0.7\spring-security-crypto-7.0.7.jar;C:\Users\ACER\.m2\repository\org\springframework\security\spring-security-oauth2-core\7.0.7\spring-security-oauth2-core-7.0.7.jar;C:\Users\ACER\.m2\repository\com\nimbusds\nimbus-jose-jwt\10.4\nimbus-jose-jwt-10.4.jar;C:\Users\ACER\.m2\repository\org\springframework\security\spring-security-oauth2-resource-server\7.0.7\spring-security-oauth2-resource-server-7.0.7.jar;C:\Users\ACER\.m2\repository\org\eclipse\paho\org.eclipse.paho.client.mqttv3\1.2.5\org.eclipse.paho.client.mqttv3-1.2.5.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-webmvc\4.0.8\spring-boot-starter-webmvc-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-jackson\4.0.8\spring-boot-starter-jackson-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-jackson\4.0.8\spring-boot-jackson-4.0.8.jar;C:\Users\ACER\.m2\repository\tools\jackson\core\jackson-databind\3.1.5\jackson-databind-3.1.5.jar;C:\Users\ACER\.m2\repository\tools\jackson\core\jackson-core\3.1.5\jackson-core-3.1.5.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-tomcat\4.0.8\spring-boot-starter-tomcat-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-tomcat-runtime\4.0.8\spring-boot-starter-tomcat-runtime-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-web-server\4.0.8\spring-boot-web-server-4.0.8.jar;C:\Users\ACER\.m2\repository\org\apache\tomcat\embed\tomcat-embed-core\11.0.24\tomcat-embed-core-11.0.24.jar;C:\Users\ACER\.m2\repository\org\apache\tomcat\embed\tomcat-embed-websocket\11.0.24\tomcat-embed-websocket-11.0.24.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-tomcat\4.0.8\spring-boot-tomcat-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-http-converter\4.0.8\spring-boot-http-converter-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-web\7.0.9\spring-web-7.0.9.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-webmvc\4.0.8\spring-boot-webmvc-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-servlet\4.0.8\spring-boot-servlet-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-webmvc\7.0.9\spring-webmvc-7.0.9.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-expression\7.0.9\spring-expression-7.0.9.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-data-jpa\4.0.8\spring-boot-starter-data-jpa-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-jdbc\4.0.8\spring-boot-starter-jdbc-4.0.8.jar;C:\Users\ACER\.m2\repository\com\zaxxer\HikariCP\7.0.2\HikariCP-7.0.2.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-data-jpa\4.0.8\spring-boot-data-jpa-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-data-commons\4.0.8\spring-boot-data-commons-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-persistence\4.0.8\spring-boot-persistence-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\data\spring-data-commons\4.0.7\spring-data-commons-4.0.7.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-hibernate\4.0.8\spring-boot-hibernate-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-jpa\4.0.8\spring-boot-jpa-4.0.8.jar;C:\Users\ACER\.m2\repository\jakarta\persistence\jakarta.persistence-api\3.2.0\jakarta.persistence-api-3.2.0.jar;C:\Users\ACER\.m2\repository\org\hibernate\orm\hibernate-core\7.2.24.Final\hibernate-core-7.2.24.Final.jar;C:\Users\ACER\.m2\repository\jakarta\transaction\jakarta.transaction-api\2.0.1\jakarta.transaction-api-2.0.1.jar;C:\Users\ACER\.m2\repository\org\hibernate\models\hibernate-models\1.0.1\hibernate-models-1.0.1.jar;C:\Users\ACER\.m2\repository\org\glassfish\jaxb\jaxb-runtime\4.0.9\jaxb-runtime-4.0.9.jar;C:\Users\ACER\.m2\repository\org\glassfish\jaxb\jaxb-core\4.0.9\jaxb-core-4.0.9.jar;C:\Users\ACER\.m2\repository\org\eclipse\angus\angus-activation\2.0.3\angus-activation-2.0.3.jar;C:\Users\ACER\.m2\repository\org\glassfish\jaxb\txw2\4.0.9\txw2-4.0.9.jar;C:\Users\ACER\.m2\repository\com\sun\istack\istack-commons-runtime\4.1.2\istack-commons-runtime-4.1.2.jar;C:\Users\ACER\.m2\repository\jakarta\inject\jakarta.inject-api\2.0.1\jakarta.inject-api-2.0.1.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-orm\7.0.9\spring-orm-7.0.9.jar;C:\Users\ACER\.m2\repository\org\springframework\data\spring-data-jpa\4.0.7\spring-data-jpa-4.0.7.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-tx\7.0.9\spring-tx-7.0.9.jar;C:\Users\ACER\.m2\repository\org\antlr\antlr4-runtime\4.13.2\antlr4-runtime-4.13.2.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-aspects\7.0.9\spring-aspects-7.0.9.jar;C:\Users\ACER\.m2\repository\org\aspectj\aspectjweaver\1.9.25.1\aspectjweaver-1.9.25.1.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-jdbc\4.0.8\spring-boot-jdbc-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-sql\4.0.8\spring-boot-sql-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-transaction\4.0.8\spring-boot-transaction-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-jdbc\7.0.9\spring-jdbc-7.0.9.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-flyway\4.0.8\spring-boot-starter-flyway-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-flyway\4.0.8\spring-boot-flyway-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-actuator\4.0.8\spring-boot-starter-actuator-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-micrometer-metrics\4.0.8\spring-boot-starter-micrometer-metrics-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-micrometer-metrics\4.0.8\spring-boot-micrometer-metrics-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-micrometer-observation\4.0.8\spring-boot-micrometer-observation-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-actuator-autoconfigure\4.0.8\spring-boot-actuator-autoconfigure-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-actuator\4.0.8\spring-boot-actuator-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-health\4.0.8\spring-boot-health-4.0.8.jar;C:\Users\ACER\.m2\repository\io\micrometer\micrometer-observation\1.16.7\micrometer-observation-1.16.7.jar;C:\Users\ACER\.m2\repository\org\jspecify\jspecify\1.0.1\jspecify-1.0.1.jar;C:\Users\ACER\.m2\repository\io\micrometer\micrometer-commons\1.16.7\micrometer-commons-1.16.7.jar;C:\Users\ACER\.m2\repository\io\micrometer\micrometer-jakarta9\1.16.7\micrometer-jakarta9-1.16.7.jar;C:\Users\ACER\.m2\repository\io\micrometer\micrometer-core\1.16.7\micrometer-core-1.16.7.jar;C:\Users\ACER\.m2\repository\org\hdrhistogram\HdrHistogram\2.2.2\HdrHistogram-2.2.2.jar;C:\Users\ACER\.m2\repository\org\latencyutils\LatencyUtils\2.0.3\LatencyUtils-2.0.3.jar;C:\Users\ACER\.m2\repository\org\flywaydb\flyway-database-postgresql\11.14.1\flyway-database-postgresql-11.14.1.jar;C:\Users\ACER\.m2\repository\org\flywaydb\flyway-core\11.14.1\flyway-core-11.14.1.jar;C:\Users\ACER\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.21.5\jackson-databind-2.21.5.jar;C:\Users\ACER\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.21\jackson-annotations-2.21.jar;C:\Users\ACER\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.21.5\jackson-core-2.21.5.jar;C:\Users\ACER\.m2\repository\org\postgresql\postgresql\42.7.13\postgresql-42.7.13.jar;C:\Users\ACER\.m2\repository\org\checkerframework\checker-qual\3.55.1\checker-qual-3.55.1.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-test\4.0.8\spring-boot-starter-test-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-test\4.0.8\spring-boot-test-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-test-autoconfigure\4.0.8\spring-boot-test-autoconfigure-4.0.8.jar;C:\Users\ACER\.m2\repository\com\jayway\jsonpath\json-path\2.10.0\json-path-2.10.0.jar;C:\Users\ACER\.m2\repository\org\slf4j\slf4j-api\2.0.18\slf4j-api-2.0.18.jar;C:\Users\ACER\.m2\repository\jakarta\xml\bind\jakarta.xml.bind-api\4.0.5\jakarta.xml.bind-api-4.0.5.jar;C:\Users\ACER\.m2\repository\jakarta\activation\jakarta.activation-api\2.1.4\jakarta.activation-api-2.1.4.jar;C:\Users\ACER\.m2\repository\net\minidev\json-smart\2.6.0\json-smart-2.6.0.jar;C:\Users\ACER\.m2\repository\net\minidev\accessors-smart\2.6.0\accessors-smart-2.6.0.jar;C:\Users\ACER\.m2\repository\org\ow2\asm\asm\9.7.1\asm-9.7.1.jar;C:\Users\ACER\.m2\repository\org\assertj\assertj-core\3.27.7\assertj-core-3.27.7.jar;C:\Users\ACER\.m2\repository\net\bytebuddy\byte-buddy\1.17.8\byte-buddy-1.17.8.jar;C:\Users\ACER\.m2\repository\org\awaitility\awaitility\4.3.0\awaitility-4.3.0.jar;C:\Users\ACER\.m2\repository\org\hamcrest\hamcrest\3.0\hamcrest-3.0.jar;C:\Users\ACER\.m2\repository\org\junit\jupiter\junit-jupiter\6.0.3\junit-jupiter-6.0.3.jar;C:\Users\ACER\.m2\repository\org\junit\jupiter\junit-jupiter-api\6.0.3\junit-jupiter-api-6.0.3.jar;C:\Users\ACER\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\ACER\.m2\repository\org\junit\platform\junit-platform-commons\6.0.3\junit-platform-commons-6.0.3.jar;C:\Users\ACER\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\ACER\.m2\repository\org\junit\jupiter\junit-jupiter-params\6.0.3\junit-jupiter-params-6.0.3.jar;C:\Users\ACER\.m2\repository\org\junit\jupiter\junit-jupiter-engine\6.0.3\junit-jupiter-engine-6.0.3.jar;C:\Users\ACER\.m2\repository\org\junit\platform\junit-platform-engine\6.0.3\junit-platform-engine-6.0.3.jar;C:\Users\ACER\.m2\repository\org\mockito\mockito-core\5.20.0\mockito-core-5.20.0.jar;C:\Users\ACER\.m2\repository\net\bytebuddy\byte-buddy-agent\1.17.8\byte-buddy-agent-1.17.8.jar;C:\Users\ACER\.m2\repository\org\objenesis\objenesis\3.3\objenesis-3.3.jar;C:\Users\ACER\.m2\repository\org\mockito\mockito-junit-jupiter\5.20.0\mockito-junit-jupiter-5.20.0.jar;C:\Users\ACER\.m2\repository\org\skyscreamer\jsonassert\1.5.3\jsonassert-1.5.3.jar;C:\Users\ACER\.m2\repository\com\vaadin\external\google\android-json\0.0.20131108.vaadin1\android-json-0.0.20131108.vaadin1.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-core\7.0.9\spring-core-7.0.9.jar;C:\Users\ACER\.m2\repository\commons-logging\commons-logging\1.3.6\commons-logging-1.3.6.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-test\7.0.9\spring-test-7.0.9.jar;C:\Users\ACER\.m2\repository\org\xmlunit\xmlunit-core\2.10.4\xmlunit-core-2.10.4.jar;"/>
+    <property name="swiftletcare.build.directory" value="D:\New_folder\System-for-Swiftlet-Farming/.build/zoneconfig-qa"/>
+    <property name="java.vm.vendor" value="Eclipse Adoptium"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="user.variant" value=""/>
+    <property name="catalina.useNaming" value="false"/>
+    <property name="java.vendor.url" value="https://adoptium.net/"/>
+    <property name="user.timezone" value="Asia/Saigon"/>
+    <property name="org.jboss.logging.provider" value="slf4j"/>
+    <property name="user.country.format" value="VN"/>
+    <property name="os.name" value="Windows 11"/>
+    <property name="java.vm.specification.version" value="21"/>
+    <property name="APPLICATION_NAME" value="swiftletcare-backend"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="user.country" value="US"/>
+    <property name="sun.boot.library.path" value="C:\Program Files\Eclipse Adoptium\jdk-21.0.12.101-hotspot\bin"/>
+    <property name="sun.java.command" value="C:\Users\ACER\AppData\Local\Temp\surefire6739422784246502676\surefirebooter-20261128121203421_3.jar C:\Users\ACER\AppData\Local\Temp\surefire6739422784246502676 2026-11-28T12-12-03_181-jvmRun1 surefire-20261128121203421_1tmp surefire_0-20261128121203421_2tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="D:\New_folder\System-for-Swiftlet-Farming\.build\zoneconfig-qa\test-classes;D:\New_folder\System-for-Swiftlet-Farming\.build\zoneconfig-qa\classes;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-validation\4.0.8\spring-boot-starter-validation-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter\4.0.8\spring-boot-starter-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-logging\4.0.8\spring-boot-starter-logging-4.0.8.jar;C:\Users\ACER\.m2\repository\ch\qos\logback\logback-classic\1.5.38\logback-classic-1.5.38.jar;C:\Users\ACER\.m2\repository\ch\qos\logback\logback-core\1.5.38\logback-core-1.5.38.jar;C:\Users\ACER\.m2\repository\org\apache\logging\log4j\log4j-to-slf4j\2.25.5\log4j-to-slf4j-2.25.5.jar;C:\Users\ACER\.m2\repository\org\apache\logging\log4j\log4j-api\2.25.5\log4j-api-2.25.5.jar;C:\Users\ACER\.m2\repository\org\slf4j\jul-to-slf4j\2.0.18\jul-to-slf4j-2.0.18.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-autoconfigure\4.0.8\spring-boot-autoconfigure-4.0.8.jar;C:\Users\ACER\.m2\repository\jakarta\annotation\jakarta.annotation-api\3.0.0\jakarta.annotation-api-3.0.0.jar;C:\Users\ACER\.m2\repository\org\yaml\snakeyaml\2.5\snakeyaml-2.5.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-validation\4.0.8\spring-boot-validation-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot\4.0.8\spring-boot-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-context\7.0.9\spring-context-7.0.9.jar;C:\Users\ACER\.m2\repository\org\apache\tomcat\embed\tomcat-embed-el\11.0.24\tomcat-embed-el-11.0.24.jar;C:\Users\ACER\.m2\repository\org\hibernate\validator\hibernate-validator\9.0.1.Final\hibernate-validator-9.0.1.Final.jar;C:\Users\ACER\.m2\repository\jakarta\validation\jakarta.validation-api\3.1.1\jakarta.validation-api-3.1.1.jar;C:\Users\ACER\.m2\repository\org\jboss\logging\jboss-logging\3.6.3.Final\jboss-logging-3.6.3.Final.jar;C:\Users\ACER\.m2\repository\com\fasterxml\classmate\1.7.3\classmate-1.7.3.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-websocket\4.0.8\spring-boot-starter-websocket-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-websocket\4.0.8\spring-boot-websocket-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-messaging\7.0.9\spring-messaging-7.0.9.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-beans\7.0.9\spring-beans-7.0.9.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-websocket\7.0.9\spring-websocket-7.0.9.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-security-oauth2-resource-server\4.0.8\spring-boot-starter-security-oauth2-resource-server-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-security\4.0.8\spring-boot-starter-security-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-security\4.0.8\spring-boot-security-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\security\spring-security-config\7.0.7\spring-security-config-7.0.7.jar;C:\Users\ACER\.m2\repository\org\springframework\security\spring-security-web\7.0.7\spring-security-web-7.0.7.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-aop\7.0.9\spring-aop-7.0.9.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-security-oauth2-resource-server\4.0.8\spring-boot-security-oauth2-resource-server-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\security\spring-security-oauth2-jose\7.0.7\spring-security-oauth2-jose-7.0.7.jar;C:\Users\ACER\.m2\repository\org\springframework\security\spring-security-core\7.0.7\spring-security-core-7.0.7.jar;C:\Users\ACER\.m2\repository\org\springframework\security\spring-security-crypto\7.0.7\spring-security-crypto-7.0.7.jar;C:\Users\ACER\.m2\repository\org\springframework\security\spring-security-oauth2-core\7.0.7\spring-security-oauth2-core-7.0.7.jar;C:\Users\ACER\.m2\repository\com\nimbusds\nimbus-jose-jwt\10.4\nimbus-jose-jwt-10.4.jar;C:\Users\ACER\.m2\repository\org\springframework\security\spring-security-oauth2-resource-server\7.0.7\spring-security-oauth2-resource-server-7.0.7.jar;C:\Users\ACER\.m2\repository\org\eclipse\paho\org.eclipse.paho.client.mqttv3\1.2.5\org.eclipse.paho.client.mqttv3-1.2.5.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-webmvc\4.0.8\spring-boot-starter-webmvc-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-jackson\4.0.8\spring-boot-starter-jackson-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-jackson\4.0.8\spring-boot-jackson-4.0.8.jar;C:\Users\ACER\.m2\repository\tools\jackson\core\jackson-databind\3.1.5\jackson-databind-3.1.5.jar;C:\Users\ACER\.m2\repository\tools\jackson\core\jackson-core\3.1.5\jackson-core-3.1.5.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-tomcat\4.0.8\spring-boot-starter-tomcat-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-tomcat-runtime\4.0.8\spring-boot-starter-tomcat-runtime-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-web-server\4.0.8\spring-boot-web-server-4.0.8.jar;C:\Users\ACER\.m2\repository\org\apache\tomcat\embed\tomcat-embed-core\11.0.24\tomcat-embed-core-11.0.24.jar;C:\Users\ACER\.m2\repository\org\apache\tomcat\embed\tomcat-embed-websocket\11.0.24\tomcat-embed-websocket-11.0.24.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-tomcat\4.0.8\spring-boot-tomcat-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-http-converter\4.0.8\spring-boot-http-converter-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-web\7.0.9\spring-web-7.0.9.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-webmvc\4.0.8\spring-boot-webmvc-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-servlet\4.0.8\spring-boot-servlet-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-webmvc\7.0.9\spring-webmvc-7.0.9.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-expression\7.0.9\spring-expression-7.0.9.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-data-jpa\4.0.8\spring-boot-starter-data-jpa-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-jdbc\4.0.8\spring-boot-starter-jdbc-4.0.8.jar;C:\Users\ACER\.m2\repository\com\zaxxer\HikariCP\7.0.2\HikariCP-7.0.2.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-data-jpa\4.0.8\spring-boot-data-jpa-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-data-commons\4.0.8\spring-boot-data-commons-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-persistence\4.0.8\spring-boot-persistence-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\data\spring-data-commons\4.0.7\spring-data-commons-4.0.7.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-hibernate\4.0.8\spring-boot-hibernate-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-jpa\4.0.8\spring-boot-jpa-4.0.8.jar;C:\Users\ACER\.m2\repository\jakarta\persistence\jakarta.persistence-api\3.2.0\jakarta.persistence-api-3.2.0.jar;C:\Users\ACER\.m2\repository\org\hibernate\orm\hibernate-core\7.2.24.Final\hibernate-core-7.2.24.Final.jar;C:\Users\ACER\.m2\repository\jakarta\transaction\jakarta.transaction-api\2.0.1\jakarta.transaction-api-2.0.1.jar;C:\Users\ACER\.m2\repository\org\hibernate\models\hibernate-models\1.0.1\hibernate-models-1.0.1.jar;C:\Users\ACER\.m2\repository\org\glassfish\jaxb\jaxb-runtime\4.0.9\jaxb-runtime-4.0.9.jar;C:\Users\ACER\.m2\repository\org\glassfish\jaxb\jaxb-core\4.0.9\jaxb-core-4.0.9.jar;C:\Users\ACER\.m2\repository\org\eclipse\angus\angus-activation\2.0.3\angus-activation-2.0.3.jar;C:\Users\ACER\.m2\repository\org\glassfish\jaxb\txw2\4.0.9\txw2-4.0.9.jar;C:\Users\ACER\.m2\repository\com\sun\istack\istack-commons-runtime\4.1.2\istack-commons-runtime-4.1.2.jar;C:\Users\ACER\.m2\repository\jakarta\inject\jakarta.inject-api\2.0.1\jakarta.inject-api-2.0.1.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-orm\7.0.9\spring-orm-7.0.9.jar;C:\Users\ACER\.m2\repository\org\springframework\data\spring-data-jpa\4.0.7\spring-data-jpa-4.0.7.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-tx\7.0.9\spring-tx-7.0.9.jar;C:\Users\ACER\.m2\repository\org\antlr\antlr4-runtime\4.13.2\antlr4-runtime-4.13.2.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-aspects\7.0.9\spring-aspects-7.0.9.jar;C:\Users\ACER\.m2\repository\org\aspectj\aspectjweaver\1.9.25.1\aspectjweaver-1.9.25.1.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-jdbc\4.0.8\spring-boot-jdbc-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-sql\4.0.8\spring-boot-sql-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-transaction\4.0.8\spring-boot-transaction-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-jdbc\7.0.9\spring-jdbc-7.0.9.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-flyway\4.0.8\spring-boot-starter-flyway-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-flyway\4.0.8\spring-boot-flyway-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-actuator\4.0.8\spring-boot-starter-actuator-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-micrometer-metrics\4.0.8\spring-boot-starter-micrometer-metrics-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-micrometer-metrics\4.0.8\spring-boot-micrometer-metrics-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-micrometer-observation\4.0.8\spring-boot-micrometer-observation-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-actuator-autoconfigure\4.0.8\spring-boot-actuator-autoconfigure-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-actuator\4.0.8\spring-boot-actuator-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-health\4.0.8\spring-boot-health-4.0.8.jar;C:\Users\ACER\.m2\repository\io\micrometer\micrometer-observation\1.16.7\micrometer-observation-1.16.7.jar;C:\Users\ACER\.m2\repository\org\jspecify\jspecify\1.0.1\jspecify-1.0.1.jar;C:\Users\ACER\.m2\repository\io\micrometer\micrometer-commons\1.16.7\micrometer-commons-1.16.7.jar;C:\Users\ACER\.m2\repository\io\micrometer\micrometer-jakarta9\1.16.7\micrometer-jakarta9-1.16.7.jar;C:\Users\ACER\.m2\repository\io\micrometer\micrometer-core\1.16.7\micrometer-core-1.16.7.jar;C:\Users\ACER\.m2\repository\org\hdrhistogram\HdrHistogram\2.2.2\HdrHistogram-2.2.2.jar;C:\Users\ACER\.m2\repository\org\latencyutils\LatencyUtils\2.0.3\LatencyUtils-2.0.3.jar;C:\Users\ACER\.m2\repository\org\flywaydb\flyway-database-postgresql\11.14.1\flyway-database-postgresql-11.14.1.jar;C:\Users\ACER\.m2\repository\org\flywaydb\flyway-core\11.14.1\flyway-core-11.14.1.jar;C:\Users\ACER\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.21.5\jackson-databind-2.21.5.jar;C:\Users\ACER\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.21\jackson-annotations-2.21.jar;C:\Users\ACER\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.21.5\jackson-core-2.21.5.jar;C:\Users\ACER\.m2\repository\org\postgresql\postgresql\42.7.13\postgresql-42.7.13.jar;C:\Users\ACER\.m2\repository\org\checkerframework\checker-qual\3.55.1\checker-qual-3.55.1.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-starter-test\4.0.8\spring-boot-starter-test-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-test\4.0.8\spring-boot-test-4.0.8.jar;C:\Users\ACER\.m2\repository\org\springframework\boot\spring-boot-test-autoconfigure\4.0.8\spring-boot-test-autoconfigure-4.0.8.jar;C:\Users\ACER\.m2\repository\com\jayway\jsonpath\json-path\2.10.0\json-path-2.10.0.jar;C:\Users\ACER\.m2\repository\org\slf4j\slf4j-api\2.0.18\slf4j-api-2.0.18.jar;C:\Users\ACER\.m2\repository\jakarta\xml\bind\jakarta.xml.bind-api\4.0.5\jakarta.xml.bind-api-4.0.5.jar;C:\Users\ACER\.m2\repository\jakarta\activation\jakarta.activation-api\2.1.4\jakarta.activation-api-2.1.4.jar;C:\Users\ACER\.m2\repository\net\minidev\json-smart\2.6.0\json-smart-2.6.0.jar;C:\Users\ACER\.m2\repository\net\minidev\accessors-smart\2.6.0\accessors-smart-2.6.0.jar;C:\Users\ACER\.m2\repository\org\ow2\asm\asm\9.7.1\asm-9.7.1.jar;C:\Users\ACER\.m2\repository\org\assertj\assertj-core\3.27.7\assertj-core-3.27.7.jar;C:\Users\ACER\.m2\repository\net\bytebuddy\byte-buddy\1.17.8\byte-buddy-1.17.8.jar;C:\Users\ACER\.m2\repository\org\awaitility\awaitility\4.3.0\awaitility-4.3.0.jar;C:\Users\ACER\.m2\repository\org\hamcrest\hamcrest\3.0\hamcrest-3.0.jar;C:\Users\ACER\.m2\repository\org\junit\jupiter\junit-jupiter\6.0.3\junit-jupiter-6.0.3.jar;C:\Users\ACER\.m2\repository\org\junit\jupiter\junit-jupiter-api\6.0.3\junit-jupiter-api-6.0.3.jar;C:\Users\ACER\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\ACER\.m2\repository\org\junit\platform\junit-platform-commons\6.0.3\junit-platform-commons-6.0.3.jar;C:\Users\ACER\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\ACER\.m2\repository\org\junit\jupiter\junit-jupiter-params\6.0.3\junit-jupiter-params-6.0.3.jar;C:\Users\ACER\.m2\repository\org\junit\jupiter\junit-jupiter-engine\6.0.3\junit-jupiter-engine-6.0.3.jar;C:\Users\ACER\.m2\repository\org\junit\platform\junit-platform-engine\6.0.3\junit-platform-engine-6.0.3.jar;C:\Users\ACER\.m2\repository\org\mockito\mockito-core\5.20.0\mockito-core-5.20.0.jar;C:\Users\ACER\.m2\repository\net\bytebuddy\byte-buddy-agent\1.17.8\byte-buddy-agent-1.17.8.jar;C:\Users\ACER\.m2\repository\org\objenesis\objenesis\3.3\objenesis-3.3.jar;C:\Users\ACER\.m2\repository\org\mockito\mockito-junit-jupiter\5.20.0\mockito-junit-jupiter-5.20.0.jar;C:\Users\ACER\.m2\repository\org\skyscreamer\jsonassert\1.5.3\jsonassert-1.5.3.jar;C:\Users\ACER\.m2\repository\com\vaadin\external\google\android-json\0.0.20131108.vaadin1\android-json-0.0.20131108.vaadin1.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-core\7.0.9\spring-core-7.0.9.jar;C:\Users\ACER\.m2\repository\commons-logging\commons-logging\1.3.6\commons-logging-1.3.6.jar;C:\Users\ACER\.m2\repository\org\springframework\spring-test\7.0.9\spring-test-7.0.9.jar;C:\Users\ACER\.m2\repository\org\xmlunit\xmlunit-core\2.10.4\xmlunit-core-2.10.4.jar;"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="C:\Users\ACER"/>
+    <property name="user.language" value="en"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2026-08-18"/>
+    <property name="java.home" value="C:\Program Files\Eclipse Adoptium\jdk-21.0.12.101-hotspot"/>
+    <property name="file.separator" value="\"/>
+    <property name="basedir" value="D:\New_folder\System-for-Swiftlet-Farming\backend"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="FILE_LOG_CHARSET" value="UTF-8"/>
+    <property name="java.awt.headless" value="true"/>
+    <property name="surefire.real.class.path" value="C:\Users\ACER\AppData\Local\Temp\surefire6739422784246502676\surefirebooter-20261128121203421_3.jar"/>
+    <property name="user.script" value=""/>
+    <property name="polyglot.engine.WarnInterpreterOnly" value="false"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="21.0.12.1+1-LTS"/>
+    <property name="user.name" value="ACER"/>
+    <property name="stdout.encoding" value="Cp1252"/>
+    <property name="path.separator" value=";"/>
+    <property name="os.version" value="10.0"/>
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
+    <property name="java.vendor.version" value="Temurin-21.0.12.1+1"/>
+    <property name="localRepository" value="C:\Users\ACER\.m2\repository"/>
+    <property name="java.vendor.url.bug" value="https://github.com/adoptium/adoptium-support/issues"/>
+    <property name="java.io.tmpdir" value="C:\Users\ACER\AppData\Local\Temp\"/>
+    <property name="catalina.home" value="C:\Users\ACER\AppData\Local\Temp\tomcat.0.15546440939054821172"/>
+    <property name="com.zaxxer.hikari.pool_number" value="5"/>
+    <property name="java.version" value="21.0.12.1"/>
+    <property name="user.dir" value="D:\New_folder\System-for-Swiftlet-Farming\backend"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="PID" value="26584"/>
+    <property name="user.language.format" value="vi"/>
+    <property name="sun.os.patch.level" value=""/>
+    <property name="CONSOLE_LOG_CHARSET" value="UTF-8"/>
+    <property name="catalina.base" value="C:\Users\ACER\AppData\Local\Temp\tomcat.0.14198986977132729047"/>
+    <property name="native.encoding" value="Cp1252"/>
+    <property name="java.library.path" value="C:\Program Files\Eclipse Adoptium\jdk-21.0.12.101-hotspot\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\Users\ACER\AppData\Local\Microsoft\WindowsApps\Microsoft.PowerShell_8wekyb3d8bbwe;C:\Users\ACER\.codex\tmp\arg0-windows\codex-arg0tHwc4n;C:\Program Files\Eclipse Adoptium\jdk-21.0.12.101-hotspot\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.3\bin\x64;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.3\bin;C:\Python314\Scripts\;C:\Python314\;C:\msys64\ucrt64\bin;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Microsoft SQL Server\150\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\180\Tools\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\Program Files (x86)\Microsoft SQL Server\160\Tools\Binn\;C:\Program Files\Microsoft SQL Server\160\Tools\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;D:\1\Git\cmd;C:\Program Files\nodejs\;C:\ProgramData\chocolatey\bin;C:\Program Files\NVIDIA Corporation\Nsight Compute 2026.2.1\;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files\WSL\;C:\Users\ACER\AppData\Local\Programs\Python\Python313\Scripts\;C:\Users\ACER\AppData\Local\Programs\Python\Python313\;C:\msys64\ucrt64\bin;D:\Microsoft VS Code\bin;C:\Users\ACER\AppData\Local\Microsoft\WindowsApps;C:\Users\ACER\.dotnet\tools;C:\Program Files\JetBrains\CLion 2025.2.3\bin;C:\Users\ACER\AppData\Local\Python\bin;C:\Users\ACER\AppData\Roaming\npm;C:\xampp\php;C:\Program Files (x86)\Nmap;D:\Microsoft VS Code\bin\copilot-shim;c:\Users\ACER\.vscode\extensions\openai.chatgpt-26.51120.50957-win32-x64\bin\windows-x86_64;."/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="stderr.encoding" value="Cp1252"/>
+    <property name="java.vendor" value="Eclipse Adoptium"/>
+    <property name="java.vm.version" value="21.0.12.1+1-LTS"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="65.0"/>
+    <property name="LOGGED_APPLICATION_NAME" value="[swiftletcare-backend] "/>
+  </properties>
+  <testcase name="invalidRoleAndMissingMembershipAreRejectedWithoutChangingState" classname="com.swiftletcare.HouseRoleReassignmentIntegrationTest" time="0.058">
+    <system-out><![CDATA[2026-11-28T05:13:21.463Z  INFO 26584 --- [swiftletcare-backend] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.swiftletcare.HouseRoleReassignmentIntegrationTest]: HouseRoleReassignmentIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-28T05:13:21.464Z DEBUG 26584 --- [swiftletcare-backend] [           main] .b.t.c.SpringBootTestContextBootstrapper : Using ContextCustomizerFactory implementations for test class [HouseRoleReassignmentIntegrationTest]: [SpringBootTestRandomPortContextCustomizerFactory, ImportsContextCustomizerFactory, PropertyMappingContextCustomizerFactory, ExcludeFilterContextCustomizerFactory, TypeExcludeFiltersContextCustomizerFactory, DisableReactorResourceFactoryGlobalResourcesContextCustomizerFactory, DuplicateJsonObjectContextCustomizerFactory, OnFailureConditionReportContextCustomizerFactory, OverrideAutoConfigurationContextCustomizerFactory, BeanOverrideContextCustomizerFactory, MockServerContainerContextCustomizerFactory, DynamicPropertiesContextCustomizerFactory]
+2026-11-28T05:13:21.464Z DEBUG 26584 --- [swiftletcare-backend] [           main] .b.t.c.SpringBootTestContextBootstrapper : Using ContextCustomizers for test class [HouseRoleReassignmentIntegrationTest]: [SpringBootTestRandomPortContextCustomizer, PropertyMappingContextCustomizer, ExcludeFilterContextCustomizer, DuplicateJsonObjectContextCustomizer, OnFailureConditionReportContextCustomizer, DynamicPropertiesContextCustomizer]
+2026-11-28T05:13:21.465Z  INFO 26584 --- [swiftletcare-backend] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.swiftletcare.SwiftletCareApplication for test class com.swiftletcare.HouseRoleReassignmentIntegrationTest
+2026-11-28T05:13:21.465Z  INFO 26584 --- [swiftletcare-backend] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.swiftletcare.HouseRoleReassignmentIntegrationTest]: HouseRoleReassignmentIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-28T05:13:21.466Z DEBUG 26584 --- [swiftletcare-backend] [           main] .b.t.c.SpringBootTestContextBootstrapper : Using ContextCustomizerFactory implementations for test class [HouseRoleReassignmentIntegrationTest]: [SpringBootTestRandomPortContextCustomizerFactory, ImportsContextCustomizerFactory, PropertyMappingContextCustomizerFactory, ExcludeFilterContextCustomizerFactory, TypeExcludeFiltersContextCustomizerFactory, DisableReactorResourceFactoryGlobalResourcesContextCustomizerFactory, DuplicateJsonObjectContextCustomizerFactory, OnFailureConditionReportContextCustomizerFactory, OverrideAutoConfigurationContextCustomizerFactory, BeanOverrideContextCustomizerFactory, MockServerContainerContextCustomizerFactory, DynamicPropertiesContextCustomizerFactory]
+2026-11-28T05:13:21.466Z DEBUG 26584 --- [swiftletcare-backend] [           main] .b.t.c.SpringBootTestContextBootstrapper : Using ContextCustomizers for test class [HouseRoleReassignmentIntegrationTest]: [SpringBootTestRandomPortContextCustomizer, PropertyMappingContextCustomizer, ExcludeFilterContextCustomizer, DuplicateJsonObjectContextCustomizer, OnFailureConditionReportContextCustomizer, DynamicPropertiesContextCustomizer]
+2026-11-28T05:13:21.466Z  INFO 26584 --- [swiftletcare-backend] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.swiftletcare.SwiftletCareApplication for test class com.swiftletcare.HouseRoleReassignmentIntegrationTest
+2026-11-28T05:13:21.466Z DEBUG 26584 --- [swiftletcare-backend] [           main] .b.t.c.SpringBootTestContextBootstrapper : Neither @ContextConfiguration nor @ContextHierarchy found for test class [HouseRoleReassignmentIntegrationTest]: using SpringBootContextLoader
+2026-11-28T05:13:21.467Z DEBUG 26584 --- [swiftletcare-backend] [           main] .b.t.c.SpringBootTestContextBootstrapper : Using TestExecutionListeners for test class [HouseRoleReassignmentIntegrationTest]: [ServletTestExecutionListener, DirtiesContextBeforeModesTestExecutionListener, ApplicationEventsTestExecutionListener, BeanOverrideTestExecutionListener, DependencyInjectionTestExecutionListener, DirtiesContextTestExecutionListener, CommonCachesTestExecutionListener, TransactionalTestExecutionListener, SqlScriptsTestExecutionListener, EventPublishingTestExecutionListener, MockitoResetTestExecutionListener]
+2026-11-28T05:13:21.471Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing SQL query [insert into swiftletcare.houses(name,active) values('B3-16 test',true) returning id
+]
+2026-11-28T05:13:21.473Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.473Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:21.476Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.476Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.house_memberships(user_id,house_id,role,active,joined_at)
+values(?,?,?,true,now()) returning id
+]
+2026-11-28T05:13:21.480Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.480Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:21.481Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.482Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.house_memberships(user_id,house_id,role,active,joined_at)
+values(?,?,?,true,now()) returning id
+]
+2026-11-28T05:13:21.487Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.487Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.498Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.498Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.503Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-2] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.503Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-2] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.509Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-10] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.509Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-10] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.513Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-10] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.513Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-10] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.515Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-10] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.515Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-10] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id from swiftletcare.houses where id=? for update]
+2026-11-28T05:13:21.516Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-10] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.516Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-10] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.517Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-10] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.517Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-10] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id,user_id,house_id,role,active,joined_at
+from swiftletcare.house_memberships
+where house_id=? and id=?
+for update
+]
+2026-11-28T05:13:21.525Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.525Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select role from swiftletcare.house_memberships where id=?]
+]]></system-out>
+  </testcase>
+  <testcase name="concurrentOwnersCannotUseAuthorizationThatWasLostWhileWaiting" classname="com.swiftletcare.HouseRoleReassignmentIntegrationTest" time="0.045">
+    <system-out><![CDATA[2026-11-28T05:13:21.533Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing SQL query [insert into swiftletcare.houses(name,active) values('B3-16 test',true) returning id
+]
+2026-11-28T05:13:21.536Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.536Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:21.539Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.539Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.house_memberships(user_id,house_id,role,active,joined_at)
+values(?,?,?,true,now()) returning id
+]
+2026-11-28T05:13:21.541Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.541Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:21.543Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.543Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.house_memberships(user_id,house_id,role,active,joined_at)
+values(?,?,?,true,now()) returning id
+]
+2026-11-28T05:13:21.546Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.546Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:21.548Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.548Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.house_memberships(user_id,house_id,role,active,joined_at)
+values(?,?,?,true,now()) returning id
+]
+2026-11-28T05:13:21.554Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.554Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.554Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-12] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.554Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-12] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.557Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.557Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-12] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.557Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.557Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-12] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.558Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-12] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.558Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.558Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-12] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id from swiftletcare.houses where id=? for update]
+2026-11-28T05:13:21.558Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id from swiftletcare.houses where id=? for update]
+2026-11-28T05:13:21.560Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.560Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.561Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.561Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id,user_id,house_id,role,active,joined_at
+from swiftletcare.house_memberships
+where house_id=? and id=?
+for update
+]
+2026-11-28T05:13:21.562Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.562Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select u.id
+from swiftletcare.house_memberships m
+join swiftletcare.users u on u.id=m.user_id
+where m.house_id=? and m.id<>? and m.role='OWNER' and m.active and u.active
+for share of u
+]
+2026-11-28T05:13:21.563Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL update
+2026-11-28T05:13:21.563Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [update swiftletcare.house_memberships set role=? where house_id=? and id=?]
+2026-11-28T05:13:21.569Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-12] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.569Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-12] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.569Z  INFO 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] c.s.m.HouseMembershipController          : House membership role changed houseId=73 membershipId=56 userId=66 actorId=68 from=OWNER to=VIEWER
+2026-11-28T05:13:21.573Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.573Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select role from swiftletcare.house_memberships where id=?]
+2026-11-28T05:13:21.575Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.575Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select role from swiftletcare.house_memberships where id=?]
+]]></system-out>
+  </testcase>
+  <testcase name="promotionAndDemotionApplyToTheNextHttpRequestWithTheSameJwt" classname="com.swiftletcare.HouseRoleReassignmentIntegrationTest" time="0.13">
+    <system-out><![CDATA[2026-11-28T05:13:21.582Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing SQL query [insert into swiftletcare.houses(name,active) values('B3-16 test',true) returning id
+]
+2026-11-28T05:13:21.584Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.584Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:21.589Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.590Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.house_memberships(user_id,house_id,role,active,joined_at)
+values(?,?,?,true,now()) returning id
+]
+2026-11-28T05:13:21.592Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.592Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:21.594Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.594Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.house_memberships(user_id,house_id,role,active,joined_at)
+values(?,?,?,true,now()) returning id
+]
+2026-11-28T05:13:21.600Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-3] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.600Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-3] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.603Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-3] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.603Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-3] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id from swiftletcare.houses where id=? for update]
+2026-11-28T05:13:21.605Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-3] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.605Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-3] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role in ('OWNER','ADMIN'))))]
+2026-11-28T05:13:21.611Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.611Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.615Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.615Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.616Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.616Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id from swiftletcare.houses where id=? for update]
+2026-11-28T05:13:21.617Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.617Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.618Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.618Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id,user_id,house_id,role,active,joined_at
+from swiftletcare.house_memberships
+where house_id=? and id=?
+for update
+]
+2026-11-28T05:13:21.619Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL update
+2026-11-28T05:13:21.619Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [update swiftletcare.house_memberships set role=? where house_id=? and id=?]
+2026-11-28T05:13:21.622Z  INFO 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] c.s.m.HouseMembershipController          : House membership role changed houseId=74 membershipId=60 userId=70 actorId=69 from=VIEWER to=ADMIN
+2026-11-28T05:13:21.625Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.625Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.628Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.628Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id from swiftletcare.houses where id=? for update]
+2026-11-28T05:13:21.630Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.630Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role in ('OWNER','ADMIN'))))]
+2026-11-28T05:13:21.631Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] org.hibernate.SQL                        : insert into swiftletcare.zones (active,area_m2,floor_label,house_id,name) values (?,?,?,?,?)
+2026-11-28T05:13:21.633Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL update
+2026-11-28T05:13:21.633Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.zone_configs(zone_id) values(?)]
+2026-11-28T05:13:21.639Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.639Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.641Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.641Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.users where id=? and active)]
+2026-11-28T05:13:21.643Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.643Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [SELECT EXISTS(
+    SELECT 1
+    FROM swiftletcare.users
+    WHERE id = ?
+      AND active = true
+      AND role = 'ADMIN'
+)
+]
+2026-11-28T05:13:21.649Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-2] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.649Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-2] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.652Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-2] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.652Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-2] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.653Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-2] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.653Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-2] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id from swiftletcare.houses where id=? for update]
+2026-11-28T05:13:21.654Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-2] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.654Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-2] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.655Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-2] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.655Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-2] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id,user_id,house_id,role,active,joined_at
+from swiftletcare.house_memberships
+where house_id=? and id=?
+for update
+]
+2026-11-28T05:13:21.657Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-2] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL update
+2026-11-28T05:13:21.657Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-2] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [update swiftletcare.house_memberships set role=? where house_id=? and id=?]
+2026-11-28T05:13:21.659Z  INFO 26584 --- [swiftletcare-backend] [o-auto-1-exec-2] c.s.m.HouseMembershipController          : House membership role changed houseId=74 membershipId=60 userId=70 actorId=69 from=ADMIN to=VIEWER
+2026-11-28T05:13:21.662Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-10] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.662Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-10] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.665Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-10] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.665Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-10] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id from swiftletcare.houses where id=? for update]
+2026-11-28T05:13:21.666Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-10] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.666Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-10] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role in ('OWNER','ADMIN'))))]
+2026-11-28T05:13:21.670Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-1] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.670Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-1] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.672Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-1] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.672Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-1] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role in ('OWNER','ADMIN','VIEWER'))))]
+2026-11-28T05:13:21.674Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-1] org.hibernate.SQL                        : select h1_0.id,h1_0.active,h1_0.address,h1_0.description,h1_0.name from swiftletcare.houses h1_0 where h1_0.id=?
+2026-11-28T05:13:21.677Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.677Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version from swiftletcare.users where id=?]
+2026-11-28T05:13:21.680Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.680Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.682Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.682Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.684Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.684Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id from swiftletcare.houses where id=? for update]
+2026-11-28T05:13:21.685Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.685Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.685Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.685Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id,user_id,house_id,role,active,joined_at
+from swiftletcare.house_memberships
+where house_id=? and id=?
+for update
+]
+2026-11-28T05:13:21.686Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL update
+2026-11-28T05:13:21.686Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [update swiftletcare.house_memberships set role=? where house_id=? and id=?]
+2026-11-28T05:13:21.689Z  INFO 26584 --- [swiftletcare-backend] [-auto-1-exec-11] c.s.m.HouseMembershipController          : House membership role changed houseId=74 membershipId=60 userId=70 actorId=69 from=VIEWER to=OWNER
+2026-11-28T05:13:21.690Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.690Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:21.693Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.693Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.house_memberships(user_id,house_id,role,active,joined_at)
+values(?,?,?,true,now()) returning id
+]
+2026-11-28T05:13:21.697Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.698Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.701Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.701Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.702Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.702Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id from swiftletcare.houses where id=? for update]
+2026-11-28T05:13:21.703Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.703Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.705Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.705Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id,user_id,house_id,role,active,joined_at
+from swiftletcare.house_memberships
+where house_id=? and id=?
+for update
+]
+2026-11-28T05:13:21.706Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL update
+2026-11-28T05:13:21.706Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [update swiftletcare.house_memberships set role=? where house_id=? and id=?]
+2026-11-28T05:13:21.708Z  INFO 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] c.s.m.HouseMembershipController          : House membership role changed houseId=74 membershipId=61 userId=71 actorId=70 from=VIEWER to=ADMIN
+]]></system-out>
+  </testcase>
+  <testcase name="openHouseAndDeviceSocketsRespectLiveReadAccess" classname="com.swiftletcare.HouseRoleReassignmentIntegrationTest" time="0.079">
+    <system-out><![CDATA[2026-11-28T05:13:21.714Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing SQL query [insert into swiftletcare.houses(name,active) values('B3-16 test',true) returning id
+]
+2026-11-28T05:13:21.716Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.716Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:21.718Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.718Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.house_memberships(user_id,house_id,role,active,joined_at)
+values(?,?,?,true,now()) returning id
+]
+2026-11-28T05:13:21.720Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.720Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:21.721Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.721Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.house_memberships(user_id,house_id,role,active,joined_at)
+values(?,?,?,true,now()) returning id
+]
+2026-11-28T05:13:21.723Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.723Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.zones(house_id,name,active)
+values(?,'B3-16 zone',true) returning id
+]
+2026-11-28T05:13:21.724Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.724Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.devices(zone_id,device_id,name,type,enabled)
+values(?,?,'B3-16 device','ESP32',true) returning id
+]
+2026-11-28T05:13:21.729Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.729Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.731Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.731Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.732Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.732Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id from swiftletcare.houses where id=? for update]
+2026-11-28T05:13:21.733Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.733Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.733Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.733Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id,user_id,house_id,role,active,joined_at
+from swiftletcare.house_memberships
+where house_id=? and id=?
+for update
+]
+2026-11-28T05:13:21.735Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL update
+2026-11-28T05:13:21.735Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [update swiftletcare.house_memberships set role=? where house_id=? and id=?]
+2026-11-28T05:13:21.736Z  INFO 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] c.s.m.HouseMembershipController          : House membership role changed houseId=75 membershipId=63 userId=73 actorId=72 from=VIEWER to=ADMIN
+2026-11-28T05:13:21.739Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-5] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.739Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-5] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.742Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-5] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.742Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-5] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role in ('OWNER','ADMIN','VIEWER'))))]
+2026-11-28T05:13:21.745Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-3] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.745Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-3] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+WS connected: id=49ee4ef6-b32d-46e1-9479-7a132a578779, uri=ws://localhost:18184/ws/devices/42, principal=JwtAuthenticationToken [Principal=org.springframework.security.oauth2.jwt.Jwt@7ab5fb2, Credentials=[PROTECTED], Authenticated=true, Details=WebAuthenticationDetails [RemoteIpAddress=127.0.0.1, SessionId=null], Granted Authorities=[FactorGrantedAuthority [authority=FACTOR_BEARER, issuedAt=2026-11-28T05:13:21.746150800Z]]]
+2026-11-28T05:13:21.747Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-3] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.747Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-3] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.zones z on z.house_id=h.id join swiftletcare.devices d on d.zone_id=z.id join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where d.id=? and z.active and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role in ('OWNER','ADMIN','VIEWER'))))]
+2026-11-28T05:13:21.748Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.748Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role in ('OWNER','ADMIN','VIEWER'))))]
+WS session registered: 49ee4ef6-b32d-46e1-9479-7a132a578779
+WS publish: device=42, type=test.ready, sessions=1
+2026-11-28T05:13:21.750Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.750Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.zones z on z.house_id=h.id join swiftletcare.devices d on d.zone_id=z.id join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where d.id=? and z.active and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role in ('OWNER','ADMIN','VIEWER'))))]
+2026-11-28T05:13:21.754Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.754Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.757Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.757Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.758Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.758Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id from swiftletcare.houses where id=? for update]
+2026-11-28T05:13:21.758Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.758Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.760Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.760Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id,user_id,house_id,role,active,joined_at
+from swiftletcare.house_memberships
+where house_id=? and id=?
+for update
+]
+2026-11-28T05:13:21.761Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL update
+2026-11-28T05:13:21.761Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [update swiftletcare.house_memberships set role=? where house_id=? and id=?]
+2026-11-28T05:13:21.763Z  INFO 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] c.s.m.HouseMembershipController          : House membership role changed houseId=75 membershipId=63 userId=73 actorId=72 from=ADMIN to=VIEWER
+2026-11-28T05:13:21.766Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.766Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.768Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.768Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id from swiftletcare.houses where id=? for update]
+2026-11-28T05:13:21.770Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.770Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role in ('OWNER','ADMIN'))))]
+2026-11-28T05:13:21.775Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.775Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role in ('OWNER','ADMIN','VIEWER'))))]
+WS publish: device=42, type=telemetry.updated, sessions=1
+2026-11-28T05:13:21.776Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.777Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.zones z on z.house_id=h.id join swiftletcare.devices d on d.zone_id=z.id join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where d.id=? and z.active and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role in ('OWNER','ADMIN','VIEWER'))))]
+2026-11-28T05:13:21.779Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL update
+2026-11-28T05:13:21.779Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [update swiftletcare.house_memberships set active=false where id=?]
+2026-11-28T05:13:21.783Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.783Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.784Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.785Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role in ('OWNER','ADMIN','VIEWER'))))]
+2026-11-28T05:13:21.788Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.788Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role in ('OWNER','ADMIN','VIEWER'))))]
+WS publish: device=42, type=telemetry.updated, sessions=1
+2026-11-28T05:13:21.789Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.789Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.zones z on z.house_id=h.id join swiftletcare.devices d on d.zone_id=z.id join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where d.id=? and z.active and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role in ('OWNER','ADMIN','VIEWER'))))]
+]]></system-out>
+  </testcase>
+  <testcase name="simultaneousDemotionsKeepOneActiveOwner" classname="com.swiftletcare.HouseRoleReassignmentIntegrationTest" time="0.055">
+    <system-out><![CDATA[2026-11-28T05:13:21.797Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing SQL query [insert into swiftletcare.houses(name,active) values('B3-16 test',true) returning id
+]
+2026-11-28T05:13:21.800Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.800Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:21.802Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.802Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.house_memberships(user_id,house_id,role,active,joined_at)
+values(?,?,?,true,now()) returning id
+]
+2026-11-28T05:13:21.806Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.806Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:21.808Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.809Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.house_memberships(user_id,house_id,role,active,joined_at)
+values(?,?,?,true,now()) returning id
+]
+2026-11-28T05:13:21.812Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.812Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:21.815Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.815Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.house_memberships(user_id,house_id,role,active,joined_at)
+values(?,?,?,true,now()) returning id
+]
+2026-11-28T05:13:21.817Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.817Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:21.823Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.823Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.823Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.823Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.826Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.826Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.829Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.829Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id from swiftletcare.houses where id=? for update]
+2026-11-28T05:13:21.829Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.829Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.830Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.830Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.830Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id from swiftletcare.houses where id=? for update]
+2026-11-28T05:13:21.830Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.831Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.832Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id,user_id,house_id,role,active,joined_at
+from swiftletcare.house_memberships
+where house_id=? and id=?
+for update
+]
+2026-11-28T05:13:21.833Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.833Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select u.id
+from swiftletcare.house_memberships m
+join swiftletcare.users u on u.id=m.user_id
+where m.house_id=? and m.id<>? and m.role='OWNER' and m.active and u.active
+for share of u
+]
+2026-11-28T05:13:21.834Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL update
+2026-11-28T05:13:21.834Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [update swiftletcare.house_memberships set role=? where house_id=? and id=?]
+2026-11-28T05:13:21.837Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.837Z  INFO 26584 --- [swiftletcare-backend] [-auto-1-exec-11] c.s.m.HouseMembershipController          : House membership role changed houseId=76 membershipId=64 userId=74 actorId=77 from=OWNER to=VIEWER
+2026-11-28T05:13:21.837Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.838Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.838Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id,user_id,house_id,role,active,joined_at
+from swiftletcare.house_memberships
+where house_id=? and id=?
+for update
+]
+2026-11-28T05:13:21.840Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.840Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select u.id
+from swiftletcare.house_memberships m
+join swiftletcare.users u on u.id=m.user_id
+where m.house_id=? and m.id<>? and m.role='OWNER' and m.active and u.active
+for share of u
+]
+2026-11-28T05:13:21.845Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.845Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select role from swiftletcare.house_memberships where id=?]
+2026-11-28T05:13:21.847Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.847Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select role from swiftletcare.house_memberships where id=?]
+]]></system-out>
+  </testcase>
+  <testcase name="rejectsSelfRoleChangesAndRequiresAnotherEffectiveOwner" classname="com.swiftletcare.HouseRoleReassignmentIntegrationTest" time="0.223">
+    <system-out><![CDATA[2026-11-28T05:13:21.855Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing SQL query [insert into swiftletcare.houses(name,active) values('B3-16 test',true) returning id
+]
+2026-11-28T05:13:21.858Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.858Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:21.861Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.861Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.house_memberships(user_id,house_id,role,active,joined_at)
+values(?,?,?,true,now()) returning id
+]
+2026-11-28T05:13:21.865Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.865Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:21.867Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.867Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.house_memberships(user_id,house_id,role,active,joined_at)
+values(?,?,?,true,now()) returning id
+]
+2026-11-28T05:13:21.870Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.870Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:21.873Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.873Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:21.876Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.876Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.house_memberships(user_id,house_id,role,active,joined_at)
+values(?,?,?,true,now()) returning id
+]
+2026-11-28T05:13:21.879Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL update
+2026-11-28T05:13:21.879Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [update swiftletcare.users set active=false where id=?]
+2026-11-28T05:13:21.881Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.881Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:21.884Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.884Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.house_memberships(user_id,house_id,role,active,joined_at)
+values(?,?,?,true,now()) returning id
+]
+2026-11-28T05:13:21.886Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL update
+2026-11-28T05:13:21.886Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [update swiftletcare.house_memberships set active=false where id=?]
+2026-11-28T05:13:21.893Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-5] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.893Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-5] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.896Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-5] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.896Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-5] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.898Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-5] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.898Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-5] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id from swiftletcare.houses where id=? for update]
+2026-11-28T05:13:21.899Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-5] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.899Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-5] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.900Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-5] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.900Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-5] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id,user_id,house_id,role,active,joined_at
+from swiftletcare.house_memberships
+where house_id=? and id=?
+for update
+]
+2026-11-28T05:13:21.908Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-3] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.908Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-3] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.913Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-3] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.913Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-3] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.916Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-3] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.916Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-3] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id from swiftletcare.houses where id=? for update]
+2026-11-28T05:13:21.917Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-3] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.917Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-3] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.919Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-3] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.920Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-3] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id,user_id,house_id,role,active,joined_at
+from swiftletcare.house_memberships
+where house_id=? and id=?
+for update
+]
+2026-11-28T05:13:21.921Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-3] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.921Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-3] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select u.id
+from swiftletcare.house_memberships m
+join swiftletcare.users u on u.id=m.user_id
+where m.house_id=? and m.id<>? and m.role='OWNER' and m.active and u.active
+for share of u
+]
+2026-11-28T05:13:21.926Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.926Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select role from swiftletcare.house_memberships where id=?]
+2026-11-28T05:13:21.928Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.928Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:21.931Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.931Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.house_memberships(user_id,house_id,role,active,joined_at)
+values(?,?,?,true,now()) returning id
+]
+2026-11-28T05:13:21.935Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.935Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.938Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.938Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.940Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.941Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id from swiftletcare.houses where id=? for update]
+2026-11-28T05:13:21.942Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.942Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.943Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.943Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-8] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id,user_id,house_id,role,active,joined_at
+from swiftletcare.house_memberships
+where house_id=? and id=?
+for update
+]
+2026-11-28T05:13:21.950Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.950Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.953Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.953Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.955Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.955Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id from swiftletcare.houses where id=? for update]
+2026-11-28T05:13:21.956Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.956Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:21.958Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.958Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-7] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id,user_id,house_id,role,active,joined_at
+from swiftletcare.house_memberships
+where house_id=? and id=?
+for update
+]
+2026-11-28T05:13:21.967Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.967Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:21.970Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:21.970Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:22.016Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.016Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id from swiftletcare.houses where id=? for update]
+2026-11-28T05:13:22.023Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.023Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:22.039Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.039Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id,user_id,house_id,role,active,joined_at
+from swiftletcare.house_memberships
+where house_id=? and id=?
+for update
+]
+2026-11-28T05:13:22.045Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.045Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select u.id
+from swiftletcare.house_memberships m
+join swiftletcare.users u on u.id=m.user_id
+where m.house_id=? and m.id<>? and m.role='OWNER' and m.active and u.active
+for share of u
+]
+2026-11-28T05:13:22.047Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL update
+2026-11-28T05:13:22.047Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [update swiftletcare.house_memberships set role=? where house_id=? and id=?]
+2026-11-28T05:13:22.051Z  INFO 26584 --- [swiftletcare-backend] [o-auto-1-exec-4] c.s.m.HouseMembershipController          : House membership role changed houseId=77 membershipId=67 userId=78 actorId=80 from=OWNER to=ADMIN
+2026-11-28T05:13:22.053Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.053Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select role from swiftletcare.house_memberships where id=?]
+2026-11-28T05:13:22.063Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.063Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select role from swiftletcare.house_memberships where id=?]
+]]></system-out>
+  </testcase>
+  <testcase name="onlyOwnersAndGlobalAdminsManageMembershipsAndIdsAreHouseScoped" classname="com.swiftletcare.HouseRoleReassignmentIntegrationTest" time="0.113">
+    <system-out><![CDATA[2026-11-28T05:13:22.083Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing SQL query [insert into swiftletcare.houses(name,active) values('B3-16 test',true) returning id
+]
+2026-11-28T05:13:22.086Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.086Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:22.090Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.090Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.house_memberships(user_id,house_id,role,active,joined_at)
+values(?,?,?,true,now()) returning id
+]
+2026-11-28T05:13:22.094Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.094Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:22.096Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.096Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.house_memberships(user_id,house_id,role,active,joined_at)
+values(?,?,?,true,now()) returning id
+]
+2026-11-28T05:13:22.100Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.100Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:22.102Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.102Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.house_memberships(user_id,house_id,role,active,joined_at)
+values(?,?,?,true,now()) returning id
+]
+2026-11-28T05:13:22.105Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing SQL query [insert into swiftletcare.houses(name,active) values('B3-16 test',true) returning id
+]
+2026-11-28T05:13:22.107Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.107Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:22.110Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.110Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.house_memberships(user_id,house_id,role,active,joined_at)
+values(?,?,?,true,now()) returning id
+]
+2026-11-28T05:13:22.112Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.112Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:22.115Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.115Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.house_memberships(user_id,house_id,role,active,joined_at)
+values(?,?,?,true,now()) returning id
+]
+2026-11-28T05:13:22.122Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-10] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.122Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-10] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:22.126Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-10] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.126Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-10] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:22.132Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-1] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.132Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-1] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:22.135Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-1] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.136Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-1] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:22.142Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.142Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:22.145Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.145Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-11] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:22.150Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.150Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:22.153Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.153Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-6] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:22.158Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-12] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.158Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-12] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:22.161Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-12] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.161Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-12] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:22.163Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-12] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.163Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-12] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id from swiftletcare.houses where id=? for update]
+2026-11-28T05:13:22.164Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-12] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.164Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-12] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:22.166Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-12] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.166Z DEBUG 26584 --- [swiftletcare-backend] [-auto-1-exec-12] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id,user_id,house_id,role,active,joined_at
+from swiftletcare.house_memberships
+where house_id=? and id=?
+for update
+]
+2026-11-28T05:13:22.171Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.171Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select role from swiftletcare.house_memberships where id=?]
+2026-11-28T05:13:22.172Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.172Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [insert into swiftletcare.users(email,password_hash,role,active,token_version)
+values(?,'unused',?,true,?) returning id
+]
+2026-11-28T05:13:22.177Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.177Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select token_version
+from swiftletcare.users
+where id=? and active
+]
+2026-11-28T05:13:22.180Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.180Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:22.181Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.181Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id from swiftletcare.houses where id=? for update]
+2026-11-28T05:13:22.182Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.182Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select exists(select 1 from swiftletcare.houses h join swiftletcare.users u on u.id=? left join swiftletcare.house_memberships m on m.house_id=h.id and m.user_id=u.id where h.id=? and u.active and u.token_version=? and h.active and (u.role='ADMIN' or (m.active and m.role='OWNER')))]
+2026-11-28T05:13:22.185Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.185Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select id,user_id,house_id,role,active,joined_at
+from swiftletcare.house_memberships
+where house_id=? and id=?
+for update
+]
+2026-11-28T05:13:22.186Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL update
+2026-11-28T05:13:22.186Z DEBUG 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [update swiftletcare.house_memberships set role=? where house_id=? and id=?]
+2026-11-28T05:13:22.189Z  INFO 26584 --- [swiftletcare-backend] [o-auto-1-exec-9] c.s.m.HouseMembershipController          : House membership role changed houseId=79 membershipId=75 userId=87 actorId=89 from=VIEWER to=ADMIN
+2026-11-28T05:13:22.191Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL query
+2026-11-28T05:13:22.191Z DEBUG 26584 --- [swiftletcare-backend] [           main] o.s.jdbc.core.JdbcTemplate               : Executing prepared SQL statement [select role from swiftletcare.house_memberships where id=?]
+]]></system-out>
+  </testcase>
+</testsuite>

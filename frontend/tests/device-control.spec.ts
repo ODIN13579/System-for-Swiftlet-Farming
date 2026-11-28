@@ -12,7 +12,7 @@ const titles = ['Quạt thông gió', 'Máy phun sương', 'Thiết bị sưởi
 const list = (items: unknown[], totalPages = 1) => ({ items, page: { totalPages, totalElements: items.length } })
 
 type Input = { action: 'SET_MODE' | 'SET_STATE'; targetMode?: string; targetState?: boolean }
-async function fixture(page: Page, opts: { online?: boolean; canControl?: boolean; fault?: number } = {}) {
+async function fixture(page: Page, opts: { online?: boolean; canControl?: boolean; fault?: number; rejection?: string } = {}) {
   let mode = 'AUTO'
   let ack = false
   let apply = false
@@ -58,6 +58,7 @@ async function fixture(page: Page, opts: { online?: boolean; canControl?: boolea
     }
     if (path.includes('/commands/test-')) {
       polls.push(path)
+      if (opts.rejection) return route.fulfill({ json: { status: 'REJECTED', failureReason: opts.rejection } })
       if (ack && apply) {
         const entry = writes.at(-1)!
         if (entry.input.targetMode) mode = entry.input.targetMode
@@ -156,4 +157,15 @@ test('Dashboard reconnects and ignores delayed and foreign ESP32 telemetry', asy
   await expect(metric).toContainText('32.0')
   await page.getByLabel('ESP32', { exact: true }).selectOption('54')
   await expect(metric).not.toContainText('32.0')
+})
+
+test('clock rejection preserves AUTO and requires a new explicit command', async ({ page }) => {
+  const qa = await fixture(page, { rejection: 'INVALID_EXPIRY' })
+  await page.getByRole('button', { name: /Môi trường & Thiết bị/ }).click()
+  const panel = page.getByRole('region', { name: 'Điều khiển thiết bị' })
+  await panel.getByRole('button', { name: 'MANUAL' }).click()
+  await expect(panel.getByRole('alert')).toContainText('INVALID_EXPIRY')
+  await expect(panel.getByRole('button', { name: 'AUTO' })).toHaveAttribute('aria-pressed', 'true')
+  await expect(panel.getByRole('button', { name: 'MANUAL' })).toBeEnabled()
+  expect(qa.writes).toHaveLength(1)
 })

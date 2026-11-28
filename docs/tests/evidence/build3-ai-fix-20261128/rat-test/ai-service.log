@@ -1,0 +1,9 @@
+2026-11-28 00:04:17,723 INFO Đang tải mô hình YOLOv8...
+2026-11-28 00:04:17,806 INFO Bắt đầu xử lý video...
+2026-11-28 00:04:17,806 INFO Video: D:\swiftletcare-p2-build3-6909bbfdcf\samples\rat-test.mp4
+2026-11-28 00:04:17,806 INFO Độ phân giải: 1280x720
+2026-11-28 00:04:17,806 INFO FPS gốc của video: 30.00
+2026-11-28 00:04:17,806 INFO Counting line (pixels): (640.0, 66.66667199999999, 640.0, 433.333368)
+2026-11-28 00:04:17,806 INFO Kích thước YOLO: 640
+2026-11-28 00:04:17,807 INFO Thiết bị xử lý: CPU
+2026-11-28 00:04:33,706 WARNING Không gửi CountLog cho clip thiếu frame: 80/997

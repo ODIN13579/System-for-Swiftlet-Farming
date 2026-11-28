@@ -1,0 +1,10 @@
+2026-11-28 00:04:53,690 INFO Đang tải mô hình YOLOv8...
+2026-11-28 00:04:53,782 INFO Bắt đầu xử lý video...
+2026-11-28 00:04:53,782 INFO Video: D:\swiftletcare-p2-build3-6909bbfdcf\samples\snake-test.mp4
+2026-11-28 00:04:53,783 INFO Độ phân giải: 1920x1080
+2026-11-28 00:04:53,783 INFO FPS gốc của video: 29.97
+2026-11-28 00:04:53,783 INFO Counting line (pixels): (960.0, 100.000008, 960.0, 650.000052)
+2026-11-28 00:04:53,784 INFO Kích thước YOLO: 640
+2026-11-28 00:04:53,785 INFO Thiết bị xử lý: CPU
+2026-11-28 00:05:00,281 INFO Predator queued event_id=eda1ae8f-2d4d-49c6-a2aa-cbb2e52d5350 species=snake camera=1
+2026-11-28 00:05:03,677 WARNING Không gửi CountLog cho clip thiếu frame: 80/300

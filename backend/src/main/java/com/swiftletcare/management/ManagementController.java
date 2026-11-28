@@ -64,7 +64,7 @@ public class ManagementController {
     houses.saveAndFlush(h);
     var z=new Zone(); z.houseId=h.id; z.name=p.initialZone().name();
     z.floorLabel=p.initialZone().floorLabel(); z.areaM2=p.initialZone().areaM2(); z.active=true;
-    zones.saveAndFlush(z);
+    saveZoneWithDefaultConfig(z);
     jdbc.update("insert into swiftletcare.house_memberships(user_id,house_id,role,active,joined_at) values(?,?,'OWNER',true,now())",creator,h.id);
     return ResponseEntity.status(201).body(h);
   }
@@ -117,7 +117,13 @@ public class ManagementController {
     access.requireHouse(jwt,houseId,Access.Permission.WRITE);
     finiteArea(p.areaM2());
     var z=new Zone(); z.houseId=houseId; z.name=p.name(); z.floorLabel=p.floorLabel(); z.areaM2=p.areaM2(); z.active=true;
-    return ResponseEntity.status(201).body(zones.saveAndFlush(z));
+    saveZoneWithDefaultConfig(z);
+    return ResponseEntity.status(201).body(z);
+  }
+
+  private void saveZoneWithDefaultConfig(Zone zone) {
+    zones.saveAndFlush(zone);
+    jdbc.update("insert into swiftletcare.zone_configs(zone_id) values(?)",zone.id);
   }
 
   @PatchMapping("/zones/{zoneId}")

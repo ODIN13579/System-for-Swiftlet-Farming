@@ -2,6 +2,7 @@ import argparse
 import gc
 import json
 import logging
+import math
 import os
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -20,7 +21,7 @@ import cv2
 import torch
 from ultralytics import YOLO
 
-from src.counting import EntryExitCounter
+from src.counting import EntryExitCounter, resolve_counting_line
 from src.api_client import send_count_log
 from src.predator import PredatorMonitor
 
@@ -29,21 +30,6 @@ torch.set_num_threads(2)
 cv2.setNumThreads(1)
 
 
-
-LOG_DIR = ROOT / "logs"
-LOG_DIR.mkdir(parents=True, exist_ok=True)
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(message)s",
-    handlers=[
-        logging.StreamHandler(),
-        logging.FileHandler(
-            LOG_DIR / "ai-service.log",
-            encoding="utf-8",
-        ),
-    ],
-)
 
 log = logging.getLogger("swiftletcare-ai")
 
@@ -127,7 +113,6 @@ def main():
 
     parser.add_argument(
         "--output",
-        default="outputs/annotated.mp4",
         help="Đường dẫn video đầu ra",
     )
 
@@ -145,7 +130,25 @@ def main():
     parser.add_argument("--model", help="Đường dẫn weights, ghi đè model_path")
     parser.add_argument("--max-frames", type=int, help="Giới hạn frame cho smoke test")
 
+    parser.add_argument("--artifact-dir", type=Path, help="New directory for per-run evidence")
+    parser.add_argument("--predator-media-clock", action="store_true",
+                        help="Use video time for predator cooldown during offline evaluation")
     args = parser.parse_args()
+    if args.predator_media_clock and not (args.no_send and args.artifact_dir):
+        parser.error("--predator-media-clock requires --no-send and --artifact-dir")
+    log_dir = args.artifact_dir.resolve() if args.artifact_dir else ROOT / "logs"
+    log_dir.mkdir(parents=True, exist_ok=args.artifact_dir is None)
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(message)s",
+        handlers=[
+            logging.StreamHandler(),
+            logging.FileHandler(
+                log_dir / "ai-service.log",
+                encoding="utf-8",
+            ),
+        ],
+    )
     if args.max_frames is not None and args.max_frames < 1:
         parser.error("--max-frames phải lớn hơn 0")
 
@@ -161,8 +164,10 @@ def main():
         )
 
     cfg = json.loads(
-        config_path.read_text(encoding="utf-8")
+        config_path.read_text(encoding="utf-8-sig")
     )
+    if args.no_send and args.artifact_dir:
+        cfg["predator_outbox"] = str(log_dir / "predator-outbox.sqlite3")
 
     # Kiểm tra video.
     video_path = Path(args.video)
@@ -188,6 +193,9 @@ def main():
 
     log.info("Đang tải mô hình YOLOv8...")
     model = YOLO(str(model_path))
+    model_version = (cfg.get("model_version") if not args.model else None) or (
+        model_path.parent.parent.name if model_path.parent.name == "weights" else model_path.stem
+    )
     service_key = os.getenv("AI_SERVICE_KEY", "")
     monitor = None
     class_ids = cfg.get("class_ids")
@@ -219,7 +227,13 @@ def main():
             f"Không mở được video: {video_path}"
         )
 
-    fps = cap.get(cv2.CAP_PROP_FPS) or 25.0
+    source_fps = cap.get(cv2.CAP_PROP_FPS)
+    if args.predator_media_clock and (not math.isfinite(source_fps) or source_fps <= 0):
+        cap.release()
+        if monitor is not None:
+            monitor.close()
+        raise ValueError("Offline predator evaluation requires video with a valid source FPS")
+    fps = source_fps if math.isfinite(source_fps) and source_fps > 0 else 25.0
 
     width = int(
         cap.get(cv2.CAP_PROP_FRAME_WIDTH)
@@ -229,8 +243,18 @@ def main():
         cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
     )
 
+    try:
+        line = resolve_counting_line(cfg, width, height)
+    except ValueError:
+        cap.release()
+        if monitor is not None:
+            monitor.close()
+        raise
+
     # Tạo đường dẫn video đầu ra.
-    output_path = Path(args.output)
+    output_path = Path(args.output) if args.output else (
+        log_dir / "annotated.mp4" if args.artifact_dir else Path("outputs/annotated.mp4")
+    )
 
     if not output_path.is_absolute():
         output_path = ROOT / output_path
@@ -256,12 +280,6 @@ def main():
             f"Không tạo được video đầu ra: {output_path}"
         )
 
-    # Giữ bộ đếm BUILD 2, cho phép line chuẩn hóa với clip khác độ phân giải.
-    line = cfg.get("counting_line")
-    if "counting_line_normalized" in cfg:
-        line = [value * dimension for value, dimension in zip(
-            cfg["counting_line_normalized"], (width, height, width, height),
-        )]
     counter = EntryExitCounter(
         line=line,
         inside_direction=cfg.get(
@@ -281,19 +299,23 @@ def main():
     frame_index = 0
     unique_track_ids = set()
 
-    event_log = LOG_DIR / "count-events.jsonl"
+    event_log = log_dir / "count-events.jsonl"
 
     log.info("Bắt đầu xử lý video...")
     log.info("Video: %s", video_path)
     log.info("Độ phân giải: %sx%s", width, height)
     log.info("FPS gốc của video: %.2f", fps)
     imgsz = args.imgsz or cfg.get("imgsz", 320)
+    log.info("Counting line (pixels): %s", line)
     log.info("Kích thước YOLO: %s", imgsz)
     log.info("Thiết bị xử lý: CPU")
 
     expected_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     stopped_early = False
+    tracking = None
     try:
+        if args.artifact_dir:
+            tracking = (log_dir / "tracks.jsonl").open("x", encoding="utf-8")
         if monitor is not None:
             monitor.start()
         while True:
@@ -306,6 +328,7 @@ def main():
                 break
 
             frame_index += 1
+            crossings = []
             if monitor is not None:
                 monitor.source_frame()
 
@@ -337,11 +360,18 @@ def main():
                     x1, y1, x2, y2 = map(int, box)
 
                     track_id = int(raw_track_id)
+                    if tracking:
+                        tracking.write(json.dumps({
+                            "frameIndex": frame_index, "trackId": track_id,
+                            "classId": int(class_number), "confidence": confidence,
+                            "xyxy": [x1, y1, x2, y2],
+                        }) + "\n")
 
                     if monitor is not None:
                         label = classes[int(class_number)]
                         if label != "swiftlet":
-                            monitor.accept(frame, frame_index, track_id, label, confidence, box)
+                            monitor.accept(frame, frame_index, track_id, label, confidence, box,
+                                           media_time=(frame_index - 1) / fps if args.predator_media_clock else None)
                             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 60, 255), 2)
                             cv2.putText(frame, f"{label} {confidence:.2f}", (x1, max(20, y1 - 8)),
                                         cv2.FONT_HERSHEY_SIMPLEX, 0.55, (0, 60, 255), 2)
@@ -383,6 +413,7 @@ def main():
 
                     # Ghi sự kiện nếu có crossing hợp lệ.
                     if event_type:
+                        crossings.append(f"{event_type} ID {track_id}")
                         event = {
                             "eventId": str(uuid.uuid4()),
                             "eventType": event_type,
@@ -397,6 +428,7 @@ def main():
                             "zoneId": cfg.get("zone_id"),
                             "trackId": track_id,
                             "frameIndex": frame_index,
+                            "clipOffsetSeconds": round((frame_index - 1) / fps, 6),
                         }
 
                         append_jsonl(
@@ -452,6 +484,11 @@ def main():
             )
 
             counts = counter.get_counts()
+            cv2.putText(
+                frame, f"{model_version} | Source {fps:.1f} FPS",
+                (12, max(18, height - 12)), cv2.FONT_HERSHEY_SIMPLEX,
+                0.45, (255, 255, 255), 1,
+            )
 
             cv2.putText(
                 frame,
@@ -473,6 +510,11 @@ def main():
                 2,
             )
 
+            cv2.putText(frame, f"Frame {frame_index}", (20, 108),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 2)
+            for index, crossing in enumerate(crossings):
+                cv2.putText(frame, crossing, (20, 132 + 20 * index),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 2)
             writer.write(frame)
 
             # Giải phóng bộ nhớ định kỳ.
@@ -489,12 +531,22 @@ def main():
                 )
 
     finally:
+        if tracking:
+            tracking.close()
         cap.release()
         writer.release()
         if monitor is not None:
             monitor.close()
         gc.collect()
 
+    complete = not stopped_early and expected_frames > 0 and frame_index >= expected_frames
+    if args.artifact_dir:
+        (log_dir / "video-run.json").write_text(json.dumps({
+            "video": str(video_path), "frames": frame_index, "expectedFrames": expected_frames,
+            "fps": fps, "complete": complete, "offline": args.no_send,
+            "predatorEnabled": monitor is not None,
+            "predatorMediaClock": args.predator_media_clock,
+        }, indent=2) + "\n", encoding="utf-8")
     if stopped_early or frame_index == 0 or (expected_frames > 0 and frame_index < expected_frames):
         log.warning("Không gửi CountLog cho clip thiếu frame: %d/%d", frame_index, expected_frames)
         return
@@ -537,7 +589,7 @@ def main():
 
     # Lưu payload cục bộ trước khi gửi.
     aggregate_path = (
-        LOG_DIR / "count-log-payload.json"
+        log_dir / "count-log-payload.json"
     )
 
     aggregate_path.write_text(

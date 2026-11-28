@@ -3,6 +3,7 @@
 import argparse
 import csv
 import hashlib
+import json
 from collections import Counter, defaultdict
 from pathlib import Path
 from zipfile import ZipFile
@@ -41,7 +42,8 @@ def ground_truth(text, width, height):
     return result
 
 
-def evaluate(archive, weights, output):
+def evaluate(archive, weights, output, excluded=None):
+    excluded = set(excluded or ())
     model = YOLO(str(weights))
     if set(model.names.values()) != set(LABELS):
         raise ValueError("Checkpoint classes differ from archived YOLO labels")
@@ -50,10 +52,14 @@ def evaluate(archive, weights, output):
         splits = {split: sorted(e for e in source.namelist()
                                 if e.startswith(PREFIX + f"images/{split}/") and not e.endswith("/"))
                   for split in ("train", "val", "test")}
+        if not excluded.issubset(splits["test"]):
+            raise ValueError("Exclusion list contains files outside this archive's test split")
         seen = {hashlib.sha256(source.read(path)).digest() for split in ("train", "val")
                 for path in splits[split]}
         evaluated = omitted = 0
         for path in splits["test"]:
+            if path in excluded:
+                continue
             raw = source.read(path)
             digest = hashlib.sha256(raw).digest()
             if digest in seen:
@@ -82,7 +88,7 @@ def evaluate(archive, weights, output):
                 stats["FN"] += len(pending)
             evaluated += 1
 
-    with output.open("w", encoding="utf-8", newline="") as file:
+    with output.open("x", encoding="utf-8", newline="") as file:
         writer = csv.writer(file)
         writer.writerow(["species", "tp", "fp", "fn", "precision", "recall"])
         for label, stats in totals.items():
@@ -91,6 +97,7 @@ def evaluate(archive, weights, output):
                              tp / (tp + fn) if tp + fn else ""])
     print("Image inventory:", {split: len(paths) for split, paths in splits.items()})
     print(f"Evaluated: {evaluated}, omitted byte-identical duplicates: {omitted}")
+    print(f"Excluded from supplied near-duplicate screen: {len(excluded)}")
     print(output.read_text(encoding="utf-8"))
 
 
@@ -99,5 +106,11 @@ if __name__ == "__main__":
     parser.add_argument("--archive", required=True, type=Path)
     parser.add_argument("--weights", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--exclude-from-split-audit", type=Path)
     args = parser.parse_args()
-    evaluate(args.archive, args.weights, args.output)
+    excluded = set()
+    if args.exclude_from_split_audit:
+        audit = json.loads(args.exclude_from_split_audit.read_text(encoding="utf-8"))
+        excluded = {match["pair"][0] for result in audit["testComparedTo"].values()
+                    for match in result["nearCandidatesDHashAtMost3"]}
+    evaluate(args.archive, args.weights, args.output, excluded)

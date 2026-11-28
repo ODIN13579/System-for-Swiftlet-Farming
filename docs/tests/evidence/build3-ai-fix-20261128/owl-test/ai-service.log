@@ -1,0 +1,10 @@
+2026-11-28 00:04:39,095 INFO Đang tải mô hình YOLOv8...
+2026-11-28 00:04:39,183 INFO Bắt đầu xử lý video...
+2026-11-28 00:04:39,184 INFO Video: D:\swiftletcare-p2-build3-6909bbfdcf\samples\owl-test.mp4
+2026-11-28 00:04:39,184 INFO Độ phân giải: 1920x1080
+2026-11-28 00:04:39,184 INFO FPS gốc của video: 29.97
+2026-11-28 00:04:39,184 INFO Counting line (pixels): (960.0, 100.000008, 960.0, 650.000052)
+2026-11-28 00:04:39,184 INFO Kích thước YOLO: 640
+2026-11-28 00:04:39,184 INFO Thiết bị xử lý: CPU
+2026-11-28 00:04:42,931 INFO Predator queued event_id=0692fee3-de91-479b-92c8-c3d0f9d8eda2 species=owl camera=1
+2026-11-28 00:04:49,227 WARNING Không gửi CountLog cho clip thiếu frame: 80/1145

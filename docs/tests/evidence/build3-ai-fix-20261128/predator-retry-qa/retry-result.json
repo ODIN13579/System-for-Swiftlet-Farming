@@ -1,0 +1,11 @@
+{
+  "eventId": "b448fdbe-f437-4def-a4c5-a55a55a29f19",
+  "cameraId": 2,
+  "species": "owl",
+  "alertId": 1,
+  "snapshotId": 1,
+  "replayHttp": 200,
+  "snapshotAuthHttp": 200,
+  "snapshotAnonymousHttp": 401,
+  "snapshotBytes": 153501
+}

@@ -452,9 +452,10 @@ export const api = {
     )
   },
 
-  getZoneConfig(zoneId: number) {
+  getZoneConfig(zoneId: number, signal?: AbortSignal) {
     return request<ZoneConfig>(
       `/api/v1/zones/${zoneId}/config`,
+      { signal },
     )
   },
 

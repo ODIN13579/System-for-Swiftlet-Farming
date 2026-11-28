@@ -1,0 +1,22 @@
+2026-11-28 07:24:22,286 INFO Đang tải mô hình YOLOv8...
+2026-11-28 07:24:22,807 INFO Bắt đầu xử lý video...
+2026-11-28 07:24:22,808 INFO Video: D:\swiftletcare-p2-build3-6909bbfdcf\samples\rat-test.mp4
+2026-11-28 07:24:22,809 INFO Độ phân giải: 1280x720
+2026-11-28 07:24:22,810 INFO FPS gốc của video: 30.00
+2026-11-28 07:24:22,812 INFO Counting line (pixels): (640.0, 66.66667199999999, 640.0, 433.333368)
+2026-11-28 07:24:22,813 INFO Kích thước YOLO: 640
+2026-11-28 07:24:22,814 INFO Thiết bị xử lý: CPU
+2026-11-28 07:25:08,287 INFO Đã xử lý 100 frame | ENTRY=0 | EXIT=0
+2026-11-28 07:25:10,427 INFO Predator queued event_id=b9026f41-5243-46d0-95bb-9d639ad28911 species=snake camera=1
+2026-11-28 07:25:55,526 INFO Đã xử lý 200 frame | ENTRY=0 | EXIT=0
+2026-11-28 07:26:26,685 INFO Đã xử lý 300 frame | ENTRY=0 | EXIT=0
+2026-11-28 07:26:53,155 INFO Đã xử lý 400 frame | ENTRY=0 | EXIT=0
+2026-11-28 07:27:18,980 INFO Đã xử lý 500 frame | ENTRY=0 | EXIT=0
+2026-11-28 07:27:46,830 INFO Đã xử lý 600 frame | ENTRY=0 | EXIT=0
+2026-11-28 07:28:13,782 INFO Đã xử lý 700 frame | ENTRY=0 | EXIT=0
+2026-11-28 07:28:43,359 INFO Đã xử lý 800 frame | ENTRY=0 | EXIT=0
+2026-11-28 07:29:12,968 INFO Đã xử lý 900 frame | ENTRY=0 | EXIT=0
+2026-11-28 07:29:42,824 INFO Kết quả: ENTRY=0 EXIT=0 tracking IDs=0
+2026-11-28 07:29:42,825 INFO CountLog: {"deviceId": 1, "periodStart": "2026-11-27T23:00:00.000000Z", "periodEnd": "2026-11-28T00:00:00.000000Z", "entryCount": 0, "exitCount": 0, "detectCount": 0, "aggregationType": "HOURLY", "processedAt": "2026-11-28T00:29:42.823279Z"}
+2026-11-28 07:29:42,825 INFO Video đầu ra: D:\New_folder\System-for-Swiftlet-Farming\docs\tests\evidence\build3-ai-followup-20261128\rat-full-runtime\annotated.mp4
+2026-11-28 07:29:42,825 INFO Chế độ --no-send: không gửi dữ liệu tới Spring Boot.

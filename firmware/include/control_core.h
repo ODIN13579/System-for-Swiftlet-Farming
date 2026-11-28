@@ -61,7 +61,7 @@ inline bool parseUtc(const char* s, int64_t& epoch) {
   auto n=[s](int i,int count){int x=0;while(count--)x=x*10+s[i++]-'0';return x;};
   int y=n(0,4), m=n(5,2), d=n(8,2), h=n(11,2), mi=n(14,2), se=n(17,2);
   int md[]={31,28,31,30,31,30,31,31,30,31,30,31};
-  if(y<2020||y>2099||m<1||m>12||h>23||mi>59||se>59)return false;
+  if(y<1970||y>2037||m<1||m>12||h>23||mi>59||se>59)return false;
   if(y%400==0||(y%4==0&&y%100!=0))md[1]=29;
   if(d<1||d>md[m-1])return false;
   y-=m<=2; int era=y/400; unsigned yo=y-era*400;
@@ -69,9 +69,25 @@ inline bool parseUtc(const char* s, int64_t& epoch) {
   int64_t days=era*146097+int(yo*365+yo/4-yo/100+doy)-719468;
   epoch=days*86400+h*3600+mi*60+se; return true;
 }
-inline const char* expiryError(int64_t expiry,int64_t now) {
-  if(expiry<=now)return "EXPIRED";
-  if(expiry>now+15)return "INVALID_EXPIRY";
+enum class CommandExpiry { Valid, ClockUntrusted, Malformed, Expired, TooFarAhead };
+
+inline CommandExpiry validateCommandExpiry(const char* value, int64_t now, bool clockTrusted,
+                                           int64_t& expiry) {
+  if (!clockTrusted) return CommandExpiry::ClockUntrusted;
+  if (!parseUtc(value, expiry)) return CommandExpiry::Malformed;
+  if (expiry <= now) return CommandExpiry::Expired;
+  if (expiry - now > 15) return CommandExpiry::TooFarAhead;
+  return CommandExpiry::Valid;
+}
+
+inline const char* commandExpiryReason(CommandExpiry status) {
+  switch (status) {
+    case CommandExpiry::ClockUntrusted: return "CLOCK_UNTRUSTED";
+    case CommandExpiry::Expired: return "EXPIRED";
+    case CommandExpiry::Malformed:
+    case CommandExpiry::TooFarAhead: return "INVALID_EXPIRY";
+    case CommandExpiry::Valid: return nullptr;
+  }
   return nullptr;
 }
 // One heap allocation at setup, never resized: preserves capacity without

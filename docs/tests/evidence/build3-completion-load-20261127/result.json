@@ -1,0 +1,50 @@
+{
+  "environment": {
+    "started_utc": "2026-11-27T16:18:49.393389+00:00",
+    "os": "Windows-11-10.0.26200-SP0",
+    "cpu": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
+    "logical_cpus": 12,
+    "python": "3.14.6",
+    "parameters": {
+      "output": "D:\\New_folder\\System-for-Swiftlet-Farming\\docs\\tests\\evidence\\build3-completion-load-20261127",
+      "mode": "mqtt-load",
+      "port": 51889,
+      "house": 1,
+      "zone": 1,
+      "cycles": 3,
+      "timeout": 20,
+      "individual_clients": true,
+      "test_broker_confirmed": true
+    }
+  },
+  "result": {
+    "devices": 50,
+    "publisher_connections": 50,
+    "cycles": 3,
+    "publish_errors": 0,
+    "duplicate_acks": 0,
+    "deadline_met": true,
+    "timeouts": 0,
+    "status": "PASS",
+    "broker_observed": {
+      "expected": 150,
+      "samples": 150,
+      "missing": 0,
+      "p50_ms": 5.46955,
+      "p95_ms": 9.528,
+      "max_ms": 10.0151,
+      "limit_ms": null,
+      "status": "MEASURED"
+    },
+    "stored_ack": {
+      "expected": 150,
+      "samples": 150,
+      "missing": 0,
+      "p50_ms": 6013.74525,
+      "p95_ms": 7447.2904,
+      "max_ms": 7596.7206,
+      "limit_ms": null,
+      "status": "MEASURED"
+    }
+  }
+}

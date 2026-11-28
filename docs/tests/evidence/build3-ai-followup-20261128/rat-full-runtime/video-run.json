@@ -1,0 +1,10 @@
+{
+  "video": "D:\\swiftletcare-p2-build3-6909bbfdcf\\samples\\rat-test.mp4",
+  "frames": 997,
+  "expectedFrames": 997,
+  "fps": 30.0,
+  "complete": true,
+  "offline": true,
+  "predatorEnabled": true,
+  "predatorMediaClock": true
+}

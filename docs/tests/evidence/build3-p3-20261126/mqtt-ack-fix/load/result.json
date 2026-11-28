@@ -1,0 +1,50 @@
+{
+  "environment": {
+    "started_utc": "2026-11-26T15:27:02.699343+00:00",
+    "os": "Windows-11-10.0.26200-SP0",
+    "cpu": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
+    "logical_cpus": 12,
+    "python": "3.14.6",
+    "parameters": {
+      "output": "docs\\tests\\evidence\\build3-p3-20261126\\mqtt-ack-fix\\load",
+      "mode": "mqtt-load",
+      "port": 51885,
+      "house": 1,
+      "zone": 1,
+      "cycles": 3,
+      "timeout": 20.0,
+      "individual_clients": true,
+      "test_broker_confirmed": true
+    }
+  },
+  "result": {
+    "devices": 50,
+    "publisher_connections": 50,
+    "cycles": 3,
+    "publish_errors": 0,
+    "duplicate_acks": 0,
+    "deadline_met": true,
+    "timeouts": 0,
+    "status": "PASS",
+    "broker_observed": {
+      "expected": 150,
+      "samples": 150,
+      "missing": 0,
+      "p50_ms": 7.417249999999999,
+      "p95_ms": 43.1738,
+      "max_ms": 48.796,
+      "limit_ms": null,
+      "status": "MEASURED"
+    },
+    "stored_ack": {
+      "expected": 150,
+      "samples": 150,
+      "missing": 0,
+      "p50_ms": 9890.628649999999,
+      "p95_ms": 11370.6214,
+      "max_ms": 11526.8817,
+      "limit_ms": null,
+      "status": "MEASURED"
+    }
+  }
+}

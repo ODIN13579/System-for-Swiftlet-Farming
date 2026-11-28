@@ -120,6 +120,8 @@ export default function FanControl({ device, available }: { device: Device; avai
       }
       if (status !== 'ACKNOWLEDGED') {
         const failure = pending(status) || reason === 'ACK_TIMEOUT' ? 'Hết thời gian chờ ACK'
+          : reason === 'INVALID_EXPIRY' || reason === 'CLOCK_UNTRUSTED'
+            ? 'ESP32 từ chối thời hạn lệnh. Chờ đồng bộ giờ rồi gửi lệnh mới.'
           : reason === 'SAFETY_OVERRIDE' ? 'Cơ chế an toàn từ chối lệnh'
           : ({ REJECTED: 'ESP32 từ chối lệnh', FAILED: 'Lệnh thất bại', EXPIRED: 'Lệnh đã hết hạn' }[status] ?? status)
         setCommand({ busy: false, text: reason ? failure + ' (' + reason + ')' : failure, error: true })
@@ -188,7 +190,14 @@ export default function FanControl({ device, available }: { device: Device; avai
         {kind === 'FAN' && row?.safetyOverride === true && <span>Cơ chế an toàn đang giữ quạt bật.</span>}
       </div>
     })}
-    {readError && <p role="alert">{readError}</p>}
-    <p role={command.error ? 'alert' : 'status'}>{command.text}</p>
+    {readError && <p role="alert" className="actuator-feedback actuator-feedback-error">{readError}</p>}
+    <p
+      role={command.error ? 'alert' : 'status'}
+      className={command.error
+        ? 'actuator-feedback actuator-feedback-error'
+        : command.text && !command.busy ? 'actuator-feedback actuator-feedback-success' : undefined}
+    >
+      {command.text}
+    </p>
   </section>
 }

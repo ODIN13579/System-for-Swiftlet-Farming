@@ -1,0 +1,30 @@
+[
+  {
+    "clip": "owl-test",
+    "max_frames": 80,
+    "events": {
+      "owl": 1
+    },
+    "local_overlay": "C:\\Users\\ACER\\AppData\\Local\\Temp\\sc-completion-video-c7fbb3cb-8554-4dcd-ba18-ece517f9ba3d\\owl-test\\annotated.mp4"
+  },
+  {
+    "clip": "rat-test",
+    "max_frames": 80,
+    "events": {},
+    "local_overlay": "C:\\Users\\ACER\\AppData\\Local\\Temp\\sc-completion-video-c7fbb3cb-8554-4dcd-ba18-ece517f9ba3d\\rat-test\\annotated.mp4"
+  },
+  {
+    "clip": "snake-test",
+    "max_frames": 80,
+    "events": {
+      "snake": 1
+    },
+    "local_overlay": "C:\\Users\\ACER\\AppData\\Local\\Temp\\sc-completion-video-c7fbb3cb-8554-4dcd-ba18-ece517f9ba3d\\snake-test\\annotated.mp4"
+  },
+  {
+    "clip": "swiftlet-test1",
+    "max_frames": 80,
+    "events": {},
+    "local_overlay": "C:\\Users\\ACER\\AppData\\Local\\Temp\\sc-completion-video-c7fbb3cb-8554-4dcd-ba18-ece517f9ba3d\\swiftlet-test1\\annotated.mp4"
+  }
+]

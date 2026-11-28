@@ -1,5 +1,5 @@
-﻿
-import { useCallback, useEffect, useState } from 'react'
+
+import { useEffect, useState } from 'react'
 import {
   api,
   ApiError,
@@ -156,11 +156,16 @@ export default function ZoneConfig() {
   const [loadingHouses, setLoadingHouses] = useState(true)
   const [loadingZones, setLoadingZones] = useState(false)
   const [config, setConfig] = useState<ZoneConfigType | null>(null)
+  const [uninitializedZoneId, setUninitializedZoneId] = useState('')
+  const [reload, setReload] = useState(0)
   const [form, setForm] = useState<FormValues>(emptyForm)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [listError, setListError] = useState('')
   const [message, setMessage] = useState('')
+  const ready = !loading && !!selectedZoneId && (String(config?.zoneId) === selectedZoneId ||
+    uninitializedZoneId === selectedZoneId)
 
   useEffect(() => {
     let cancelled = false
@@ -183,7 +188,7 @@ export default function ZoneConfig() {
         }
       } catch (err) {
         if (!cancelled) {
-          setError(
+          setListError(
             err instanceof Error
               ? err.message
               : 'Không thể tải danh sách nhà yến.',
@@ -215,6 +220,7 @@ export default function ZoneConfig() {
       }
 
       setLoadingZones(true)
+      setListError('')
 
       try {
         const result = await api.getZones(Number(selectedHouseId))
@@ -228,7 +234,7 @@ export default function ZoneConfig() {
         }
       } catch (err) {
         if (!cancelled) {
-          setError(
+          setListError(
             err instanceof Error
               ? err.message
               : 'Không thể tải danh sách khu vực.',
@@ -246,36 +252,39 @@ export default function ZoneConfig() {
     }
   }, [selectedHouseId])
 
-  const loadConfig = useCallback(async () => {
-    if (!selectedZoneId) {
-      setConfig(null)
-      setLoading(false)
-      return
-    }
-
-    setLoading(true)
-    setError('')
-    setMessage('')
-
-    try {
-      const data = await api.getZoneConfig(Number(selectedZoneId))
-      setConfig(data)
-      setForm(toForm(data))
-    } catch (err) {
-      setConfig(null)
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Không thể tải cấu hình khu vực.',
-      )
-    } finally {
-      setLoading(false)
-    }
-  }, [selectedZoneId])
-
   useEffect(() => {
+    const controller = new AbortController()
+    const { signal } = controller
+
+    async function loadConfig() {
+      setConfig(null)
+      setUninitializedZoneId('')
+      setForm(emptyForm)
+      setError('')
+      setMessage('')
+      setLoading(!!selectedZoneId)
+      if (!selectedZoneId) return
+
+      try {
+        const data = await api.getZoneConfig(Number(selectedZoneId), signal)
+        if (signal.aborted) return
+        setConfig(data)
+        setForm(toForm(data))
+      } catch (err) {
+        if (signal.aborted) return
+        if (err instanceof ApiError && err.status === 404 && err.code === 'ZONE_CONFIG_NOT_INITIALIZED') {
+          setUninitializedZoneId(selectedZoneId)
+        } else {
+          setError(err instanceof Error ? err.message : 'Không thể tải cấu hình khu vực.')
+        }
+      } finally {
+        if (!signal.aborted) setLoading(false)
+      }
+    }
+
     void loadConfig()
-  }, [loadConfig])
+    return () => controller.abort()
+  }, [selectedZoneId, reload])
 
   function changeField(key: keyof FormValues, value: string) {
     setForm((current) => ({ ...current, [key]: value }))
@@ -406,7 +415,7 @@ export default function ZoneConfig() {
     setError('')
     setMessage('')
 
-    if (!config) return
+    if (!ready || saving) return
 
     const validationError = validate()
     if (validationError) {
@@ -419,9 +428,10 @@ export default function ZoneConfig() {
     try {
       const updated = await api.updateZoneConfig(
         Number(selectedZoneId),
-        toInput(form, config.version),
+        toInput(form, config?.version ?? 0),
       )
       setConfig(updated)
+      setUninitializedZoneId('')
       setForm(toForm(updated))
       setMessage('Đã lưu cấu hình.')
     } catch (err) {
@@ -441,49 +451,7 @@ export default function ZoneConfig() {
     }
   }
 
-  if (loadingHouses) {
-    return <div className="zone-config-page">Đang tải danh sách nhà yến...</div>
-  }
-
-  if (!loadingHouses && houses.length === 0) {
-    return (
-      <div className="zone-config-page">
-        <h2>Cấu hình môi trường</h2>
-        <p>Chưa có nhà yến nào được cấp quyền truy cập.</p>
-      </div>
-    )
-  }
-
-  if (selectedHouseId && !loadingZones && zones.length === 0) {
-    return (
-      <div className="zone-config-page">
-        <h2>Cấu hình môi trường</h2>
-        <p>Nhà yến này chưa có khu vực để cấu hình.</p>
-      </div>
-    )
-  }
-
-  if (loading) {
-    return <div className="zone-config-page">Đang tải cấu hình khu vực...</div>
-  }
-
-  if (error && !config) {
-    return (
-      <div className="zone-config-page">
-        <h2>Cấu hình môi trường</h2>
-        <p className="zone-config-error">{error}</p>
-        <button type="button" onClick={() => void loadConfig()}>
-          Thử tải lại
-        </button>
-      </div>
-    )
-  }
-
-  if (!config) {
-    return <div className="zone-config-page">Không có dữ liệu cấu hình.</div>
-  }
-
-  const syncStatus = config.syncStatus?.trim().toUpperCase() || 'UNKNOWN'
+  const syncStatus = config?.syncStatus?.trim().toUpperCase() || 'UNKNOWN'
 
   return (
     <div className="zone-config-page">
@@ -496,8 +464,9 @@ export default function ZoneConfig() {
               <span>Nhà yến</span>
               <select
                 value={selectedHouseId}
-                disabled={loadingHouses || houses.length === 0}
+                disabled={saving || loadingHouses || houses.length === 0}
                 onChange={(event) => {
+                  setSelectedZoneId('')
                   setSelectedHouseId(event.target.value)
                   setError('')
                   setMessage('')
@@ -519,7 +488,7 @@ export default function ZoneConfig() {
               <span>Khu vực</span>
               <select
                 value={selectedZoneId}
-                disabled={loadingZones || zones.length === 0}
+                disabled={saving || loadingZones || zones.length === 0}
                 onChange={(event) => {
                   setSelectedZoneId(event.target.value)
                   setError('')
@@ -546,15 +515,15 @@ export default function ZoneConfig() {
           <p>
             {zones.find((zone) => zone.id === Number(selectedZoneId))?.name
               ?? `Khu vực ID: ${selectedZoneId}`}
-            {' · '}Phiên bản: {config.version}
+            {config && ` · Phiên bản: ${config.version}`}
           </p>
         </div>
-        <button type="button" onClick={() => void loadConfig()} disabled={saving}>
+        <button type="button" onClick={() => setReload((value) => value + 1)} disabled={!selectedZoneId || loading || saving}>
           Tải lại
         </button>
       </div>
 
-      <div
+      {config && <div
         className={`zone-config-notice${syncStatus === 'APPLIED' ? ' zone-config-notice--applied' : ''}`}
         role="status"
       >
@@ -563,8 +532,11 @@ export default function ZoneConfig() {
         </strong>
         <small>Mã trạng thái: {syncStatus}</small>
         <p>{getSyncStatusDescription(syncStatus, config.version)}</p>
-      </div>
+      </div>}
 
+      {listError && <p className="zone-config-error" role="alert">{listError}</p>}
+      {loading && selectedZoneId && <p role="status">Đang tải cấu hình khu vực...</p>}
+      {ready && !config && <p role="status">Khu vực chưa có cấu hình. Hãy nhập ngưỡng và lưu để khởi tạo.</p>}
       {error && <p className="zone-config-error" role="alert">{error}</p>}
       {message && <p className="zone-config-success" role="status">{message}</p>}
 
@@ -578,7 +550,7 @@ export default function ZoneConfig() {
               unit="%"
               min={0}
               max={100}
-              disabled={saving}
+              disabled={saving || !ready}
               onChange={(v) => changeField('humidityOn', v)}
             />
             <NumberField
@@ -587,7 +559,7 @@ export default function ZoneConfig() {
               unit="%"
               min={0}
               max={100}
-              disabled={saving}
+              disabled={saving || !ready}
               onChange={(v) => changeField('humidityOff', v)}
             />
           </div>
@@ -604,7 +576,7 @@ export default function ZoneConfig() {
               min={-10}
               max={60}
               step={0.1}
-              disabled={saving}
+              disabled={saving || !ready}
               onChange={(v) => changeField('tempMin', v)}
             />
             <NumberField
@@ -614,7 +586,7 @@ export default function ZoneConfig() {
               min={-10}
               max={60}
               step={0.1}
-              disabled={saving}
+              disabled={saving || !ready}
               onChange={(v) => changeField('tempMax', v)}
             />
             <NumberField
@@ -623,7 +595,7 @@ export default function ZoneConfig() {
               unit="°C"
               min={0.1}
               step={0.1}
-              disabled={saving}
+              disabled={saving || !ready}
               onChange={(v) => changeField('tempHysteresis', v)}
             />
           </div>
@@ -638,7 +610,7 @@ export default function ZoneConfig() {
               unit="ppm"
               min={0}
               max={5000}
-              disabled={saving}
+              disabled={saving || !ready}
               onChange={(v) => changeField('co2Min', v)}
             />
             <NumberField
@@ -647,7 +619,7 @@ export default function ZoneConfig() {
               unit="ppm"
               min={0}
               max={5000}
-              disabled={saving}
+              disabled={saving || !ready}
               onChange={(v) => changeField('co2Max', v)}
             />
           </div>
@@ -662,7 +634,7 @@ export default function ZoneConfig() {
               unit="lux"
               min={0}
               max={100000}
-              disabled={saving}
+              disabled={saving || !ready}
               onChange={(v) => changeField('lightMin', v)}
             />
             <NumberField
@@ -671,7 +643,7 @@ export default function ZoneConfig() {
               unit="lux"
               min={0}
               max={100000}
-              disabled={saving}
+              disabled={saving || !ready}
               onChange={(v) => changeField('lightMax', v)}
             />
           </div>
@@ -686,7 +658,7 @@ export default function ZoneConfig() {
               unit="giây"
               min={1}
               max={60}
-              disabled={saving}
+              disabled={saving || !ready}
               onChange={(v) => changeField('telemetryIntervalSec', v)}
             />
             <NumberField
@@ -695,25 +667,25 @@ export default function ZoneConfig() {
               unit="giây"
               min={2}
               max={2}
-              disabled={saving}
+              disabled={saving || !ready}
               onChange={(v) => changeField('heartbeatIntervalSec', v)}
             />
           </div>
         </section>
 
         <div className="zone-config-actions">
-          <button type="button" onClick={() => setForm(toForm(config))} disabled={saving}>
+          <button type="button" onClick={() => setForm(config ? toForm(config) : emptyForm)} disabled={saving || !ready}>
             Hoàn tác
           </button>
-          <button type="submit" disabled={saving}>
+          <button type="submit" disabled={saving || !ready}>
             {saving ? 'Đang lưu...' : 'Lưu cấu hình'}
           </button>
         </div>
       </form>
 
-      <p className="zone-config-meta">
+      {config && <p className="zone-config-meta">
         Cập nhật lần cuối: {new Date(config.updatedAt).toLocaleString('vi-VN')}
-      </p>
+      </p>}
     </div>
   )
 }

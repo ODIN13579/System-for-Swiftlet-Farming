@@ -1,0 +1,10 @@
+{
+  "deviceId": 1,
+  "periodStart": "2026-11-27T23:00:00.000000Z",
+  "periodEnd": "2026-11-28T00:00:00.000000Z",
+  "entryCount": 0,
+  "exitCount": 0,
+  "detectCount": 0,
+  "aggregationType": "HOURLY",
+  "processedAt": "2026-11-28T00:29:42.823279Z"
+}

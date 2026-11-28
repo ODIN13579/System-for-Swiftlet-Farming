@@ -1,0 +1,10 @@
+{
+  "video": "D:\\swiftletcare-p2-build3-6909bbfdcf\\samples\\swiftlet-test1.mp4",
+  "frames": 80,
+  "expectedFrames": 521,
+  "fps": 25.0,
+  "complete": false,
+  "offline": true,
+  "predatorEnabled": true,
+  "predatorMediaClock": false
+}

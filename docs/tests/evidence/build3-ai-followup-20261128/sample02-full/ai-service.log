@@ -1,0 +1,21 @@
+2026-11-28 07:20:54,079 INFO Đang tải mô hình YOLOv8...
+2026-11-28 07:20:54,194 INFO Bắt đầu xử lý video...
+2026-11-28 07:20:54,195 INFO Video: D:\New_folder\System-for-Swiftlet-Farming\ai\samples\sample-02.mp4
+2026-11-28 07:20:54,195 INFO Độ phân giải: 568x320
+2026-11-28 07:20:54,195 INFO FPS gốc của video: 29.97
+2026-11-28 07:20:54,196 INFO Counting line (pixels): (284.0, 40.0, 284.0, 280.0)
+2026-11-28 07:20:54,196 INFO Kích thước YOLO: 320
+2026-11-28 07:20:54,196 INFO Thiết bị xử lý: CPU
+2026-11-28 07:21:03,326 INFO Đã xử lý 100 frame | ENTRY=0 | EXIT=0
+2026-11-28 07:21:06,365 INFO Đã xử lý 200 frame | ENTRY=0 | EXIT=0
+2026-11-28 07:21:09,088 INFO Đã xử lý 300 frame | ENTRY=0 | EXIT=0
+2026-11-28 07:21:11,749 INFO Đã xử lý 400 frame | ENTRY=0 | EXIT=0
+2026-11-28 07:21:15,716 INFO Đã xử lý 500 frame | ENTRY=0 | EXIT=0
+2026-11-28 07:21:19,204 INFO Đã xử lý 600 frame | ENTRY=0 | EXIT=0
+2026-11-28 07:21:22,186 INFO Đã xử lý 700 frame | ENTRY=0 | EXIT=0
+2026-11-28 07:21:25,022 INFO Đã xử lý 800 frame | ENTRY=0 | EXIT=0
+2026-11-28 07:21:28,181 INFO Đã xử lý 900 frame | ENTRY=0 | EXIT=0
+2026-11-28 07:21:28,723 INFO Kết quả: ENTRY=0 EXIT=0 tracking IDs=15
+2026-11-28 07:21:28,723 INFO CountLog: {"deviceId": 2, "periodStart": "2026-11-27T23:00:00.000000Z", "periodEnd": "2026-11-28T00:00:00.000000Z", "entryCount": 0, "exitCount": 0, "detectCount": 15, "aggregationType": "HOURLY", "processedAt": "2026-11-28T00:21:28.723282Z"}
+2026-11-28 07:21:28,724 INFO Video đầu ra: D:\New_folder\System-for-Swiftlet-Farming\docs\tests\evidence\build3-ai-followup-20261128\sample02-full\annotated.mp4
+2026-11-28 07:21:28,724 INFO Chế độ --no-send: không gửi dữ liệu tới Spring Boot.

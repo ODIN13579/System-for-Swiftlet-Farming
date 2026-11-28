@@ -100,7 +100,9 @@ public class ZoneConfigController {
 
   private View find(long zone) {
     var rows=jdbc.query("select * from swiftletcare.zone_configs where zone_id=?",this::map,zone);
-    if(rows.isEmpty()) throw ApiError.missing();
+    if(rows.isEmpty()) {
+      throw new ApiError.Failure(404,"ZONE_CONFIG_NOT_INITIALIZED","Zone configuration has not been initialized");
+    }
     View v = rows.getFirst();
     return new View(v.id(), v.zoneId(), v.humidityOn(), v.humidityOff(), v.tempMin(),
         v.tempMax(), v.tempHysteresis(), v.co2Min(), v.co2Max(), v.lightMin(), v.lightMax(),

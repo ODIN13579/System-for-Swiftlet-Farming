@@ -1,0 +1,20 @@
+2026-11-28 00:05:55,537 INFO Đang tải mô hình YOLOv8...
+2026-11-28 00:05:55,642 INFO Bắt đầu xử lý video...
+2026-11-28 00:05:55,642 INFO Video: D:\swiftletcare-p2-build3-6909bbfdcf\samples\swiftlet-test1.mp4
+2026-11-28 00:05:55,643 INFO Độ phân giải: 1920x1080
+2026-11-28 00:05:55,643 INFO FPS gốc của video: 25.00
+2026-11-28 00:05:55,643 INFO Counting line (pixels): (960, 100, 960, 650)
+2026-11-28 00:05:55,644 INFO Kích thước YOLO: 640
+2026-11-28 00:05:55,644 INFO Thiết bị xử lý: CPU
+2026-11-28 00:06:01,499 INFO Sự kiện đếm: {"eventId": "290c4455-da86-4734-bc91-710094bdf4b0", "eventType": "ENTRY", "className": "swiftlet", "confidence": 0.49423643946647644, "timestamp": "2026-11-27T17:06:01.496879+00:00", "deviceId": 1, "cameraId": "CAM-001", "zoneId": "ZONE-01", "trackId": 22, "frameIndex": 5}
+2026-11-28 00:06:03,159 INFO Sự kiện đếm: {"eventId": "cd545bbf-6686-4e48-84ca-f797a847b60c", "eventType": "ENTRY", "className": "swiftlet", "confidence": 0.6227789521217346, "timestamp": "2026-11-27T17:06:03.158506+00:00", "deviceId": 1, "cameraId": "CAM-001", "zoneId": "ZONE-01", "trackId": 2, "frameIndex": 14}
+2026-11-28 00:06:05,301 INFO Sự kiện đếm: {"eventId": "6c9b8b5d-e463-4bae-b361-9b453ebbef80", "eventType": "ENTRY", "className": "swiftlet", "confidence": 0.5643531084060669, "timestamp": "2026-11-27T17:06:05.300530+00:00", "deviceId": 1, "cameraId": "CAM-001", "zoneId": "ZONE-01", "trackId": 28, "frameIndex": 22}
+2026-11-28 00:06:06,188 INFO Sự kiện đếm: {"eventId": "05252e9a-9893-4512-bced-d2b9e2ab38e2", "eventType": "ENTRY", "className": "swiftlet", "confidence": 0.48151612281799316, "timestamp": "2026-11-27T17:06:06.187370+00:00", "deviceId": 1, "cameraId": "CAM-001", "zoneId": "ZONE-01", "trackId": 11, "frameIndex": 29}
+2026-11-28 00:06:06,392 INFO Sự kiện đếm: {"eventId": "e6d37c74-55d4-47f5-8c8c-0cca8f48ff20", "eventType": "ENTRY", "className": "swiftlet", "confidence": 0.5229060053825378, "timestamp": "2026-11-27T17:06:06.391828+00:00", "deviceId": 1, "cameraId": "CAM-001", "zoneId": "ZONE-01", "trackId": 14, "frameIndex": 30}
+2026-11-28 00:06:06,720 INFO Sự kiện đếm: {"eventId": "da5ba702-de70-407b-a4b2-3531a7c329c4", "eventType": "ENTRY", "className": "swiftlet", "confidence": 0.4675769805908203, "timestamp": "2026-11-27T17:06:06.720174+00:00", "deviceId": 1, "cameraId": "CAM-001", "zoneId": "ZONE-01", "trackId": 9, "frameIndex": 32}
+2026-11-28 00:06:07,364 INFO Sự kiện đếm: {"eventId": "08aeedbd-808c-4d74-81c2-cb979177895a", "eventType": "ENTRY", "className": "swiftlet", "confidence": 0.5624711513519287, "timestamp": "2026-11-27T17:06:07.363777+00:00", "deviceId": 1, "cameraId": "CAM-001", "zoneId": "ZONE-01", "trackId": 344, "frameIndex": 36}
+2026-11-28 00:06:11,256 INFO Sự kiện đếm: {"eventId": "a55e0b61-515f-48d0-8a85-98f060a42c4e", "eventType": "ENTRY", "className": "swiftlet", "confidence": 0.5063893795013428, "timestamp": "2026-11-27T17:06:11.255553+00:00", "deviceId": 1, "cameraId": "CAM-001", "zoneId": "ZONE-01", "trackId": 49, "frameIndex": 53}
+2026-11-28 00:06:14,517 INFO Sự kiện đếm: {"eventId": "4a949504-c319-4dd0-af33-5f6eb80509ff", "eventType": "ENTRY", "className": "swiftlet", "confidence": 0.552431583404541, "timestamp": "2026-11-27T17:06:14.517245+00:00", "deviceId": 1, "cameraId": "CAM-001", "zoneId": "ZONE-01", "trackId": 508, "frameIndex": 70}
+2026-11-28 00:06:15,683 INFO Sự kiện đếm: {"eventId": "ee12f7cd-f78c-4cb8-a5bc-5103667008a1", "eventType": "ENTRY", "className": "swiftlet", "confidence": 0.5067476630210876, "timestamp": "2026-11-27T17:06:15.682811+00:00", "deviceId": 1, "cameraId": "CAM-001", "zoneId": "ZONE-01", "trackId": 267, "frameIndex": 78}
+2026-11-28 00:06:15,782 INFO Sự kiện đếm: {"eventId": "a24d59d2-efe1-4e0d-b89d-f07f61e589a3", "eventType": "ENTRY", "className": "swiftlet", "confidence": 0.5085262060165405, "timestamp": "2026-11-27T17:06:15.781465+00:00", "deviceId": 1, "cameraId": "CAM-001", "zoneId": "ZONE-01", "trackId": 433, "frameIndex": 79}
+2026-11-28 00:06:16,042 WARNING Không gửi CountLog cho clip thiếu frame: 80/521

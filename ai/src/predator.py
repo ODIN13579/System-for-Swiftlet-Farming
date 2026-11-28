@@ -175,11 +175,11 @@ class PredatorMonitor:
         self.key = service_key
         self.threads = []
 
-    def accept(self, frame, frame_index, track_id, label, confidence, box):
+    def accept(self, frame, frame_index, track_id, label, confidence, box, *, media_time=None):
         threshold = self.thresholds.get(label)
         if threshold is None or confidence < threshold:
             return
-        now = time.monotonic()
+        now = time.monotonic() if media_time is None else media_time
         if not self.gate.ready(track_id, label, frame_index, now):
             return
         event_id = str(uuid.uuid4())

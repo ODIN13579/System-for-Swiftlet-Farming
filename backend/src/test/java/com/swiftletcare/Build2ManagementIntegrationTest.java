@@ -85,6 +85,9 @@ class Build2ManagementIntegrationTest {
 
   @Test void configStorageVersionsPermissionsAndNoOp() throws Exception {
     String path="/zones/"+zone+"/config";
+    var uninitialized=call("GET",path,null,token);
+    assertThat(uninitialized.statusCode()).isEqualTo(404);
+    assertThat(json.readTree(uninitialized.body()).path("code").asText()).isEqualTo("ZONE_CONFIG_NOT_INITIALIZED");
     assertThat(call("GET",path,null,token).statusCode()).isEqualTo(404);
     assertThat(call("PUT",path,json.writeValueAsString(config(0,74)),null).statusCode()).isEqualTo(401);
     var first=call("PUT",path,json.writeValueAsString(config(0,74)),token);
@@ -141,6 +144,24 @@ class Build2ManagementIntegrationTest {
     assertThat(jdbc.queryForObject("select version from swiftletcare.zone_configs where zone_id=?",Integer.class,zone)).isEqualTo(2);
   }
 
+  @Test void newZoneStartsWithReadableDefaultConfig() throws Exception {
+    var created=call("POST","/houses/"+house+"/zones","{\"name\":\"new zone\"}",token);
+    assertThat(created.statusCode()).isEqualTo(201);
+    long id=json.readTree(created.body()).path("id").asLong();
+    assertDefaultZoneConfig(id);
+  }
+
+  private void assertDefaultZoneConfig(long zoneId) throws Exception {
+    var response=call("GET","/zones/"+zoneId+"/config",null,token);
+    assertThat(response.statusCode()).isEqualTo(200);
+    var body=json.readTree(response.body());
+    assertThat(body.path("zoneId").asLong()).isEqualTo(zoneId);
+    assertThat(body.path("version").asInt()).isEqualTo(1);
+    assertThat(body.path("telemetryIntervalSec").asInt()).isEqualTo(5);
+    assertThat(body.path("heartbeatIntervalSec").asInt()).isEqualTo(2);
+    assertThat(body.path("humidityOn").isNull()).isTrue();
+  }
+
   @Test void houseCreationIsAtomicAndRestrictedToGlobalAdmin() throws Exception {
     var body=Map.of("name","created-"+UUID.randomUUID(),"address","test","initialZone",Map.of("name","initial","areaM2",100));
     assertThat(call("POST","/houses",json.writeValueAsString(body),token).statusCode()).isEqualTo(403);
@@ -152,6 +173,7 @@ class Build2ManagementIntegrationTest {
     assertThat(created.statusCode()).isEqualTo(201);
     long id=json.readTree(created.body()).get("id").asLong();
     assertThat(jdbc.queryForObject("select count(*) from swiftletcare.zones where house_id=?",Long.class,id)).isEqualTo(1);
+    assertDefaultZoneConfig(jdbc.queryForObject("select id from swiftletcare.zones where house_id=?",Long.class,id));
     assertThat(jdbc.queryForObject("select role from swiftletcare.house_memberships where user_id=? and house_id=?",String.class,user,id)).isEqualTo("OWNER");
     String suffix=UUID.randomUUID().toString().replace("-","");
     String trigger="b2_house_"+suffix;

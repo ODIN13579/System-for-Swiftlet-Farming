@@ -11,6 +11,7 @@
 #include <time.h>
 #include <WiFi.h>         // ESP32 kết nối WiFi để giao tiếp với MQTT Broker
 #include <PubSubClient.h> // Thư viện MQTT cho ESP32
+#include "control_core.h"
 #include "DHT.h"          // Thư viện cảm biến DHT22
 
 // SENSOR & DEVICE PIN
@@ -229,6 +230,7 @@ std::atomic<bool> mqttOnline{false};
 std::atomic<bool> networkEnabled{true};
 std::atomic<bool> mqttJustConnected{false};
 std::atomic<bool> ntpSynced{false};
+std::atomic<bool> commandClockResyncRequested{false};
 std::atomic<uint32_t> lastNtpSyncMs{0};
 std::atomic<uint32_t> reconnectCount{0}, connectAttempts{0};
 std::atomic<uint32_t> txFailures{0}, rxDrops{0};
@@ -907,140 +909,6 @@ bool fanCanTurnOff = latestTemperature <= FAN_OFF_TEMP &&
   if (overrideChanged)
     publishState();
 }
-time_t utcToEpoch(struct tm *t)
-{
-  // Convert calendar date to days since 1970-01-01.
-  int year = t->tm_year + 1900;
-  unsigned int month = t->tm_mon + 1;
-  int day = t->tm_mday;
-
-  year -= (month <= 2);
-
-  const int era = (year >= 0 ? year : year - 399) / 400;
-  const unsigned int yearOfEra = (unsigned int)(year - era * 400);
-  const unsigned int dayOfYear =
-      (153 * (month + (month > 2 ? -3 : 9)) + 2) / 5 + day - 1;
-  const unsigned int dayOfEra =
-      yearOfEra * 365 + yearOfEra / 4 - yearOfEra / 100 + dayOfYear;
-
-  int days = era * 146097 + (int)dayOfEra - 719468;
-
-  return (time_t)days * 86400 + (time_t)t->tm_hour * 3600 + (time_t)t->tm_min * 60 + t->tm_sec;
-}
-bool isValidUtcDate(
-    int year,
-    int month,
-    int day,
-    int hour,
-    int minute,
-    int second)
-{
-  if (year < 1970 || year > 2037 ||
-      month < 1 || month > 12 ||
-      hour < 0 || hour > 23 ||
-      minute < 0 || minute > 59 ||
-      second < 0 || second > 59)
-  {
-    return false;
-  }
-
-  const int daysInMonth[] = {
-      31, 28, 31, 30, 31, 30,
-      31, 31, 30, 31, 30, 31};
-
-  int maxDay = daysInMonth[month - 1];
-
-  bool leapYear =
-      (year % 400 == 0) ||
-      (year % 4 == 0 && year % 100 != 0);
-
-  if (month == 2 && leapYear)
-  {
-    maxDay = 29;
-  }
-
-  return day >= 1 && day <= maxDay;
-}
-bool hasStrictUtcFormat(const char *s)
-{
-  if (s == nullptr || strlen(s) != 20)
-  {
-    return false;
-  }
-
-  const int positions[] = {4, 7, 10, 13, 16, 19};
-  const char expected[] = {'-', '-', 'T', ':', ':', 'Z'};
-
-  for (int i = 0; i < 6; i++)
-  {
-    if (s[positions[i]] != expected[i])
-    {
-      return false;
-    }
-  }
-
-  for (int i = 0; i < 19; i++)
-  {
-    bool separator = false;
-
-    for (int j = 0; j < 6; j++)
-    {
-      if (i == positions[j])
-      {
-        separator = true;
-        break;
-      }
-    }
-
-    if (!separator && (s[i] < '0' || s[i] > '9'))
-    {
-      return false;
-    }
-  }
-
-  return true;
-}
-bool parseUtcExpiry(const char *value, time_t &expiry)
-{
-  if (!hasStrictUtcFormat(value))
-  {
-    return false;
-  }
-
-  int year, month, day;
-  int hour, minute, second;
-  char trailing;
-
-  // Chỉ chấp nhận định dạng UTC: YYYY-MM-DDTHH:MM:SSZ
-  int fields = sscanf(
-      value,
-      "%4d-%2d-%2dT%2d:%2d:%2dZ%c",
-      &year, &month, &day,
-      &hour, &minute, &second,
-      &trailing);
-
-  if (fields != 6)
-  {
-    return false;
-  }
-
-  if (!isValidUtcDate(year, month, day, hour, minute, second))
-  {
-    return false;
-  }
-  struct tm timeInfo = {};
-  timeInfo.tm_year = year - 1900;
-  timeInfo.tm_mon = month - 1;
-  timeInfo.tm_mday = day;
-  timeInfo.tm_hour = hour;
-  timeInfo.tm_min = minute;
-  timeInfo.tm_sec = second;
-
-  // Chuyển thời gian UTC thành Unix timestamp.
-  expiry = utcToEpoch(&timeInfo);
-
-  return expiry > 0;
-}
 void rejectAndCache(
     const String &commandId,
     const String &normalizedContent,
@@ -1566,37 +1434,18 @@ void mqttCallback(
       return;
     }
   }
-  if (!isClockTrusted())
+  const time_t now = time(nullptr);
+  int64_t expiryTime = 0;
+  const auto expiry = sc::validateCommandExpiry(expiresAt.c_str(), now, isClockTrusted(), expiryTime);
+  if (expiry != sc::CommandExpiry::Valid)
   {
-    rejectAndCache(commandId, normalizedContent, "CLOCK_UNTRUSTED", actuator);
-    return;
-  }
-
-  time_t expiryTime = 0;
-
-  if (!parseUtcExpiry(expiresAt.c_str(), expiryTime))
-  {
-    rejectAndCache(commandId, normalizedContent, "INVALID_EXPIRY", actuator);
-    return;
-  }
-  const uint32_t syncAgeMs =
-    (uint32_t)(millis() - lastNtpSyncMs.load());
-
-  Serial.printf("[CLOCK-CHECK] synced=%d sync_age_s=%lu\n",
-                ntpSynced.load() ? 1 : 0,
-                (unsigned long)(syncAgeMs / 1000UL));
-  time_t now = time(nullptr);
-  Serial.printf("[B2-41] id=%s action=%s now=%lld expires=%lld ttl_s=%lld\n", commandId.c_str(), action.c_str(), (long long)now, (long long)expiryTime, (long long)expiryTime - (long long)now);
-
-  if (expiryTime <= now)
-  {
-    rejectAndCache(commandId, normalizedContent, "EXPIRED", actuator);
-    return;
-  }
-
-  if (expiryTime > now + 15)
-  {
-    rejectAndCache(commandId, normalizedContent, "INVALID_EXPIRY", actuator);
+    if (expiry == sc::CommandExpiry::TooFarAhead)
+      commandClockResyncRequested.store(true);
+    const char *reason = sc::commandExpiryReason(expiry);
+    Serial.printf("[COMMAND-CLOCK] id=%s reason=%s now=%lld expires=%lld sync_age_ms=%lu\n",
+                  commandId.c_str(), reason, (long long)now, (long long)expiryTime,
+                  (unsigned long)(millis() - lastNtpSyncMs.load()));
+    rejectAndCache(commandId, normalizedContent, reason, actuator);
     return;
   }
   // Xử lý lệnh SET_MODE.
@@ -1942,6 +1791,8 @@ void networkTask(void *)
   sntp_set_time_sync_notification_cb(onTimeSync);
   MqttPacket pending = {};
   bool hasPending = false;
+  uint32_t lastClockRestart = 0;
+  bool clockRestarted = false;
   while (true)
   {
     if (!networkEnabled.load())
@@ -1961,9 +1812,21 @@ void networkTask(void *)
     }
     if (!ntpConfigured)
     {
+#ifdef SWIFTLETCARE_DEMO
+      sntp_set_sync_interval(15000UL);
+#else
       sntp_set_sync_interval(60000UL);
+#endif
       configTime(0, 0, "pool.ntp.org", "time.google.com");
       ntpConfigured = true;
+    }
+    if (commandClockResyncRequested.load() &&
+        (!clockRestarted || sc::due(millis(), lastClockRestart, 5000UL)))
+    {
+      commandClockResyncRequested.exchange(false);
+      lastClockRestart = millis();
+      clockRestarted = true;
+      sntp_restart();
     }
     tryConnectMQTT();
     if (mqttClient.connected())

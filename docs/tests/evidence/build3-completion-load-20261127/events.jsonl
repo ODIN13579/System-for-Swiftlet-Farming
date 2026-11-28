@@ -1,0 +1,500 @@
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.673550+00:00", "device_id": "B3P3-QA-01"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.683836+00:00", "device_id": "B3P3-QA-02"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.688847+00:00", "device_id": "B3P3-QA-03"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.705860+00:00", "device_id": "B3P3-QA-04"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.721749+00:00", "device_id": "B3P3-QA-05"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.724267+00:00", "device_id": "B3P3-QA-06"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.736699+00:00", "device_id": "B3P3-QA-07"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.752558+00:00", "device_id": "B3P3-QA-08"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.756585+00:00", "device_id": "B3P3-QA-09"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.782862+00:00", "device_id": "B3P3-QA-10"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.799126+00:00", "device_id": "B3P3-QA-11"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.802577+00:00", "device_id": "B3P3-QA-12"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.806424+00:00", "device_id": "B3P3-QA-13"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.829585+00:00", "device_id": "B3P3-QA-14"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.844880+00:00", "device_id": "B3P3-QA-15"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.861084+00:00", "device_id": "B3P3-QA-16"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.875349+00:00", "device_id": "B3P3-QA-17"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.891352+00:00", "device_id": "B3P3-QA-18"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.894331+00:00", "device_id": "B3P3-QA-19"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.897218+00:00", "device_id": "B3P3-QA-20"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.899745+00:00", "device_id": "B3P3-QA-21"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.922054+00:00", "device_id": "B3P3-QA-22"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.937329+00:00", "device_id": "B3P3-QA-23"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.952680+00:00", "device_id": "B3P3-QA-24"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.968224+00:00", "device_id": "B3P3-QA-25"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.985263+00:00", "device_id": "B3P3-QA-26"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.988223+00:00", "device_id": "B3P3-QA-27"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.992379+00:00", "device_id": "B3P3-QA-28"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.995088+00:00", "device_id": "B3P3-QA-29"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:49.997870+00:00", "device_id": "B3P3-QA-30"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:50.000608+00:00", "device_id": "B3P3-QA-31"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:50.018894+00:00", "device_id": "B3P3-QA-32"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:50.026672+00:00", "device_id": "B3P3-QA-33"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:50.034525+00:00", "device_id": "B3P3-QA-34"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:50.040003+00:00", "device_id": "B3P3-QA-35"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:50.045172+00:00", "device_id": "B3P3-QA-36"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:50.061787+00:00", "device_id": "B3P3-QA-37"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:50.077582+00:00", "device_id": "B3P3-QA-38"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:50.081860+00:00", "device_id": "B3P3-QA-39"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:50.108970+00:00", "device_id": "B3P3-QA-40"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:50.125738+00:00", "device_id": "B3P3-QA-41"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:50.141301+00:00", "device_id": "B3P3-QA-42"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:50.173414+00:00", "device_id": "B3P3-QA-43"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:50.202655+00:00", "device_id": "B3P3-QA-44"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:50.216292+00:00", "device_id": "B3P3-QA-45"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:50.222881+00:00", "device_id": "B3P3-QA-46"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:50.228717+00:00", "device_id": "B3P3-QA-47"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:50.246125+00:00", "device_id": "B3P3-QA-48"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:50.250444+00:00", "device_id": "B3P3-QA-49"}
+{"kind": "device_connected", "utc": "2026-11-27T16:18:50.254754+00:00", "device_id": "B3P3-QA-50"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.254881+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-0", "topic": "swiftletcare/1/1/B3P3-QA-01/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.255153+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-1", "topic": "swiftletcare/1/1/B3P3-QA-02/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.255377+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-2", "topic": "swiftletcare/1/1/B3P3-QA-03/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.255492+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-3", "topic": "swiftletcare/1/1/B3P3-QA-04/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.255608+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-4", "topic": "swiftletcare/1/1/B3P3-QA-05/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.255866+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-5", "topic": "swiftletcare/1/1/B3P3-QA-06/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.256070+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-6", "topic": "swiftletcare/1/1/B3P3-QA-07/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.256502+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-7", "topic": "swiftletcare/1/1/B3P3-QA-08/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.257078+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-8", "topic": "swiftletcare/1/1/B3P3-QA-09/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.257904+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-0", "elapsed_ms": 2.497}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.258271+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-9", "topic": "swiftletcare/1/1/B3P3-QA-10/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.258872+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-1", "elapsed_ms": 3.6307}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.259223+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-10", "topic": "swiftletcare/1/1/B3P3-QA-11/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.259925+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-3", "elapsed_ms": 4.3881}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.260200+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-11", "topic": "swiftletcare/1/1/B3P3-QA-12/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.260740+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-2", "elapsed_ms": 5.1139}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.261131+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-12", "topic": "swiftletcare/1/1/B3P3-QA-13/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.261574+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-4", "elapsed_ms": 5.9009}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.262041+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-6", "elapsed_ms": 5.92}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.262405+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-13", "topic": "swiftletcare/1/1/B3P3-QA-14/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.262894+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-5", "elapsed_ms": 6.6898}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.263160+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-14", "topic": "swiftletcare/1/1/B3P3-QA-15/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.263785+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-8", "elapsed_ms": 6.6586}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.264051+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-15", "topic": "swiftletcare/1/1/B3P3-QA-16/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.264598+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-7", "elapsed_ms": 8.015}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.265307+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-16", "topic": "swiftletcare/1/1/B3P3-QA-17/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.265651+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-9", "elapsed_ms": 7.2307}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.266064+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-17", "topic": "swiftletcare/1/1/B3P3-QA-18/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.266396+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-10", "elapsed_ms": 7.1219}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.266882+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-11", "elapsed_ms": 6.6427}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.267034+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-18", "topic": "swiftletcare/1/1/B3P3-QA-19/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.267437+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-12", "elapsed_ms": 6.2521}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.267948+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-19", "topic": "swiftletcare/1/1/B3P3-QA-20/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.268446+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-13", "elapsed_ms": 5.8138}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.268753+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-20", "topic": "swiftletcare/1/1/B3P3-QA-21/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.269105+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-14", "elapsed_ms": 5.9078}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.269453+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-21", "topic": "swiftletcare/1/1/B3P3-QA-22/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.269924+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-15", "elapsed_ms": 5.813}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.270389+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-16", "elapsed_ms": 5.0604}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.270707+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-22", "topic": "swiftletcare/1/1/B3P3-QA-23/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.271156+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-17", "elapsed_ms": 5.0143}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.271415+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-23", "topic": "swiftletcare/1/1/B3P3-QA-24/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.271705+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-18", "elapsed_ms": 4.6418}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.271856+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-24", "topic": "swiftletcare/1/1/B3P3-QA-25/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.272107+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-19", "elapsed_ms": 4.128}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.272509+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-20", "elapsed_ms": 3.727}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.272751+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-25", "topic": "swiftletcare/1/1/B3P3-QA-26/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.273036+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-21", "elapsed_ms": 3.5981}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.273268+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-26", "topic": "swiftletcare/1/1/B3P3-QA-27/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.273452+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-27", "topic": "swiftletcare/1/1/B3P3-QA-28/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.273729+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-22", "elapsed_ms": 2.8762}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.274292+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-23", "elapsed_ms": 2.8334}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.274451+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-28", "topic": "swiftletcare/1/1/B3P3-QA-29/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.274835+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-24", "elapsed_ms": 2.9451}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.275124+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-29", "topic": "swiftletcare/1/1/B3P3-QA-30/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.275690+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-25", "elapsed_ms": 2.9002}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.275955+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-30", "topic": "swiftletcare/1/1/B3P3-QA-31/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.276351+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-26", "elapsed_ms": 3.0229}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.276606+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-31", "topic": "swiftletcare/1/1/B3P3-QA-32/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.277145+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-27", "elapsed_ms": 3.3163}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.277335+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-32", "topic": "swiftletcare/1/1/B3P3-QA-33/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.277569+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-28", "elapsed_ms": 3.0992}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.277707+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-33", "topic": "swiftletcare/1/1/B3P3-QA-34/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.278123+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-29", "elapsed_ms": 2.6668}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.278283+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-34", "topic": "swiftletcare/1/1/B3P3-QA-35/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.278598+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-30", "elapsed_ms": 2.6198}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.278785+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-35", "topic": "swiftletcare/1/1/B3P3-QA-36/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.279025+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-31", "elapsed_ms": 2.4009}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.279313+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-36", "topic": "swiftletcare/1/1/B3P3-QA-37/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.279686+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-32", "elapsed_ms": 2.3223}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.279894+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-37", "topic": "swiftletcare/1/1/B3P3-QA-38/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.280175+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-33", "elapsed_ms": 2.4296}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.280441+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-38", "topic": "swiftletcare/1/1/B3P3-QA-39/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.280756+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-34", "elapsed_ms": 2.3038}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.280930+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-39", "topic": "swiftletcare/1/1/B3P3-QA-40/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.281128+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-40", "topic": "swiftletcare/1/1/B3P3-QA-41/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.281259+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-41", "topic": "swiftletcare/1/1/B3P3-QA-42/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.281742+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-35", "elapsed_ms": 2.2207}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.282150+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-42", "topic": "swiftletcare/1/1/B3P3-QA-43/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.282441+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-36", "elapsed_ms": 3.0954}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.282569+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-43", "topic": "swiftletcare/1/1/B3P3-QA-44/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.282913+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-44", "topic": "swiftletcare/1/1/B3P3-QA-45/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.283244+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-37", "elapsed_ms": 3.1174}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.283567+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-45", "topic": "swiftletcare/1/1/B3P3-QA-46/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.283804+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-38", "elapsed_ms": 3.3426}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.283976+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-46", "topic": "swiftletcare/1/1/B3P3-QA-47/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.284332+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-39", "elapsed_ms": 3.3763}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.284541+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-47", "topic": "swiftletcare/1/1/B3P3-QA-48/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.284702+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-40", "elapsed_ms": 3.5425}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.284833+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-48", "topic": "swiftletcare/1/1/B3P3-QA-49/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.285005+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-41", "elapsed_ms": 3.7237}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.285255+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-49", "topic": "swiftletcare/1/1/B3P3-QA-50/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.285564+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-42", "elapsed_ms": 3.3956}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.285698+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-0", "topic": "swiftletcare/1/1/B3P3-QA-01/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.285901+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-1", "topic": "swiftletcare/1/1/B3P3-QA-02/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.286142+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-2", "topic": "swiftletcare/1/1/B3P3-QA-03/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.286412+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-43", "elapsed_ms": 3.7007}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.286627+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-3", "topic": "swiftletcare/1/1/B3P3-QA-04/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.286910+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-44", "elapsed_ms": 3.9573}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.287139+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-4", "topic": "swiftletcare/1/1/B3P3-QA-05/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.287465+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-45", "elapsed_ms": 3.8606}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.287676+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-5", "topic": "swiftletcare/1/1/B3P3-QA-06/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.287879+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-46", "elapsed_ms": 3.89}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.287989+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-6", "topic": "swiftletcare/1/1/B3P3-QA-07/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.288276+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-48", "elapsed_ms": 3.4115}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.288948+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-47", "elapsed_ms": 4.374}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.289272+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-0", "elapsed_ms": 3.5505}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.289364+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-7", "topic": "swiftletcare/1/1/B3P3-QA-08/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.289591+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-49", "elapsed_ms": 4.3146}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.289766+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-8", "topic": "swiftletcare/1/1/B3P3-QA-09/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.289997+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-1", "elapsed_ms": 3.9877}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.290189+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-9", "topic": "swiftletcare/1/1/B3P3-QA-10/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.290546+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-2", "elapsed_ms": 4.1785}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.290711+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-10", "topic": "swiftletcare/1/1/B3P3-QA-11/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.290953+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-3", "elapsed_ms": 4.3022}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.291079+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-11", "topic": "swiftletcare/1/1/B3P3-QA-12/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.291261+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-12", "topic": "swiftletcare/1/1/B3P3-QA-13/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.291439+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-13", "topic": "swiftletcare/1/1/B3P3-QA-14/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.291764+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-5", "elapsed_ms": 4.0596}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.292050+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-4", "elapsed_ms": 4.8905}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.292204+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-14", "topic": "swiftletcare/1/1/B3P3-QA-15/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.292472+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-6", "elapsed_ms": 4.4553}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.292651+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-15", "topic": "swiftletcare/1/1/B3P3-QA-16/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.292848+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-16", "topic": "swiftletcare/1/1/B3P3-QA-17/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.293234+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-7", "elapsed_ms": 3.6338}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.293465+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-17", "topic": "swiftletcare/1/1/B3P3-QA-18/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.293694+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-8", "elapsed_ms": 3.8886}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.293822+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-18", "topic": "swiftletcare/1/1/B3P3-QA-19/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.294149+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-9", "elapsed_ms": 3.9359}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.294339+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-19", "topic": "swiftletcare/1/1/B3P3-QA-20/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.294677+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-20", "topic": "swiftletcare/1/1/B3P3-QA-21/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.294912+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-10", "elapsed_ms": 4.1634}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.295169+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-21", "topic": "swiftletcare/1/1/B3P3-QA-22/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.295554+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-12", "elapsed_ms": 4.2601}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.295718+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-22", "topic": "swiftletcare/1/1/B3P3-QA-23/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.296017+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-11", "elapsed_ms": 4.9072}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.296276+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-23", "topic": "swiftletcare/1/1/B3P3-QA-24/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.296541+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-13", "elapsed_ms": 5.0709}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.296677+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-24", "topic": "swiftletcare/1/1/B3P3-QA-25/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.297179+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-25", "topic": "swiftletcare/1/1/B3P3-QA-26/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.297529+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-14", "elapsed_ms": 5.1347}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.297781+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-26", "topic": "swiftletcare/1/1/B3P3-QA-27/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.297979+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-27", "topic": "swiftletcare/1/1/B3P3-QA-28/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.298263+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-15", "elapsed_ms": 5.416}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.298608+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-28", "topic": "swiftletcare/1/1/B3P3-QA-29/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.298843+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-16", "elapsed_ms": 5.9621}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.298978+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-29", "topic": "swiftletcare/1/1/B3P3-QA-30/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.299151+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-17", "elapsed_ms": 5.6692}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.299308+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-18", "elapsed_ms": 5.4743}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.299544+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-30", "topic": "swiftletcare/1/1/B3P3-QA-31/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.299794+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-19", "elapsed_ms": 5.4272}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.299936+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-31", "topic": "swiftletcare/1/1/B3P3-QA-32/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.300174+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-20", "elapsed_ms": 5.4648}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.300369+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-32", "topic": "swiftletcare/1/1/B3P3-QA-33/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.300630+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-21", "elapsed_ms": 5.4437}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.300868+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-22", "elapsed_ms": 5.122}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.300981+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-33", "topic": "swiftletcare/1/1/B3P3-QA-34/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.301174+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-23", "elapsed_ms": 4.8838}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.301343+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-34", "topic": "swiftletcare/1/1/B3P3-QA-35/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.301610+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-24", "elapsed_ms": 4.9071}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.301751+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-35", "topic": "swiftletcare/1/1/B3P3-QA-36/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.302101+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-25", "elapsed_ms": 4.8916}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.302343+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-36", "topic": "swiftletcare/1/1/B3P3-QA-37/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.302593+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-27", "elapsed_ms": 4.5848}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.302798+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-37", "topic": "swiftletcare/1/1/B3P3-QA-38/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.302957+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-38", "topic": "swiftletcare/1/1/B3P3-QA-39/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.303065+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-39", "topic": "swiftletcare/1/1/B3P3-QA-40/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.303309+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-40", "topic": "swiftletcare/1/1/B3P3-QA-41/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.303614+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-41", "topic": "swiftletcare/1/1/B3P3-QA-42/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.303840+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-26", "elapsed_ms": 6.0274}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.304104+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-42", "topic": "swiftletcare/1/1/B3P3-QA-43/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.304321+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-28", "elapsed_ms": 5.6854}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.304457+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-43", "topic": "swiftletcare/1/1/B3P3-QA-44/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.304675+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-29", "elapsed_ms": 5.678}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.304838+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-44", "topic": "swiftletcare/1/1/B3P3-QA-45/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.305008+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-30", "elapsed_ms": 5.452}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.305170+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-45", "topic": "swiftletcare/1/1/B3P3-QA-46/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.305433+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-31", "elapsed_ms": 5.4555}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.305605+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-46", "topic": "swiftletcare/1/1/B3P3-QA-47/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.305825+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-32", "elapsed_ms": 5.4394}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.305917+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-47", "topic": "swiftletcare/1/1/B3P3-QA-48/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.306111+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-48", "topic": "swiftletcare/1/1/B3P3-QA-49/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.306340+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-33", "elapsed_ms": 5.3355}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.306517+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-49", "topic": "swiftletcare/1/1/B3P3-QA-50/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.306709+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-0", "topic": "swiftletcare/1/1/B3P3-QA-01/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.306900+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-35", "elapsed_ms": 5.1346}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.307145+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-1", "topic": "swiftletcare/1/1/B3P3-QA-02/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.307448+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-34", "elapsed_ms": 6.0678}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.307712+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-2", "topic": "swiftletcare/1/1/B3P3-QA-03/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.308055+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-36", "elapsed_ms": 5.6767}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.308272+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-3", "topic": "swiftletcare/1/1/B3P3-QA-04/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.308565+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-37", "elapsed_ms": 5.7292}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.308728+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-4", "topic": "swiftletcare/1/1/B3P3-QA-05/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.308976+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-38", "elapsed_ms": 5.9906}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.309136+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-5", "topic": "swiftletcare/1/1/B3P3-QA-06/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.309421+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-39", "elapsed_ms": 6.3294}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.309658+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-6", "topic": "swiftletcare/1/1/B3P3-QA-07/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.309938+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-40", "elapsed_ms": 6.5927}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.310194+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-7", "topic": "swiftletcare/1/1/B3P3-QA-08/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.310450+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-41", "elapsed_ms": 6.794}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.310667+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-8", "topic": "swiftletcare/1/1/B3P3-QA-09/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.310901+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-42", "elapsed_ms": 6.7724}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.311139+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-9", "topic": "swiftletcare/1/1/B3P3-QA-10/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.311356+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-43", "elapsed_ms": 6.7755}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.311553+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-10", "topic": "swiftletcare/1/1/B3P3-QA-11/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.311798+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-44", "elapsed_ms": 6.9373}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.311961+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-11", "topic": "swiftletcare/1/1/B3P3-QA-12/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.312159+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-45", "elapsed_ms": 6.9688}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.312263+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-12", "topic": "swiftletcare/1/1/B3P3-QA-13/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.312436+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-46", "elapsed_ms": 6.8129}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.312721+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-13", "topic": "swiftletcare/1/1/B3P3-QA-14/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.312880+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-47", "elapsed_ms": 6.9397}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.313054+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-14", "topic": "swiftletcare/1/1/B3P3-QA-15/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.313262+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-48", "elapsed_ms": 7.133}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.313401+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-15", "topic": "swiftletcare/1/1/B3P3-QA-16/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.313646+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-49", "elapsed_ms": 7.1}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.313798+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-16", "topic": "swiftletcare/1/1/B3P3-QA-17/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.313990+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-0", "elapsed_ms": 7.2603}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.314145+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-17", "topic": "swiftletcare/1/1/B3P3-QA-18/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.314336+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-1", "elapsed_ms": 7.1768}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.314465+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-18", "topic": "swiftletcare/1/1/B3P3-QA-19/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.314694+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-2", "elapsed_ms": 6.833}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.314924+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-19", "topic": "swiftletcare/1/1/B3P3-QA-20/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.315093+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-20", "topic": "swiftletcare/1/1/B3P3-QA-21/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.315367+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-3", "elapsed_ms": 7.0642}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.315531+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-21", "topic": "swiftletcare/1/1/B3P3-QA-22/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.315779+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-4", "elapsed_ms": 7.0312}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.315889+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-22", "topic": "swiftletcare/1/1/B3P3-QA-23/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.316150+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-23", "topic": "swiftletcare/1/1/B3P3-QA-24/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.316678+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-5", "elapsed_ms": 7.1408}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.316980+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-24", "topic": "swiftletcare/1/1/B3P3-QA-25/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.317253+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-6", "elapsed_ms": 7.4398}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.317466+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-25", "topic": "swiftletcare/1/1/B3P3-QA-26/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.317759+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-7", "elapsed_ms": 7.5401}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.318081+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-26", "topic": "swiftletcare/1/1/B3P3-QA-27/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.318314+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-27", "topic": "swiftletcare/1/1/B3P3-QA-28/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.318594+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-8", "elapsed_ms": 7.776}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.318738+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-28", "topic": "swiftletcare/1/1/B3P3-QA-29/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.319008+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-29", "topic": "swiftletcare/1/1/B3P3-QA-30/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.319105+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-9", "elapsed_ms": 7.7159}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.319449+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-30", "topic": "swiftletcare/1/1/B3P3-QA-31/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.319755+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-10", "elapsed_ms": 8.0604}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.319881+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-31", "topic": "swiftletcare/1/1/B3P3-QA-32/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.320038+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-11", "elapsed_ms": 8.0507}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.320267+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-32", "topic": "swiftletcare/1/1/B3P3-QA-33/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.320471+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-12", "elapsed_ms": 8.1786}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.320644+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-33", "topic": "swiftletcare/1/1/B3P3-QA-34/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.320913+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-13", "elapsed_ms": 8.1651}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.321061+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-34", "topic": "swiftletcare/1/1/B3P3-QA-35/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.321323+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-14", "elapsed_ms": 8.1599}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.321474+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-15", "elapsed_ms": 8.0567}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.321597+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-35", "topic": "swiftletcare/1/1/B3P3-QA-36/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.321887+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-36", "topic": "swiftletcare/1/1/B3P3-QA-37/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.322088+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-16", "elapsed_ms": 8.2569}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.322214+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-37", "topic": "swiftletcare/1/1/B3P3-QA-38/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.322359+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-38", "topic": "swiftletcare/1/1/B3P3-QA-39/telemetry"}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.322797+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-39", "topic": "swiftletcare/1/1/B3P3-QA-40/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.322939+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-17", "elapsed_ms": 8.3965}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.323363+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-40", "topic": "swiftletcare/1/1/B3P3-QA-41/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.323843+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-18", "elapsed_ms": 9.3441}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.323969+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-41", "topic": "swiftletcare/1/1/B3P3-QA-42/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.324201+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-19", "elapsed_ms": 9.2568}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.324483+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-42", "topic": "swiftletcare/1/1/B3P3-QA-43/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.324830+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-20", "elapsed_ms": 9.528}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.324999+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-43", "topic": "swiftletcare/1/1/B3P3-QA-44/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.325233+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-21", "elapsed_ms": 9.6769}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.325507+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-44", "topic": "swiftletcare/1/1/B3P3-QA-45/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.325845+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-22", "elapsed_ms": 9.9148}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.326014+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-45", "topic": "swiftletcare/1/1/B3P3-QA-46/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.326193+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-23", "elapsed_ms": 10.0151}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.326375+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-46", "topic": "swiftletcare/1/1/B3P3-QA-47/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.326628+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-24", "elapsed_ms": 9.6245}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.326865+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-47", "topic": "swiftletcare/1/1/B3P3-QA-48/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.327123+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-25", "elapsed_ms": 9.6173}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.327298+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-48", "topic": "swiftletcare/1/1/B3P3-QA-49/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.327628+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-26", "elapsed_ms": 9.5228}
+{"kind": "publish", "utc": "2026-11-27T16:18:50.327813+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-49", "topic": "swiftletcare/1/1/B3P3-QA-50/telemetry"}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.328064+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-27", "elapsed_ms": 9.7234}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.328342+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-29", "elapsed_ms": 9.3071}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.328484+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-28", "elapsed_ms": 9.7283}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.328587+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-30", "elapsed_ms": 9.1294}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.328696+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-31", "elapsed_ms": 8.8013}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.328780+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-32", "elapsed_ms": 8.506}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.328859+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-33", "elapsed_ms": 8.2067}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.328943+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-34", "elapsed_ms": 7.8698}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.329373+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-36", "elapsed_ms": 7.1255}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.329517+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-35", "elapsed_ms": 7.9043}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.329594+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-37", "elapsed_ms": 7.3705}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.329666+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-38", "elapsed_ms": 7.2976}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.329732+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-39", "elapsed_ms": 6.9254}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.329806+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-41", "elapsed_ms": 5.8239}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.329875+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-40", "elapsed_ms": 6.5283}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.329940+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-42", "elapsed_ms": 5.4497}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.330030+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-43", "elapsed_ms": 5.0199}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.330154+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-44", "elapsed_ms": 4.641}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.330226+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-45", "elapsed_ms": 4.2039}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.330292+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-46", "elapsed_ms": 3.9102}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.330357+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-47", "elapsed_ms": 3.4878}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.330421+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-48", "elapsed_ms": 3.1165}
+{"kind": "broker_observed", "utc": "2026-11-27T16:18:50.330480+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-49", "elapsed_ms": 2.6626}
+{"kind": "stored", "utc": "2026-11-27T16:18:51.308797+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-0", "elapsed_ms": 1053.8678}
+{"kind": "stored", "utc": "2026-11-27T16:18:54.654919+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-1", "elapsed_ms": 4399.6928}
+{"kind": "stored", "utc": "2026-11-27T16:18:54.677654+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-3", "elapsed_ms": 4422.0532}
+{"kind": "stored", "utc": "2026-11-27T16:18:54.698464+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-2", "elapsed_ms": 4442.9792}
+{"kind": "stored", "utc": "2026-11-27T16:18:54.719810+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-4", "elapsed_ms": 4464.118}
+{"kind": "stored", "utc": "2026-11-27T16:18:54.741188+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-6", "elapsed_ms": 4485.0329}
+{"kind": "stored", "utc": "2026-11-27T16:18:54.773022+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-5", "elapsed_ms": 4517.0723}
+{"kind": "stored", "utc": "2026-11-27T16:18:54.815646+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-8", "elapsed_ms": 4558.4107}
+{"kind": "stored", "utc": "2026-11-27T16:18:54.849103+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-7", "elapsed_ms": 4592.5145}
+{"kind": "stored", "utc": "2026-11-27T16:18:54.891277+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-9", "elapsed_ms": 4632.9207}
+{"kind": "stored", "utc": "2026-11-27T16:18:54.912023+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-10", "elapsed_ms": 4652.7318}
+{"kind": "stored", "utc": "2026-11-27T16:18:54.934406+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-11", "elapsed_ms": 4674.1339}
+{"kind": "stored", "utc": "2026-11-27T16:18:54.957365+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-12", "elapsed_ms": 4696.1408}
+{"kind": "stored", "utc": "2026-11-27T16:18:54.979441+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-13", "elapsed_ms": 4716.9214}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.000679+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-14", "elapsed_ms": 4737.4324}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.022414+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-15", "elapsed_ms": 4758.2733}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.042381+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-16", "elapsed_ms": 4776.9922}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.063932+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-17", "elapsed_ms": 4797.7947}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.085795+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-18", "elapsed_ms": 4818.6899}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.108085+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-19", "elapsed_ms": 4840.0589}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.132411+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-20", "elapsed_ms": 4863.5373}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.153266+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-21", "elapsed_ms": 4883.657}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.176542+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-22", "elapsed_ms": 4905.7179}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.196316+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-23", "elapsed_ms": 4924.8232}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.217484+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-24", "elapsed_ms": 4945.5248}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.239924+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-25", "elapsed_ms": 4967.0554}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.262152+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-26", "elapsed_ms": 4988.7178}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.281524+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-27", "elapsed_ms": 5007.9667}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.303064+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-28", "elapsed_ms": 5028.5404}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.325436+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-29", "elapsed_ms": 5050.1085}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.345950+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-30", "elapsed_ms": 5069.8735}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.367037+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-31", "elapsed_ms": 5090.2963}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.389019+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-32", "elapsed_ms": 5111.6051}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.412470+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-33", "elapsed_ms": 5134.6305}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.431544+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-34", "elapsed_ms": 5153.1769}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.456535+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-35", "elapsed_ms": 5177.5748}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.479286+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-36", "elapsed_ms": 5199.6362}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.499729+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-37", "elapsed_ms": 5219.6627}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.518858+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-38", "elapsed_ms": 5238.327}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.540550+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-39", "elapsed_ms": 5259.4981}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.561948+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-40", "elapsed_ms": 5280.6878}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.582518+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-41", "elapsed_ms": 5301.1547}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.604688+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-42", "elapsed_ms": 5322.4621}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.627796+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-43", "elapsed_ms": 5345.1302}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.649984+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-44", "elapsed_ms": 5366.9915}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.671417+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-45", "elapsed_ms": 5387.7607}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.693024+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-46", "elapsed_ms": 5408.9596}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.713409+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-48", "elapsed_ms": 5428.4768}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.734264+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-47", "elapsed_ms": 5449.6318}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.756357+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-0", "elapsed_ms": 5470.5498}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.779235+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-0-49", "elapsed_ms": 5493.7952}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.800299+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-1", "elapsed_ms": 5514.3014}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.821980+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-2", "elapsed_ms": 5535.7404}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.846784+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-3", "elapsed_ms": 5560.0284}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.866217+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-5", "elapsed_ms": 5578.3977}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.888190+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-4", "elapsed_ms": 5600.939}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.910682+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-6", "elapsed_ms": 5622.5849}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.930801+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-7", "elapsed_ms": 5641.3353}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.952334+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-8", "elapsed_ms": 5662.474}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.972935+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-9", "elapsed_ms": 5682.6653}
+{"kind": "stored", "utc": "2026-11-27T16:18:55.994622+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-10", "elapsed_ms": 5703.8186}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.017977+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-12", "elapsed_ms": 5726.5713}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.039177+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-11", "elapsed_ms": 5747.6694}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.060627+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-13", "elapsed_ms": 5769.0722}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.083736+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-14", "elapsed_ms": 5791.4011}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.104566+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-15", "elapsed_ms": 5811.8186}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.125888+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-16", "elapsed_ms": 5832.941}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.147690+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-17", "elapsed_ms": 5854.1255}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.168304+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-18", "elapsed_ms": 5874.389}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.190252+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-19", "elapsed_ms": 5895.8111}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.211176+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-20", "elapsed_ms": 5916.3943}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.234587+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-21", "elapsed_ms": 5939.3061}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.257173+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-22", "elapsed_ms": 5961.3588}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.278612+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-23", "elapsed_ms": 5982.2356}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.299999+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-24", "elapsed_ms": 6003.2176}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.321550+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-25", "elapsed_ms": 6024.2729}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.342616+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-27", "elapsed_ms": 6044.5356}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.368942+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-26", "elapsed_ms": 6071.0539}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.384765+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-28", "elapsed_ms": 6086.0401}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.406064+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-29", "elapsed_ms": 6106.9848}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.429028+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-30", "elapsed_ms": 6129.3649}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.449815+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-31", "elapsed_ms": 6149.7657}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.471163+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-32", "elapsed_ms": 6170.6951}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.492672+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-33", "elapsed_ms": 6191.5869}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.513629+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-35", "elapsed_ms": 6211.7659}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.534398+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-34", "elapsed_ms": 6232.9148}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.555894+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-36", "elapsed_ms": 6253.4506}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.577332+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-37", "elapsed_ms": 6274.4386}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.600099+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-38", "elapsed_ms": 6297.0509}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.621116+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-39", "elapsed_ms": 6317.9567}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.645447+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-40", "elapsed_ms": 6342.024}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.664371+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-41", "elapsed_ms": 6360.6649}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.686855+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-42", "elapsed_ms": 6382.285}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.708171+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-43", "elapsed_ms": 6403.5623}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.728148+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-44", "elapsed_ms": 6423.2025}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.750805+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-45", "elapsed_ms": 6445.5441}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.772723+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-46", "elapsed_ms": 6466.8844}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.796725+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-47", "elapsed_ms": 6490.6386}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.819430+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-48", "elapsed_ms": 6513.1061}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.840798+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-1-49", "elapsed_ms": 6534.1522}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.859868+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-0", "elapsed_ms": 6553.0491}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.881626+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-1", "elapsed_ms": 6574.3829}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.904994+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-2", "elapsed_ms": 6597.1765}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.925836+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-3", "elapsed_ms": 6617.4649}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.946796+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-4", "elapsed_ms": 6637.968}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.968740+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-5", "elapsed_ms": 6659.4917}
+{"kind": "stored", "utc": "2026-11-27T16:18:56.991085+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-6", "elapsed_ms": 6681.3031}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.012937+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-7", "elapsed_ms": 6702.6147}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.034146+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-8", "elapsed_ms": 6723.3624}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.055496+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-9", "elapsed_ms": 6744.2456}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.079607+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-10", "elapsed_ms": 6767.9371}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.103141+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-11", "elapsed_ms": 6791.0583}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.123274+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-12", "elapsed_ms": 6810.9005}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.144774+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-13", "elapsed_ms": 6831.9452}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.166129+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-14", "elapsed_ms": 6852.965}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.187946+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-15", "elapsed_ms": 6874.4368}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.208700+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-16", "elapsed_ms": 6894.8025}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.232405+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-17", "elapsed_ms": 6918.1124}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.252826+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-18", "elapsed_ms": 6938.2262}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.274034+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-19", "elapsed_ms": 6958.8919}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.295415+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-20", "elapsed_ms": 6980.1865}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.315771+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-21", "elapsed_ms": 7000.0964}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.340905+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-22", "elapsed_ms": 7024.8845}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.361770+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-23", "elapsed_ms": 7045.4735}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.386089+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-24", "elapsed_ms": 7068.9514}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.408487+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-25", "elapsed_ms": 7090.8645}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.428418+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-26", "elapsed_ms": 7110.2004}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.450397+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-27", "elapsed_ms": 7131.9752}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.471729+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-29", "elapsed_ms": 7152.6162}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.493407+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-28", "elapsed_ms": 7174.5544}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.514966+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-30", "elapsed_ms": 7195.4071}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.538868+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-31", "elapsed_ms": 7218.8668}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.560360+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-32", "elapsed_ms": 7239.9923}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.581591+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-33", "elapsed_ms": 7260.8097}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.602255+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-34", "elapsed_ms": 7281.0856}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.624904+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-36", "elapsed_ms": 7302.9077}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.646077+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-35", "elapsed_ms": 7324.3645}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.666467+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-37", "elapsed_ms": 7344.1404}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.688075+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-38", "elapsed_ms": 7365.6008}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.709783+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-39", "elapsed_ms": 7386.8772}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.730005+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-41", "elapsed_ms": 7405.9227}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.750886+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-40", "elapsed_ms": 7427.417}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.771876+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-42", "elapsed_ms": 7447.2904}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.794256+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-43", "elapsed_ms": 7469.0971}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.815756+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-44", "elapsed_ms": 7490.1085}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.835480+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-45", "elapsed_ms": 7509.2852}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.858503+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-46", "elapsed_ms": 7531.9944}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.879545+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-47", "elapsed_ms": 7552.5493}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.904193+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-48", "elapsed_ms": 7576.7404}
+{"kind": "stored", "utc": "2026-11-27T16:18:57.924665+00:00", "event_id": "fc62615bcf1e4128ab08d8d4bf440ca5-2-49", "elapsed_ms": 7596.7206}

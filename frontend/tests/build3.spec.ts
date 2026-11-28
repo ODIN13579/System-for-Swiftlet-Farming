@@ -65,6 +65,33 @@ const noticeCount = (page: Page) => page.evaluate(() =>
   (window as unknown as { notices: unknown[] }).notices.length,
 )
 
+test('Zone configuration distinguishes an uninitialized zone from a routing 404', async ({ page }) => {
+  await setup(page)
+  let missingCode = 'RESOURCE_NOT_FOUND'
+  await page.route('**/api/v1/zones/2/config', async route => {
+    if (route.request().method() === 'PUT') {
+      const input = route.request().postDataJSON()
+      expect(input).toMatchObject({ version: 0, telemetryIntervalSec: 5, heartbeatIntervalSec: 2 })
+      return route.fulfill({ json: { ...input, id: 1, zoneId: 2, version: 1, updatedAt: '2026-11-27T00:00:00Z' } })
+    }
+    return route.fulfill({ status: 404, json: { code: missingCode, message: 'Resource not found' } })
+  })
+  await page.getByRole('button', { name: 'Cấu hình ngưỡng' }).click()
+  await expect(page.getByText('API 404: Resource not found')).toBeVisible()
+  await expect(page.getByLabel('Nhà yến')).toBeEnabled()
+  await expect(page.getByLabel('Khu vực')).toBeEnabled()
+  await expect(page.getByRole('heading', { name: 'Độ ẩm', exact: true })).toBeVisible()
+  const save = page.getByRole('button', { name: 'Lưu cấu hình' })
+  await expect(save).toBeDisabled()
+
+  missingCode = 'ZONE_CONFIG_NOT_INITIALIZED'
+  await page.getByRole('button', { name: 'Tải lại' }).click()
+  await expect(page.getByText(/Khu vực chưa có cấu hình/)).toBeVisible()
+  await save.click()
+  await expect(page.getByText('Đã lưu cấu hình.')).toBeVisible()
+  await expect(page.getByText(/Phiên bản: 1/)).toBeVisible()
+})
+
 test('Dashboard notification, House filter, deduplication, deep link and logout', async ({ page }) => {
   const qa = await setup(page)
   await expect(page.getByRole('button', { name: /Quản lý tài khoản/ })).toHaveCount(0)
